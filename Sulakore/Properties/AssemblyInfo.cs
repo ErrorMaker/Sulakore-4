@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Arachis")]
 [assembly: AssemblyProduct("Habbo Hotel SDK")]
-[assembly: AssemblyCopyright("Copyright © Kendax 2014")]
+[assembly: AssemblyCopyright("Copyright © The Old Nut Man 2014")]
 [assembly: AssemblyTrademark("Kendax")]
 [assembly: AssemblyCulture("")]
 
