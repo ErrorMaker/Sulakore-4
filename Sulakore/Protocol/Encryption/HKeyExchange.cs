@@ -85,11 +85,11 @@ namespace Sulakore.Protocol.Encryption
 
             if (IsInitiator)
             {
-                do { DhPrime = BigInteger.genPseudoPrime(212, 6, ByteGen); }
-                while (!DhPrime.isProbablePrime());
+                do { DhPrime = BigInteger.GenPseudoPrime(212, 6, ByteGen); }
+                while (!DhPrime.IsProbablePrime());
 
-                do { DhGenerator = BigInteger.genPseudoPrime(212, 6, ByteGen); }
-                while (DhGenerator >= DhPrime && !DhPrime.isProbablePrime());
+                do { DhGenerator = BigInteger.GenPseudoPrime(212, 6, ByteGen); }
+                while (DhGenerator >= DhPrime && !DhPrime.IsProbablePrime());
 
                 if (DhGenerator > DhPrime)
                 {
@@ -99,7 +99,7 @@ namespace Sulakore.Protocol.Encryption
                 }
 
                 DhPrivate = new BigInteger(RandomHex(30), bitSize);
-                DhPublic = DhGenerator.modPow(DhPrivate, DhPrime);
+                DhPublic = DhGenerator.ModPow(DhPrivate, DhPrime);
             }
         }
         #endregion
@@ -117,7 +117,7 @@ namespace Sulakore.Protocol.Encryption
             }
 
             var unpaddedPublicKey = new BigInteger(publicKey, 10);
-            return unpaddedPublicKey.modPow(DhPrivate, DhPrime).getBytes();
+            return unpaddedPublicKey.ModPow(DhPrivate, DhPrime).ToBytes();
         }
         public void DoHandshake(Bitmap banner, string token)
         {
@@ -146,7 +146,7 @@ namespace Sulakore.Protocol.Encryption
             DhGenerator = new BigInteger(bannerChunk.Substring(0, bannerSize), 10);
 
             DhPrivate = new BigInteger(RandomHex(30), _bitSize);
-            DhPublic = DhGenerator.modPow(DhPrivate, DhPrime);
+            DhPublic = DhGenerator.ModPow(DhPrivate, DhPrime);
         }
         public void DoHandshake(string signedPrime, string signedGenerator)
         {
@@ -165,7 +165,7 @@ namespace Sulakore.Protocol.Encryption
             if (DhGenerator >= DhPrime) throw new Exception(string.Format("Generator cannot be >= Prime!\nPrime: {0}\nGenerator: {1}", DhPrime, DhGenerator));
 
             DhPrivate = new BigInteger(RandomHex(30), _bitSize);
-            DhPublic = DhGenerator.modPow(DhPrivate, DhPrime);
+            DhPublic = DhGenerator.ModPow(DhPrivate, DhPrime);
         }
 
         public void Flush()
