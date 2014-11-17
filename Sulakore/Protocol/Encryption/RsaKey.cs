@@ -1,5 +1,33 @@
 ﻿using System;
 
+/* Copyright
+ *
+ * RsaKey
+ * 
+ * Copyright (c) 2014 The Old Nut Man
+ * All rights reserved.
+ * 
+ * Derived From: The jsbn library is Copyright (c) 2003-2005 Tom Wu (tjw@cs.Stanford.EDU)
+ * (http://www-cs-students.stanford.edu/~tjw/jsbn/)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 namespace Sulakore.Protocol.Encryption
 {
     public class RsaKey
@@ -85,11 +113,11 @@ namespace Sulakore.Protocol.Encryption
             int qs = bitSize >> 1;
             do
             {
-                do p = BigInteger.genPseudoPrime(bitSize - qs, 6, ByteGen);
-                while ((p - 1).gcd(e) != 1 && !p.isProbablePrime(10));
+                do p = BigInteger.GenPseudoPrime(bitSize - qs, 6, ByteGen);
+                while ((p - 1).Gcd(e) != 1 && !p.IsProbablePrime(10));
 
-                do q = BigInteger.genPseudoPrime(qs, 6, ByteGen);
-                while ((q - 1).gcd(e) != 1 && !q.isProbablePrime(10) && q == p);
+                do q = BigInteger.GenPseudoPrime(qs, 6, ByteGen);
+                while ((q - 1).Gcd(e) != 1 && !q.IsProbablePrime(10) && q == p);
 
                 if (p < q)
                 {
@@ -98,13 +126,13 @@ namespace Sulakore.Protocol.Encryption
                 }
                 phi = (p1 = (p - 1)) * (q1 = (q - 1));
             }
-            while (phi.gcd(e) != 1);
+            while (phi.Gcd(e) != 1);
 
             BigInteger n = p * q;
-            BigInteger d = e.modInverse(phi);
+            BigInteger d = e.ModInverse(phi);
             BigInteger dmp1 = d % p1;
             BigInteger dmq1 = d % q1;
-            BigInteger iqmp = q.modInverse(p);
+            BigInteger iqmp = q.ModInverse(p);
             return new RsaKey(e, n, d, p, q, dmp1, dmq1, iqmp);
         }
 
@@ -126,7 +154,7 @@ namespace Sulakore.Protocol.Encryption
         {
             var outCome = new byte[length];
 
-            for (int i = data.Length - 1; (i >= 0 && length > 11); )
+            for (int i = data.Length - 1; (i >= 0 && length > 11);)
                 outCome[--length] = data[i--];
 
             outCome[--length] = 0;
@@ -182,7 +210,7 @@ namespace Sulakore.Protocol.Encryption
 
         public int GetBlockSize()
         {
-            return (N.bitCount() + 7) / 8;
+            return (N.BitCount() + 7) / 8;
         }
         #endregion
 
@@ -190,25 +218,25 @@ namespace Sulakore.Protocol.Encryption
         private void _Decrypt(Func<BigInteger, BigInteger> doFunc, ref byte[] data, PKCS1PadType type)
         {
             int blockSize = GetBlockSize();
-            data = Pkcs1Unpad(doFunc(new BigInteger(data)).getBytes(), blockSize, type);
+            data = Pkcs1Unpad(doFunc(new BigInteger(data)).ToBytes(), blockSize, type);
         }
         private void _Encrypt(Func<BigInteger, BigInteger> doFunc, ref byte[] data, PKCS1PadType type)
         {
             int blockSize = GetBlockSize();
-            data = doFunc(new BigInteger(Pkcs1Pad(data, blockSize, type))).getBytes();
+            data = doFunc(new BigInteger(Pkcs1Pad(data, blockSize, type))).ToBytes();
         }
 
         private BigInteger DoPublic(BigInteger x)
         {
-            return x.modPow(E, N);
+            return x.ModPow(E, N);
         }
         private BigInteger DoPrivate(BigInteger x)
         {
             if (P == null && Q == null)
-                return x.modPow(D, N);
+                return x.ModPow(D, N);
 
-            BigInteger xp = (x % P).modPow(Dmp1, P);
-            BigInteger xq = (x % Q).modPow(Dmq1, Q);
+            BigInteger xp = (x % P).ModPow(Dmp1, P);
+            BigInteger xq = (x % Q).ModPow(Dmq1, Q);
 
             while (xp < xq) xp = xp + P;
             return ((((xp - xq) * (Iqmp)) % P) * Q) + xq;
