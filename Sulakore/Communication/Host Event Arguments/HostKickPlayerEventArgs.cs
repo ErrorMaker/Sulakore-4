@@ -3,7 +3,7 @@ using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
-    public class HostKickedPlayerEventArgs : EventArgs, IHabboEvent
+    public class HostKickPlayerEventArgs : EventArgs, IHabboEvent
     {
         private readonly HMessage _packet;
 
@@ -20,7 +20,7 @@ namespace Sulakore.Communication
             }
         }
 
-        public HostKickedPlayerEventArgs(HMessage packet)
+        public HostKickPlayerEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
