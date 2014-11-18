@@ -1,53 +1,51 @@
-﻿using Sulakore.Habbo;
+﻿using System;
 using Sulakore.Protocol;
-using System;
-using System.Collections.Generic;
 
 namespace Sulakore.Communication
 {
     public class HostMutePlayerEventArgs : EventArgs, IHabboEvent
     {
-        #region Properties
-        public static object[] Params
-        {
-            get { return new object[] { "Header", "PlayerID", "RoomID", "Minutes" }; }
-        }
-        public Dictionary<string, object> Data
+        private readonly HMessage _packet;
+
+        public ushort Header { get; private set; }
+
+        private int? _playerId;
+        public int PlayerId
         {
             get
             {
-                return new Dictionary<string, object>
-                {
-                    { "Header", Header },
-                    { "PlayerID", PlayerId },
-                    { "RoomID", RoomId },
-                    { "Minutes", Minutes }
-                };
+                return (int)(_playerId != null ?
+                    _playerId :
+                    _playerId = _packet.ReadInt(0));
             }
         }
-        public HMessage Packet { get; private set; }
 
-        public ushort Header { get; private set; }
-        public int PlayerId { get; private set; }
-        public int RoomId { get; private set; }
-        public int Minutes { get; private set; }
-        #endregion
-
-        public HostMutePlayerEventArgs(ushort header, int playerId, int roomId, int minutes)
+        private int? _roomId;
+        public int RoomId
         {
-            Header = header;
-            PlayerId = playerId;
-            RoomId = roomId;
-            Minutes = minutes;
-        }
-        public static HostMutePlayerEventArgs CreateArguments(HMessage packet)
-        {
-            return new HostMutePlayerEventArgs(HHeaders.Mute = packet.Header, packet.ReadInt(0), packet.ReadInt(4), packet.ReadInt(8)) { Packet = new HMessage(packet.ToBytes(), HDestinations.Server) };
+            get
+            {
+                return (int)(_roomId != null ?
+                    _roomId :
+                    _roomId = _packet.ReadInt(4));
+            }
         }
 
-        public override string ToString()
+        private int? _minutes;
+        public int Minutes
         {
-            return string.Format("Header: {0} | PlayerID: {1} | RoomID: {2} | Minutes: {3}", Header, PlayerId, RoomId, Minutes);
+            get
+            {
+                return (int)(_minutes != null ?
+                    _minutes :
+                    _minutes = _packet.ReadInt(8));
+            }
+        }
+
+        public HostMutePlayerEventArgs(HMessage packet)
+        {
+            _packet = packet;
+            Header = _packet.Header;
         }
     }
 }

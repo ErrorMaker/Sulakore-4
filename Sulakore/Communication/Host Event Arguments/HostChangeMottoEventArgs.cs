@@ -1,47 +1,29 @@
-﻿using Sulakore.Habbo;
+﻿using System;
 using Sulakore.Protocol;
-using System;
-using System.Collections.Generic;
 
 namespace Sulakore.Communication
 {
     public class HostChangeMottoEventArgs : EventArgs, IHabboEvent
     {
-        #region Properties
-        public static object[] Params
-        {
-            get { return new object[] { "Header", "Motto" }; }
-        }
-        public Dictionary<string, object> Data
+        private readonly HMessage _packet;
+
+        public ushort Header { get; private set; }
+
+        private string _motto;
+        public string Motto
         {
             get
             {
-                return new Dictionary<string, object>
-                {
-                    { "Header", Header },
-                    { "Motto", Motto }
-                };
+                return !string.IsNullOrEmpty(_motto) ?
+                    _motto :
+                    _motto = _packet.ReadString(0);
             }
         }
-        public HMessage Packet { get; private set; }
 
-        public ushort Header { get; private set; }
-        public string Motto { get; private set; }
-        #endregion
-
-        public HostChangeMottoEventArgs(ushort header, string motto)
+        public HostChangeMottoEventArgs(HMessage packet)
         {
-            Header = header;
-            Motto = motto;
-        }
-        public static HostChangeMottoEventArgs CreateArguments(HMessage packet)
-        {
-            return new HostChangeMottoEventArgs(HHeaders.Motto = packet.Header, packet.ReadString(0)) { Packet = new HMessage(packet.ToBytes(), HDestinations.Server) };
-        }
-
-        public override string ToString()
-        {
-            return string.Format("Header: {0} | Motto: {1}", Header, Motto);
+            _packet = packet;
+            Header = _packet.Header;
         }
     }
 }

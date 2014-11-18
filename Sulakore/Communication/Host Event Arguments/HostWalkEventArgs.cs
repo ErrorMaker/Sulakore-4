@@ -1,48 +1,30 @@
-﻿using Sulakore.Habbo;
+﻿using System;
+using Sulakore.Habbo;
 using Sulakore.Protocol;
-using System;
-using System.Collections.Generic;
 
 namespace Sulakore.Communication
 {
     public class HostWalkEventArgs : EventArgs, IHabboEvent
     {
-        #region Properties
-        public static object[] Params
-        {
-            get { return new object[] { "Header", "X", "Y" }; }
-        }
-        public Dictionary<string, object> Data
+        private readonly HMessage _packet;
+
+        public ushort Header { get; private set; }
+
+        private HPoint _tile;
+        public HPoint Tile
         {
             get
             {
-                return new Dictionary<string, object>
-                {
-                    { "Header", Header },
-                    { "X", Tile.X },
-                    { "Y", Tile.Y }
-                };
+                return _tile != HPoint.Empty ?
+                    _tile :
+                    _tile = new HPoint(_packet.ReadInt(0), _packet.ReadInt(4));
             }
         }
-        public HMessage Packet { get; private set; }
 
-        public ushort Header { get; private set; }
-        public HPoint Tile { get; private set; }
-        #endregion
-
-        public HostWalkEventArgs(ushort header, int x, int y)
+        public HostWalkEventArgs(HMessage packet)
         {
-            Header = header;
-            Tile = new HPoint(x, y);
-        }
-        public static HostWalkEventArgs CreateArguments(HMessage packet)
-        {
-            return new HostWalkEventArgs(HHeaders.Walk = packet.Header, packet.ReadInt(0), packet.ReadInt(4)) { Packet = new HMessage(packet.ToBytes(), HDestinations.Server) };
-        }
-
-        public override string ToString()
-        {
-            return string.Format("Header: {0} | Tile: {1}", Header, Tile.ToPoint().ToString());
+            _packet = packet;
+            Header = _packet.Header;
         }
     }
 }

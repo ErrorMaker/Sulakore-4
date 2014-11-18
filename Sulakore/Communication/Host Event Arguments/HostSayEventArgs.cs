@@ -1,51 +1,41 @@
 ﻿using System;
-using Sulakore.Protocol;
-using System.Collections.Generic;
 using Sulakore.Habbo;
+using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
     public class HostSayEventArgs : EventArgs, IHabboEvent
     {
-        #region Properties
-        public static object[] Params
-        {
-            get { return new object[] { "Header", "Message", "Theme" }; }
-        }
-        public Dictionary<string, object> Data
+        private readonly HMessage _packet;
+
+        public ushort Header { get; private set; }
+
+        private string _message;
+        public string Message
         {
             get
             {
-                return new Dictionary<string, object> 
-                {
-                    { "Header", Header },
-                    { "Message", Message },
-                    { "Theme", Theme }
-                };
+                return !string.IsNullOrEmpty(_message) ?
+                    _message :
+                    _message = _packet.ReadString(0);
             }
         }
-        public HMessage Packet { get; private set; }
 
-        public ushort Header { get; private set; }
-        public string Message { get; private set; }
-        public HThemes Theme { get; private set; }
-        #endregion
-
-        public HostSayEventArgs(ushort header, string message, HThemes theme)
+        private HThemes? _theme;
+        public HThemes Theme
         {
-            Header = header;
-            Message = message;
-            Theme = theme;
-        }
-        public static HostSayEventArgs CreateArguments(HMessage packet)
-        {
-            int p = 0;
-            return new HostSayEventArgs(HHeaders.Say = packet.Header, packet.ReadString(ref p), (HThemes)packet.ReadInt(p)) { Packet = new HMessage(packet.ToBytes(), HDestinations.Server) };
+            get
+            {
+                return (HThemes)(_theme != null ?
+                    _theme :
+                    _theme = (HThemes)_packet.ReadInt(_packet.Length - 10));
+            }
         }
 
-        public override string ToString()
+        public HostSayEventArgs(HMessage packet)
         {
-            return string.Format("Header: {0} | Message: {1} | Theme: {2}", Header, Message, Theme);
+            _packet = packet;
+            Header = _packet.Header;
         }
     }
 }

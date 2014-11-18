@@ -1,55 +1,52 @@
-﻿using Sulakore.Habbo;
+﻿using System;
+using Sulakore.Habbo;
 using Sulakore.Protocol;
-using System;
-using System.Collections.Generic;
 
 namespace Sulakore.Communication
 {
     public class HostMoveFurnitureEventArgs : EventArgs, IHabboEvent
     {
-        #region Properties
-        public static object[] Params
-        {
-            get { return new object[] { "Header", "FurniID", "X", "Y", "Z", "Direction" }; }
-        }
-        public Dictionary<string, object> Data
+        private readonly HMessage _packet;
+
+        public ushort Header { get; private set; }
+
+        private int? _furnitureId;
+        public int FurnitureId
         {
             get
             {
-                return new Dictionary<string, object>
-                {
-                    { "Header", Header },
-                    { "FurniID", FurniId },
-                    { "X", Tile.X },
-                    { "Y", Tile.Y },
-                    { "Z", Tile.Z },
-                    { "Direction", Direction }
-                };
+                return (int)(_furnitureId != null ?
+                    _furnitureId :
+                    _furnitureId = _packet.ReadInt(0));
             }
         }
-        public HMessage Packet { get; private set; }
 
-        public ushort Header { get; private set; }
-        public int FurniId { get; private set; }
-        public HPoint Tile { get; private set; }
-        public HDirections Direction { get; private set; }
-        #endregion
-
-        public HostMoveFurnitureEventArgs(ushort header, int furniId, int x, int y, string z, HDirections direction)
+        private HPoint _tile;
+        public HPoint Tile
         {
-            Header = header;
-            FurniId = furniId;
-            Tile = new HPoint(x, y, z);
-            Direction = direction;
-        }
-        public static HostMoveFurnitureEventArgs CreateArguments(HMessage packet, string z)
-        {
-            return new HostMoveFurnitureEventArgs(HHeaders.MoveFurniture = packet.Header, packet.ReadInt(0), packet.ReadInt(4), packet.ReadInt(8), z, (HDirections)packet.ReadInt(12)) { Packet = new HMessage(packet.ToBytes(), HDestinations.Server) };
+            get
+            {
+                return _tile != HPoint.Empty ?
+                    _tile :
+                    _tile = new HPoint(_packet.ReadInt(4), _packet.ReadInt(8));
+            }
         }
 
-        public override string ToString()
+        private HDirections? _direction;
+        public HDirections Direction
         {
-            return string.Format("Header: {0} | FurniID: {1} | Tile: {2} | Direction: {3}", Header, FurniId, Tile.ToString(), Direction);
+            get
+            {
+                return (HDirections)(_direction != null ?
+                    _direction :
+                    _direction = (HDirections)_packet.ReadInt(12));
+            }
+        }
+
+        public HostMoveFurnitureEventArgs(HMessage packet)
+        {
+            _packet = packet;
+            Header = _packet.Header;
         }
     }
 }

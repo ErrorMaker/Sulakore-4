@@ -1,51 +1,41 @@
 ﻿using Sulakore.Habbo;
 using Sulakore.Protocol;
 using System;
-using System.Collections.Generic;
 
 namespace Sulakore.Communication
 {
     public class HostClickPlayerEventArgs : EventArgs, IHabboEvent
     {
-        #region Properties
-        public static object[] Params
-        {
-            get { return new object[] { "Header", "PlayerID", "X", "Y" }; }
-        }
-        public Dictionary<string, object> Data
+        private readonly HMessage _packet;
+
+        public ushort Header { get; private set; }
+
+        private int? _playerId;
+        public int PlayerId
         {
             get
             {
-                return new Dictionary<string, object>
-                {
-                    { "Header", Header },
-                    { "PlayerID", PlayerId },
-                    { "X", Tile.X },
-                    { "Y", Tile.Y }
-                };
+                return (int)(_playerId != null ?
+                    _playerId :
+                    _playerId = _packet.ReadInt(0));
             }
         }
-        public HMessage Packet { get; private set; }
 
-        public ushort Header { get; private set; }
-        public int PlayerId { get; private set; }
-        public HPoint Tile { get; private set; }
-        #endregion
-
-        public HostClickPlayerEventArgs(ushort header, int playerId, int x, int y)
+        private HPoint _tile;
+        public HPoint Tile
         {
-            Header = header;
-            PlayerId = playerId;
-            Tile = new HPoint(x, y);
-        }
-        public static HostClickPlayerEventArgs CreateArguments(HMessage packet, int playerId)
-        {
-            return new HostClickPlayerEventArgs(HHeaders.Rotate = packet.Header, playerId, packet.ReadInt(0), packet.ReadInt(4)) { Packet = new HMessage(packet.ToBytes(), HDestinations.Server) };
+            get
+            {
+                return _tile != HPoint.Empty ?
+                    _tile :
+                    _tile = new HPoint(_packet.ReadInt(0), _packet.ReadInt(4));
+            }
         }
 
-        public override string ToString()
+        public HostClickPlayerEventArgs(HMessage packet)
         {
-            return string.Format("Header: {0} | PlayerID: {1} | Tile: {2}", Header, PlayerId, Tile.ToPoint().ToString());
+            _packet = packet;
+            Header = _packet.Header;
         }
     }
 }
