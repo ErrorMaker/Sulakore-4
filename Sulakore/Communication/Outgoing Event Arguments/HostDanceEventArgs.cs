@@ -26,5 +26,10 @@ namespace Sulakore.Communication
             _packet = packet;
             Header = _packet.Header;
         }
+
+        public override string ToString()
+        {
+            return string.Format("Header: {0}, Dance: {1}", Header, Dance);
+        }
     }
 }

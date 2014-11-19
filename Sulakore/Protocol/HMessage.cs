@@ -809,11 +809,6 @@ namespace Sulakore.Protocol
         #endregion
 
         #region Instance Formatters
-        public static implicit operator byte[] (HMessage hmessage)
-        {
-            return hmessage.ToBytes();
-        }
-
         public byte[] ToBytes()
         {
             return _bufferCache ?? (_bufferCache = Construct(_header, Destination, Protocol, Body));
@@ -914,7 +909,7 @@ namespace Sulakore.Protocol
             buffer.AddRange(ConstructBody(destination, protocol, chunks));
 
             if (!isAncient || destination == HDestinations.Server)
-                buffer.InsertRange(isAncient ? 1 : 0, protocol.CypherShort((ushort)(buffer.Count - (isAncient ? 1 : 0))));
+                buffer.InsertRange(isAncient ? 1 : 0, isAncient ? Ancient.CypherShort((ushort)(buffer.Count - 1)) : Modern.CypherInt(buffer.Count));//  protocol.CypherShort((ushort)(buffer.Count - (isAncient ? 1 : 0))));
             else if (buffer[buffer.Count - 1] != 1) buffer.Add(1);
 
             return buffer.ToArray();

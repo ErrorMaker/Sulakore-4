@@ -4,7 +4,7 @@ using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
-    public class HostChangeClothesEventArgs : EventArgs, IHabboEvent
+    public class HostClothesChangedEventArgs : EventArgs, IHabboEvent
     {
         private readonly HMessage _packet;
 
@@ -32,7 +32,7 @@ namespace Sulakore.Communication
             }
         }
 
-        public HostChangeClothesEventArgs(HMessage packet)
+        public HostClothesChangedEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;

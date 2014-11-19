@@ -1,231 +1,343 @@
 ﻿using System;
-using Sulakore.Habbo;
 using Sulakore.Protocol;
+using System.Collections.Generic;
+using Sulakore.Habbo;
 
 namespace Sulakore.Communication
 {
     public abstract class HTriggerBase : IDisposable
     {
-        private HMessage _lastToServer;
+        #region Private Fields
+        protected abstract IHConnection Connection { get; }
 
-        #region Game Connection Events
-        public event EventHandler<HostSayEventArgs> OnHostSay;
-        public event EventHandler<HostExitEventArgs> OnHostExit;
-        public event EventHandler<HostWalkEventArgs> OnHostWalk;
-        public event EventHandler<HostSignEventArgs> OnHostSign;
-        public event EventHandler<HostDanceEventArgs> OnHostDance;
-        public event EventHandler<HostShoutEventArgs> OnHostShout;
-        public event EventHandler<HostTradeEventArgs> OnHostTrade;
-        public event EventHandler<HostKickedEventArgs> OnHostKicked;
-        public event EventHandler<HostGestureEventArgs> OnHostGesture;
-        public event EventHandler<HostNavigateEventArgs> OnHostNavigate;
-        public event EventHandler<HostBanPlayerEventArgs> OnHostBanPlayer;
-        public event EventHandler<HostMutePlayerEventArgs> OnHostMutePlayer;
-        public event EventHandler<HostKickPlayerEventArgs> OnHostKickPlayer;
-        public event EventHandler<HostClickPlayerEventArgs> OnHostClickPlayer;
-        public event EventHandler<HostChangeMottoEventArgs> OnHostChangeMotto;
-        public event EventHandler<HostChangeStanceEventArgs> OnHostChangeStance;
-        public event EventHandler<HostMoveFurnitureEventArgs> OnHostMoveFurniture;
-        public event EventHandler<HostChangeClothesEventArgs> OnHostChangeClothes;
+        private Action<HMessage, HMessage> _outEventDitch, _inEventDitch;
 
-        public event EventHandler<PlayerSayEventArgs> OnPlayerSay;
-        public event EventHandler<PlayerWalkEventArgs> OnPlayerWalk;
-        public event EventHandler<PlayerSignEventArgs> OnPlayerSign;
-        public event EventHandler<PlayerShoutEventArgs> OnPlayerShout;
-        public event EventHandler<PlayerEnterEventArgs> OnPlayerEnter;
-        public event EventHandler<PlayerDanceEventArgs> OnPlayerDance;
-        public event EventHandler<PlayerGestureEventArgs> OnPlayerGesture;
-        public event EventHandler<PlayerChangeDataEventArgs> OnPlayerChangeData;
-        public event EventHandler<PlayerChangeStanceEventArgs> OnPlayerChangeStance;
-        public event EventHandler<PlayerMoveFurnitureEventArgs> OnPlayerMoveFurniture;
-        public event EventHandler<PlayerDropFurnitureEventArgs> OnPlayerDropFurniture;
+        private readonly Stack<HMessage> _previousOutgoing = new Stack<HMessage>();
+        private readonly Stack<HMessage> _previousIncoming = new Stack<HMessage>();
+        private readonly Dictionary<ushort, Action<HMessage>> _lockedOutgoing = new Dictionary<ushort, Action<HMessage>>();
+        private readonly Dictionary<ushort, Action<HMessage>> _lockedIncoming = new Dictionary<ushort, Action<HMessage>>();
         #endregion
 
-        protected void TriggerHostEvents(byte[] data)
+        #region Public Properties
+        private bool _lockEvents;
+        public bool LockEvents
         {
-            var packet = new HMessage(data);
-            try
+            get { return _lockEvents; }
+            set
             {
-                if (OnHostSay != null && packet.IsHostSay)
-                { _lastToServer = packet; OnHostSay(this, HostSayEventArgs.CreateArguments(packet)); return; }
+                if (value == _lockEvents) return;
 
-                if (OnHostShout != null && packet.IsHostShout)
-                { _lastToServer = packet; OnHostShout(this, HostShoutEventArgs.CreateArguments(packet)); return; }
-
-                if (OnHostExit != null && _lastToServer != null && packet.IsHostExit && !_lastToServer.IsHostExit)
-                { HMessage lastToServer = _lastToServer; _lastToServer = packet; OnHostExit(this, HostExitEventArgs.CreateArguments(lastToServer)); return; }
-
-                if (OnHostTrade != null && _lastToServer != null && _lastToServer.IsHostTrade)
-                { _lastToServer = packet; OnHostTrade(this, HostTradeEventArgs.CreateArguments(packet)); return; }
-
-                if (OnHostSign != null && _lastToServer != null && !_lastToServer.IsHostSign && packet.IsHostSign)
-                { HMessage lastToServer = _lastToServer; _lastToServer = packet; OnHostSign(this, HostSignEventArgs.CreateArguments(lastToServer)); return; }
-
-                if (OnHostNavigate != null && _lastToServer != null && !_lastToServer.IsHostNavigate && packet.IsHostNavigate)
-                { HMessage lastToServer = _lastToServer; _lastToServer = packet; OnHostNavigate(this, HostNavigateEventArgs.CreateArguments(lastToServer)); return; }
-
-                if (OnHostGesture != null && _lastToServer != null && !packet.IsHostGesture && _lastToServer.IsHostGesture)
-                { _lastToServer = packet; OnHostGesture(this, HostGestureEventArgs.CreateArguments(packet)); return; }
-
-                if (OnHostChangeStance != null && _lastToServer != null && _lastToServer.IsHostChangeStance)
-                { _lastToServer = packet; OnHostChangeStance(this, HostChangeStanceEventArgs.CreateArguments(packet)); return; }
-
-                if (OnHostKickPlayer != null && _lastToServer != null && _lastToServer.IsHostKickPlayer)
-                { _lastToServer = packet; OnHostKickPlayer(this, HostKickPlayerEventArgs.CreateArguments(packet)); return; }
-
-                if (OnHostMutePlayer != null && _lastToServer != null && _lastToServer.IsHostMutePlayer)
-                { _lastToServer = packet; OnHostMutePlayer(this, HostMutePlayerEventArgs.CreateArguments(packet)); return; }
-
-                if (_lastToServer != null && _lastToServer.IsHostDance && OnHostDance != null)
-                { _lastToServer = packet; OnHostDance(this, HostDanceEventArgs.CreateArguments(packet)); return; }
-
-                if (_lastToServer != null && _lastToServer.IsHostBanPlayer && OnHostBanPlayer != null)
-                { _lastToServer = packet; OnHostBanPlayer(this, HostBanPlayerEventArgs.CreateArguments(packet)); return; }
-
-                if (_lastToServer != null && _lastToServer.IsCoordinate && packet.IsPossiblePlayerId && OnHostClickPlayer != null)
-                { HMessage lastToServer = _lastToServer; _lastToServer = packet; OnHostClickPlayer(this, HostClickPlayerEventArgs.CreateArguments(lastToServer, packet.ReadInt(0))); return; }
-                _lastToServer = packet;
+                if (!(_lockEvents = value))
+                {
+                    _lockedOutgoing.Clear();
+                    _lockedIncoming.Clear();
+                }
             }
-            catch (Exception ex) { SKore.Debugger(ex.ToString()); }
         }
-        protected void TriggerPlayerEvents(byte[] data)
+        #endregion
+
+        #region Game Connection Events
+        public event EventHandler<HostSayEventArgs> HostSay;
+        public event EventHandler<HostWalkEventArgs> HostWalk;
+        public event EventHandler<HostDanceEventArgs> HostDance; //
+        public event EventHandler<HostShoutEventArgs> HostShout;
+        public event EventHandler<HostGestureEventArgs> HostGesture; //
+        public event EventHandler<HostRoomExitEventArgs> HostRoomExit;
+        public event EventHandler<HostRaiseSignEventArgs> HostRaiseSign; //
+        public event EventHandler<HostBanPlayerEventArgs> HostBanPlayer;
+        public event EventHandler<HostMutePlayerEventArgs> HostMutePlayer;
+        public event EventHandler<HostKickPlayerEventArgs> HostKickPlayer;
+        public event EventHandler<HostClickPlayerEventArgs> HostClickPlayer;
+        public event EventHandler<HostMottoChangedEventArgs> HostChangeMotto;
+        public event EventHandler<HostTradePlayerEventArgs> HostTradePlayer;
+        public event EventHandler<HostStanceChangedEventArgs> HostChangeStance; //
+        public event EventHandler<HostRoomNavigateEventArgs> HostRoomNavigate;
+        public event EventHandler<HostMoveFurnitureEventArgs> HostMoveFurniture;
+        public event EventHandler<HostClothesChangedEventArgs> HostChangeClothes;
+
+        public event EventHandler<PlayerKickedHostEventArgs> PlayerKickedHost;
+        public event EventHandler<PlayerDataLoadedEventArgs> PlayerDataLoaded; //
+        public event EventHandler<FurnitureDataLoadedEventArgs> FurnitureDataLoaded;
+        #endregion
+
+        #region Game Connection Event Overrides
+        protected virtual void OnHostSay(HMessage packet)
         {
-            var packet = new HMessage(data);
+            if (HostSay != null)
+                HostSay(Connection, new HostSayEventArgs(packet));
+        }
+        protected virtual void OnHostWalk(HMessage packet)
+        {
+            if (HostWalk != null)
+                HostWalk(Connection, new HostWalkEventArgs(packet));
+        }
+        protected virtual void OnHostDance(HMessage packet)
+        {
+            if (HostDance != null)
+                HostDance(Connection, new HostDanceEventArgs(packet));
+        }
+        protected virtual void OnHostShout(HMessage packet)
+        {
+            if (HostShout != null)
+                HostShout(Connection, new HostShoutEventArgs(packet));
+        }
+        protected virtual void OnHostGesture(HMessage packet)
+        {
+            if (HostGesture != null)
+                HostGesture(Connection, new HostGestureEventArgs(packet));
+        }
+        protected virtual void OnHostRoomExit(HMessage packet)
+        {
+            if (HostRoomExit != null)
+                HostRoomExit(Connection, new HostRoomExitEventArgs(packet));
+        }
+        protected virtual void OnHostRaiseSign(HMessage packet)
+        {
+            if (HostRaiseSign != null)
+                HostRaiseSign(Connection, new HostRaiseSignEventArgs(packet));
+        }
+        protected virtual void OnHostBanPlayer(HMessage packet)
+        {
+            if (HostBanPlayer != null)
+                HostBanPlayer(Connection, new HostBanPlayerEventArgs(packet));
+        }
+        protected virtual void OnHostMutePlayer(HMessage packet)
+        {
+            if (HostMutePlayer != null)
+                HostMutePlayer(Connection, new HostMutePlayerEventArgs(packet));
+        }
+        protected virtual void OnHostKickPlayer(HMessage packet)
+        {
+            if (HostKickPlayer != null)
+                HostKickPlayer(Connection, new HostKickPlayerEventArgs(packet));
+        }
+        protected virtual void OnHostClickPlayer(HMessage packet)
+        {
+            if (HostClickPlayer != null)
+                HostClickPlayer(Connection, new HostClickPlayerEventArgs(packet));
+        }
+        protected virtual void OnHostChangeMotto(HMessage packet)
+        {
+            if (HostChangeMotto != null)
+                HostChangeMotto(Connection, new HostMottoChangedEventArgs(packet));
+        }
+        protected virtual void OnHostTradePlayer(HMessage packet)
+        {
+            if (HostTradePlayer != null)
+                HostTradePlayer(Connection, new HostTradePlayerEventArgs(packet));
+        }
+        protected virtual void OnHostChangeStance(HMessage packet)
+        {
+            if (HostChangeStance != null)
+                HostChangeStance(Connection, new HostStanceChangedEventArgs(packet));
+        }
+        protected virtual void OnHostRoomNavigate(HMessage packet)
+        {
+            if (HostRoomNavigate != null)
+                HostRoomNavigate(Connection, new HostRoomNavigateEventArgs(packet));
+        }
+        protected virtual void OnHostMoveFurniture(HMessage packet)
+        {
+            if (HostMoveFurniture != null)
+                HostMoveFurniture(Connection, new HostMoveFurnitureEventArgs(packet));
+        }
+        protected virtual void OnHostChangeClothes(HMessage packet)
+        {
+            if (HostChangeClothes != null)
+                HostChangeClothes(Connection, new HostClothesChangedEventArgs(packet));
+        }
+
+        protected virtual void OnPlayerKickedHost(HMessage packet)
+        {
+            if (PlayerKickedHost != null)
+                PlayerKickedHost(Connection, new PlayerKickedHostEventArgs(packet));
+        }
+        protected virtual void OnPlayerDataLoaded(HMessage packet)
+        {
+            if (PlayerDataLoaded != null)
+                PlayerDataLoaded(Connection, new PlayerDataLoadedEventArgs(packet));
+        }
+        #endregion
+
+        protected virtual void ProcessOutgoing(byte[] data)
+        {
+            var packet = new HMessage(data, HDestinations.Server);
             try
             {
-                if (_lastToServer != null && _lastToServer.Header == HHeaders.Dance)
-                    HHeaders.PlayerDance = packet.Header;
-
-                if (_lastToServer != null && packet.Length == 10 && _lastToServer.Header == HHeaders.Gesture)
-                    HHeaders.PlayerGesture = packet.Header;
-
-                if (_lastToServer != null && HHeaders.PlayerSay == 0 && packet.IsPlayerTalking && _lastToServer.Header == HHeaders.Say)
-                    HHeaders.PlayerSay = packet.Header;
-
-                if (_lastToServer != null && HHeaders.PlayerShout == 0 && packet.IsPlayerTalking && _lastToServer.Header == HHeaders.Shout)
-                    HHeaders.PlayerShout = packet.Header;
-
-                if (packet.IsPlayerSign && OnPlayerSign != null)
+                HMessage previousOutgoing = _previousOutgoing.Count > 0 ? _previousOutgoing.Pop() : null;
+                if (LockEvents && _lockedOutgoing.ContainsKey(packet.Header))
                 {
-                    OnPlayerSign(this, PlayerSignEventArgs.CreateArguments(packet)); return;
+                    _lockedOutgoing[packet.Header](packet);
+                    packet = null;
                 }
-
-                if (packet.IsHostKicked && OnHostKicked != null)
-                { OnHostKicked(this, HostKickedEventArgs.CreateArguments(packet)); return; }
-
-                if (packet.IsPlayerChangeData && OnPlayerChangeData != null)
-                { OnPlayerChangeData(this, PlayerChangeDataEventArgs.CreateArguments(packet)); return; }
-
-                if (packet.IsPlayerDropFurniture && OnPlayerDropFurniture != null)
-                { OnPlayerDropFurniture(this, PlayerDropFurnitureEventArgs.CreateArguments(packet)); return; }
-
-                if (packet.IsPlayerMoveFurniture)
-                {
-                    if (_lastToServer != null && OnHostMoveFurniture != null && _lastToServer.IsHostMoveFurniture && _lastToServer.ReadInt(0) == packet.ReadInt(0))
-                    { HMessage lastToServer = _lastToServer; _lastToServer = null; OnHostMoveFurniture(this, HostMoveFurnitureEventArgs.CreateArguments(lastToServer, packet.ReadString(20))); }
-
-                    if (OnPlayerMoveFurniture != null)
-                        OnPlayerMoveFurniture(this, PlayerMoveFurnitureEventArgs.CreateArguments(packet));
-                    return;
-                }
-
-                if (_lastToServer != null && packet.IsHostChangeData)
-                {
-                    if (_lastToServer.IsHostChangeMotto && OnHostChangeMotto != null)
-                    { HMessage lastToServer = _lastToServer; _lastToServer = null; OnHostChangeMotto(this, HostChangeMottoEventArgs.CreateArguments(lastToServer)); return; }
-
-                    if (_lastToServer.IsHostChangeClothes && OnHostChangeClothes != null)
-                    { HMessage lastToServer = _lastToServer; _lastToServer = null; OnHostChangeClothes(this, HostChangeClothesEventArgs.CreateArguments(lastToServer)); return; }
-                }
-
-                if (packet.IsPlayerEntering && OnPlayerEnter != null)
-                { OnPlayerEnter(this, PlayerEnterEventArgs.CreateArguments(packet)); return; }
-
-                if (packet.Length == 10 && packet.Header == HHeaders.PlayerDance && OnPlayerDance != null)
-                { OnPlayerDance(this, PlayerDanceEventArgs.CreateArguments(packet)); return; }
-
-                if (packet.Header == HHeaders.PlayerGesture && OnPlayerGesture != null)
-                { OnPlayerGesture(this, PlayerGestureEventArgs.CreateArguments(packet)); return; }
-
-                if (packet.IsMultiplePlayerMovement)
-                {
-                    if (OnPlayerWalk != null)
-                    {
-                        if (PlayerWalkEventArgs.HasMultiplePlayers(packet))
-                        {
-                            PlayerWalkEventArgs[] playerWalkList = PlayerWalkEventArgs.GetPlayerWalkList(packet);
-                            foreach (PlayerWalkEventArgs walkEventArgs in playerWalkList)
-                                OnPlayerWalk(this, walkEventArgs);
-                        }
-                    }
-                    if (OnPlayerChangeStance != null)
-                    {
-                        if (PlayerChangeStanceEventArgs.HasMultiplePlayers(packet))
-                        {
-                            PlayerChangeStanceEventArgs[] stanceList = PlayerChangeStanceEventArgs.GetPlayerChangeStanceList(packet);
-                            foreach (PlayerChangeStanceEventArgs stanceEventArgs in stanceList)
-                                OnPlayerChangeStance(this, stanceEventArgs);
-                        }
-                    }
-                }
-
-                if (packet.IsPlayerChangeStance && OnPlayerChangeStance != null)
-                { OnPlayerChangeStance(this, PlayerChangeStanceEventArgs.CreateArguments(packet)); return; }
-
-                if (packet.IsPlayerWalking && OnPlayerWalk != null)
-                {
-                    if (_lastToServer != null && _lastToServer.IsCoordinate && OnHostWalk != null)
-                    { HMessage lastToServer = _lastToServer; _lastToServer = null; OnHostWalk(this, HostWalkEventArgs.CreateArguments(lastToServer)); }
-                    OnPlayerWalk(this, PlayerWalkEventArgs.CreateArguments(packet));
-
-                    if (packet.IsPlayerSign && OnPlayerSign != null)
-                        OnPlayerSign(this, PlayerSignEventArgs.CreateArguments(packet));
-                    return;
-                }
-
-                if (packet.Header == HHeaders.PlayerShout && OnPlayerShout != null)
-                { OnPlayerShout(this, PlayerShoutEventArgs.CreateArguments(packet)); return; }
-
-                if (packet.Header == HHeaders.PlayerSay && OnPlayerSay != null)
-                { OnPlayerSay(this, PlayerSayEventArgs.CreateArguments(packet)); }
+                else ProcessOutgoing(previousOutgoing, ref packet);
             }
-            catch (Exception ex) { SKore.Debugger(ex.ToString()); }
+            catch (Exception ex)
+            {
+                SKore.Debugger(ex.ToString());
+            }
+            finally
+            {
+                if (packet != null)
+                {
+                    packet.Position = 0;
+                    _previousOutgoing.Push(packet);
+                }
+            }
+        }
+        private void ProcessOutgoing(HMessage previous, ref HMessage current)
+        {
+            if (_outEventDitch != null)
+            {
+                _outEventDitch(previous, current);
+                _outEventDitch = null;
+                current = null;
+            }
+            else if (previous != null)
+            {
+                if (previous.Length >= 5 && previous.ReadShort(0) < previous.Length)
+                {
+                    switch (previous.ReadString())
+                    {
+                        case "OwnAvatarMenu":
+                        {
+                            if (previous.ReadString() != "click") break;
+                            if (previous.ReadString() != "sign")
+                                ProcessAvatarMenuEvent(previous, current);
+                            break;
+                        }
+                    }
+                    switch (current.ReadString())
+                    {
+                        case "OwnAvatarMenu":
+                        {
+                            if (current.ReadString() != "click") break;
+                            if (current.ReadString() == "sign")
+                            {
+                                ProcessAvatarMenuEvent(current, previous);
+                            }
+                            break;
+                        }
+                    }
+                    current = null;
+                }
+            }
+            else
+            {
+
+            }
+        }
+
+        protected virtual void ProcessIncoming(byte[] data)
+        {
+            var packet = new HMessage(data, HDestinations.Client);
+            try
+            {
+                HMessage previousIncoming = _previousIncoming.Count > 0 ? _previousIncoming.Pop() : null;
+                if (LockEvents && _lockedIncoming.ContainsKey(packet.Header))
+                {
+                    _lockedIncoming[packet.Header](packet);
+                    packet = null;
+                }
+                else ProcessIncoming(previousIncoming, ref packet);
+            }
+            catch (Exception ex)
+            {
+                SKore.Debugger(ex.ToString());
+            }
+            finally
+            {
+                if (packet != null)
+                {
+                    packet.Position = 0;
+                    _previousIncoming.Push(packet);
+                }
+            }
+        }
+        private void ProcessIncoming(HMessage previous, ref HMessage current)
+        {
+            if (_inEventDitch != null)
+            {
+                _inEventDitch(previous, current);
+                _inEventDitch = null;
+                current = null;
+            }
+            else if (previous != null) current = null;
+            else
+            {
+                if (current.Length > 100 & current.ToString().Contains("hd-"))
+                    ProcessPlayerDataEvent(current);
+                else current = null;
+            }
+        }
+
+        private void ProcessPlayerDataEvent(HMessage packet)
+        {
+            int possiblePlayerCount = packet.ReadInt(0);
+            int possiblePlayerId = packet.ReadInt(4);
+            if (possiblePlayerCount > 0 && possiblePlayerCount < 250 && possiblePlayerId > 0)
+            {
+                if (LockEvents) _lockedOutgoing[packet.Header] = OnPlayerDataLoaded;
+                OnPlayerDataLoaded(packet);
+            }
+        }
+        private void ProcessAvatarMenuEvent(HMessage logPacket, HMessage actionPacket)
+        {
+            int position = 0;
+            logPacket.ReadString(ref position);
+            logPacket.ReadString(ref position);
+            switch (logPacket.ReadString(ref position))
+            {
+                case "sign":
+                {
+                    if (LockEvents) _lockedOutgoing[actionPacket.Header] = OnHostRaiseSign;
+                    OnHostRaiseSign(actionPacket); break;
+                }
+                case "stand":
+                case "sit":
+                {
+                    if (LockEvents) _lockedOutgoing[actionPacket.Header] = OnHostChangeStance;
+                    OnHostChangeStance(actionPacket); break;
+                }
+                case "wave":
+                case "idle":
+                case "blow":
+                case "laugh":
+                {
+                    if (LockEvents) _lockedOutgoing[actionPacket.Header] = OnHostGesture;
+                    OnHostGesture(actionPacket); break;
+                }
+                case "dance_stop":
+                case "dance_start":
+                {
+                    if (LockEvents) _lockedOutgoing[actionPacket.Header] = OnHostDance;
+                    OnHostDance(actionPacket); break;
+                }
+            }
         }
 
         public virtual void Dispose()
         {
-            SKore.Unsubscribe(ref OnHostSay);
-            SKore.Unsubscribe(ref OnHostExit);
-            SKore.Unsubscribe(ref OnHostWalk);
-            SKore.Unsubscribe(ref OnHostSign);
-            SKore.Unsubscribe(ref OnHostDance);
-            SKore.Unsubscribe(ref OnHostShout);
-            SKore.Unsubscribe(ref OnHostTrade);
-            SKore.Unsubscribe(ref OnHostKicked);
-            SKore.Unsubscribe(ref OnHostGesture);
-            SKore.Unsubscribe(ref OnHostNavigate);
-            SKore.Unsubscribe(ref OnHostBanPlayer);
-            SKore.Unsubscribe(ref OnHostMutePlayer);
-            SKore.Unsubscribe(ref OnHostKickPlayer);
-            SKore.Unsubscribe(ref OnHostClickPlayer);
-            SKore.Unsubscribe(ref OnHostChangeMotto);
-            SKore.Unsubscribe(ref OnHostChangeStance);
-            SKore.Unsubscribe(ref OnHostMoveFurniture);
-            SKore.Unsubscribe(ref OnHostChangeClothes);
+            SKore.Unsubscribe(ref HostSay);
+            SKore.Unsubscribe(ref HostRoomExit);
+            SKore.Unsubscribe(ref HostWalk);
+            SKore.Unsubscribe(ref HostRaiseSign);
+            SKore.Unsubscribe(ref HostDance);
+            SKore.Unsubscribe(ref HostShout);
+            SKore.Unsubscribe(ref HostTradePlayer);
+            SKore.Unsubscribe(ref HostGesture);
+            SKore.Unsubscribe(ref HostRoomNavigate);
+            SKore.Unsubscribe(ref HostBanPlayer);
+            SKore.Unsubscribe(ref HostMutePlayer);
+            SKore.Unsubscribe(ref HostKickPlayer);
+            SKore.Unsubscribe(ref HostClickPlayer);
+            SKore.Unsubscribe(ref HostChangeMotto);
+            SKore.Unsubscribe(ref HostChangeStance);
+            SKore.Unsubscribe(ref HostMoveFurniture);
+            SKore.Unsubscribe(ref HostChangeClothes);
 
-            SKore.Unsubscribe(ref OnPlayerSay);
-            SKore.Unsubscribe(ref OnPlayerWalk);
-            SKore.Unsubscribe(ref OnPlayerSign);
-            SKore.Unsubscribe(ref OnPlayerShout);
-            SKore.Unsubscribe(ref OnPlayerEnter);
-            SKore.Unsubscribe(ref OnPlayerDance);
-            SKore.Unsubscribe(ref OnPlayerGesture);
-            SKore.Unsubscribe(ref OnPlayerChangeData);
-            SKore.Unsubscribe(ref OnPlayerChangeStance);
-            SKore.Unsubscribe(ref OnPlayerMoveFurniture);
-            SKore.Unsubscribe(ref OnPlayerDropFurniture);
-
-            _lastToServer = null;
+            SKore.Unsubscribe(ref PlayerKickedHost);
+            SKore.Unsubscribe(ref PlayerDataLoaded);
         }
     }
 }

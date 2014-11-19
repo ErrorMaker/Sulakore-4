@@ -8,7 +8,7 @@ namespace Sulakore.Habbo
         int PlayerId { get; }
         int PlayerIndex { get; }
         HPoint Tile { get; }
-        string PlayerFigureId { get; }
+        string FigureId { get; }
         string Motto { get; }
         HGenders Gender { get; }
         string GroupName { get; }

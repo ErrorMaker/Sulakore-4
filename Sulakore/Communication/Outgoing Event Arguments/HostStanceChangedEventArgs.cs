@@ -4,7 +4,7 @@ using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
-    public class HostChangeStanceEventArgs : EventArgs, IHabboEvent
+    public class HostStanceChangedEventArgs : EventArgs, IHabboEvent
     {
         private readonly HMessage _packet;
 
@@ -21,10 +21,15 @@ namespace Sulakore.Communication
             }
         }
 
-        public HostChangeStanceEventArgs(HMessage packet)
+        public HostStanceChangedEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Header: {0}, Stance: {1}", Header, Stance);
         }
     }
 }

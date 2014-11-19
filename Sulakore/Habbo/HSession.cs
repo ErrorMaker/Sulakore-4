@@ -873,7 +873,7 @@ namespace Sulakore.Habbo
         #endregion
 
         #region Static Methods
-        public static HSession[] Extract(string path, char delimiter = ':')
+        public static IEnumerable<HSession> Extract(string path, char delimiter = ':')
         {
             var accounts = new List<HSession>();
             using (var streamReader = new StreamReader(path))
@@ -901,9 +901,9 @@ namespace Sulakore.Habbo
                     }
                 }
             }
-            return accounts.ToArray();
+            return accounts;
         }
-        public static Task<HSession[]> ExtractAsync(string path, char delimiter = ':')
+        public static Task<IEnumerable<HSession>> ExtractAsync(string path, char delimiter = ':')
         {
             return Task.Factory.StartNew(() => Extract(path, delimiter));
         }

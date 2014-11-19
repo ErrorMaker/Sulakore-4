@@ -40,16 +40,12 @@ namespace Sulakore.Communication.Proxy
         }
         public static void Terminate()
         {
-            if (!IsRunning)
-                throw new Exception("Eavesdropper has not yet been started, you must first call the Initate method before you can call Terminate.");
-
-            IsRunning = false;
-
             if (_pendingCallbacks.Count == 0)
             {
                 NativeMethods.DisableProxy();
-                _httpListener.Stop();
+                if (IsRunning) _httpListener.Stop();
             }
+            IsRunning = false;
         }
 
         private static void CaptureClients()

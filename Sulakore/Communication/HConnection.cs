@@ -75,10 +75,15 @@ namespace Sulakore.Communication
         public bool CaptureEvents { get; set; }
         public HProtocols Protocol { get; private set; }
 
+        protected override IHConnection Connection
+        {
+            get { return this; }
+        }
         #endregion
 
         #region Constructor(s)
         public HConnection(string host, int port)
+            : base()
         {
             _disposeLock = new object();
             _resetHostLock = new object();
@@ -148,21 +153,21 @@ namespace Sulakore.Communication
             return SendToServer(HMessage.Construct(header, HDestinations.Server, Protocol, chunks));
         }
 
-        public void AssignIncomingEvent(ushort header, Action<HMessage> callback)
+        public void AttachIncoming(ushort header, Action<HMessage> callback)
         {
             _incomingEvents[header] = callback;
         }
-        public void AssignOutgoingEvent(ushort header, Action<HMessage> callback)
+        public void AttachOutgoing(ushort header, Action<HMessage> callback)
         {
             _outgoingEvents[header] = callback;
         }
 
-        public void DetachIncomingEvent(ushort header)
+        public void DetachIncoming(ushort header)
         {
             if (_incomingEvents.ContainsKey(header))
                 _incomingEvents.Remove(header);
         }
-        public void DetachOutgoingEvent(ushort header)
+        public void DetachOutgoing(ushort header)
         {
             if (_outgoingEvents.ContainsKey(header))
                 _outgoingEvents.Remove(header);
@@ -338,7 +343,7 @@ namespace Sulakore.Communication
                 SKore.Debugger(ex.ToString());
             }
         }
-        private void ProcessOutgoing(byte[] data)
+        protected override void ProcessOutgoing(byte[] data)
         {
             try
             {
@@ -368,12 +373,14 @@ namespace Sulakore.Communication
                     }
                     if (!arguments.Skip) SendToServer(arguments.Packet.ToBytes());
                 }
-
-                if (CaptureEvents && !RequestEncrypted)
-                    Task.Factory.StartNew(() => TriggerHostEvents(data), _eventCallFlags)
-                        .ContinueWith(OnException, TaskContinuationOptions.OnlyOnFaulted);
             }
             catch (Exception ex) { SKore.Debugger(ex.ToString()); }
+            finally
+            {
+                if (CaptureEvents && !RequestEncrypted)
+                    Task.Factory.StartNew(() => base.ProcessOutgoing(data), _eventCallFlags)
+                        .ContinueWith(OnException, TaskContinuationOptions.OnlyOnFaulted);
+            }
         }
 
         private void ReadServerData()
@@ -422,7 +429,7 @@ namespace Sulakore.Communication
                 SKore.Debugger(ex.ToString());
             }
         }
-        private void ProcessIncoming(byte[] data)
+        protected override void ProcessIncoming(byte[] data)
         {
             try
             {
@@ -439,7 +446,6 @@ namespace Sulakore.Communication
                     }
                 }
 
-
                 if (DataToClient == null) SendToClient(data);
                 else
                 {
@@ -453,12 +459,14 @@ namespace Sulakore.Communication
                     }
                     if (!dataToEventArgs.Skip) SendToClient(dataToEventArgs.Packet.ToBytes());
                 }
-
-                if (CaptureEvents && !ResponseEncrypted)
-                    Task.Factory.StartNew(() => TriggerPlayerEvents(data), _eventCallFlags)
-                        .ContinueWith(OnException, TaskContinuationOptions.OnlyOnFaulted);
             }
             catch (Exception ex) { SKore.Debugger(ex.ToString()); }
+            finally
+            {
+                if (CaptureEvents && !ResponseEncrypted)
+                    Task.Factory.StartNew(() => base.ProcessIncoming(data), _eventCallFlags)
+                        .ContinueWith(OnException, TaskContinuationOptions.OnlyOnFaulted);
+            }
         }
 
         private void OnException(Task task)

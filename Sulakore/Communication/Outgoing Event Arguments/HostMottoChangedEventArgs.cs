@@ -1,27 +1,26 @@
 ﻿using System;
-using Sulakore.Habbo;
 using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
-    public class HostRaiseSignEventArgs : EventArgs, IHabboEvent
+    public class HostMottoChangedEventArgs : EventArgs, IHabboEvent
     {
         private readonly HMessage _packet;
 
         public ushort Header { get; private set; }
 
-        private HSigns? _sign;
-        public HSigns Sign
+        private string _motto;
+        public string Motto
         {
             get
             {
-                return (HSigns)(_sign != null ?
-                    _sign :
-                    _sign = (HSigns)_packet.ReadInt(0));
+                return !string.IsNullOrEmpty(_motto) ?
+                    _motto :
+                    _motto = _packet.ReadString(0);
             }
         }
 
-        public HostRaiseSignEventArgs(HMessage packet)
+        public HostMottoChangedEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;

@@ -37,7 +37,7 @@ namespace Sulakore.Protocol.Components
 
         public void AddSchedule(HMessage packet, int interval, int burst, bool autoStart, string description, HMScheduleCallback callback)
         {
-            var item = new ListViewItem(new[] { packet.ToString(), packet.Destination.ToString(), burst.ToString(CultureInfo.InvariantCulture), interval.ToString(CultureInfo.InvariantCulture), "Running" })
+            var item = new ListViewItem(new[] { packet.ToString(), packet.Destination.ToString(), burst.ToString(), interval.ToString(), "Running" })
             {
                 ToolTipText = description
             };

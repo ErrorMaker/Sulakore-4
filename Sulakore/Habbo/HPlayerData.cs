@@ -1,4 +1,5 @@
-﻿using Sulakore.Protocol;
+﻿using System;
+using Sulakore.Protocol;
 using System.Collections.Generic;
 
 namespace Sulakore.Habbo
@@ -9,46 +10,48 @@ namespace Sulakore.Habbo
         public int PlayerId { get; private set; }
         public int PlayerIndex { get; private set; }
         public HPoint Tile { get; private set; }
-        public string PlayerFigureId { get; private set; }
+        public string FigureId { get; private set; }
         public string Motto { get; private set; }
         public HGenders Gender { get; private set; }
         public string GroupName { get; private set; }
 
         public HPlayerData(string playerName, int playerId, int playerIndex,
-            HPoint tile, string playerFigureId, string motto, HGenders gender,
-            string groupName)
+            HPoint tile, string figureId, string motto, HGenders gender, string groupName)
         {
             PlayerName = playerName;
             PlayerId = playerId;
             PlayerIndex = playerIndex;
             Tile = tile;
-            PlayerFigureId = playerFigureId;
+            FigureId = figureId;
             Motto = motto;
             Gender = gender;
             GroupName = groupName;
         }
-        
+
         public static IEnumerable<IHPlayerData> Extract(HMessage packet)
         {
-            var playerDataList = new List<HPlayerData>(packet.ReadInt());
-            string playerName, playerFigureId, motto, gender, groupName, z;
-            int playerId, playerIndex, playerType, x, y, position;
+            int playerId, playerIndex, playerType, x, y, position = 0;
+            string playerName, figureId, motto, gender, groupName, z;
+            var playerDataList = new List<HPlayerData>(packet.ReadInt(ref position));
 
             do
             {
-                playerId = playerIndex = playerType = x = y = position = 0;
-                playerName = playerFigureId = motto = gender = groupName = z = string.Empty;
+                playerId = playerIndex = playerType = x = y = 0;
+                playerName = figureId = motto = gender = groupName = z = string.Empty;
 
                 playerId = packet.ReadInt(ref position);
                 playerName = packet.ReadString(ref position);
                 motto = packet.ReadString(ref position);
-                playerFigureId = packet.ReadString(ref position);
+                figureId = packet.ReadString(ref position);
                 playerIndex = packet.ReadInt(ref position);
                 x = packet.ReadInt(ref position);
                 y = packet.ReadInt(ref position);
                 z = packet.ReadString(ref position);
                 packet.ReadInt(ref position);
                 playerType = packet.ReadInt(ref position);
+
+                if (playerType != 1)
+                    playerDataList.Capacity--;
 
                 switch (playerType)
                 {
@@ -63,7 +66,7 @@ namespace Sulakore.Habbo
                         packet.ReadBool(ref position);
 
                         playerDataList.Add(new HPlayerData(playerName, playerId, playerIndex,
-                            new HPoint(x, y, z), playerFigureId, motto, SKore.ConvertToHGender(gender), groupName));
+                            new HPoint(x, y, z), figureId, motto, SKore.ConvertToHGender(gender), groupName));
                         break;
                     }
                     case 2:
@@ -98,7 +101,10 @@ namespace Sulakore.Habbo
             return playerDataList;
         }
 
-        public override string ToString() => "PlayerName: \{PlayerName} | PlayerId: \{PlayerId} | PlayerIndex: \{PlayerIndex} | " +
-            "Tile: \{Tile} | FigureId: \{PlayerFigureId.Remove(6, PlayerFigureId.Length - 6)} | Motto: \{Motto} | Gender: \{Gender}";
+        public override string ToString()
+        {
+            return string.Format("PlayerName: {0} | PlayerId: {1} | PlayerIndex: {2} | Tile: {3} | FigureId: {4}... | Motto: {5} | Gender: {6} | Group Name: {7}",
+                PlayerName, PlayerId, PlayerIndex, Tile, FigureId.Remove(10, FigureId.Length - 10), Motto, Gender, GroupName);
+        }
     }
 }
