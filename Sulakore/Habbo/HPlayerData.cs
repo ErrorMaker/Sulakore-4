@@ -1,5 +1,4 @@
-﻿using System;
-using Sulakore.Protocol;
+﻿using Sulakore.Protocol;
 using System.Collections.Generic;
 
 namespace Sulakore.Habbo
