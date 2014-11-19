@@ -35,11 +35,11 @@
         /// <summary>
         /// Represents the duck funk dance. (HC Only)
         /// </summary>
-        DuckFunk = 2,
+        PogoMogo = 2,
         /// <summary>
         /// Represents the pogo mogo dance. (HC Only).
         /// </summary>
-        PogoMogo = 3,
+        DuckFunk = 3,
         /// <summary>
         /// Represents the rollie dance. (HC Only)
         /// </summary>
