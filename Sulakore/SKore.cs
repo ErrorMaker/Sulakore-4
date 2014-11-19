@@ -134,7 +134,7 @@ namespace Sulakore
             return Task.Factory.StartNew(() => GetPlayerAvatar(playerName, hotel));
         }
 
-        public static string GetPlayerFigure(string playerName, HHotels hotel)
+        public static string GetPlayerFigureId(string playerName, HHotels hotel)
         {
             using (var webClient = new WebClient())
             {
@@ -144,9 +144,9 @@ namespace Sulakore
                 return body.Contains("habbo-imaging/avatar/") ? body.GetChild("habbo-imaging/avatar/", ',') : string.Empty;
             }
         }
-        public static Task<string> GetPlayerFigureAsync(string playerName, HHotels hotel)
+        public static Task<string> GetPlayerFigureIdAsync(string playerName, HHotels hotel)
         {
-            return Task.Factory.StartNew(() => GetPlayerFigure(playerName, hotel));
+            return Task.Factory.StartNew(() => GetPlayerFigureId(playerName, hotel));
         }
 
         public static string GetPlayerLastOnline(string playerName, HHotels hotel, bool exact = true)
@@ -221,16 +221,6 @@ namespace Sulakore
             lock (RandomSignLock)
                 return RandomSignGenerator.Next(0, 19);
         }
-        public static string Juice(this HBans ban)
-        {
-            switch (ban)
-            {
-                case HBans.Day: return "RWUAM_BAN_USER_DAY";
-                case HBans.Hour: return "RWUAM_BAN_USER_HOUR";
-                case HBans.Permanent: return "RWUAM_BAN_USER_PERM";
-                default: return "RWUAM_BAN_USER_DAY";
-            }
-        }
         public static int Juice(this HThemes theme)
         {
             if (theme != HThemes.Random) return (int)theme;
@@ -249,6 +239,34 @@ namespace Sulakore
                 case HPages.Me: return hotel.ToUrl() + "/me";
                 case HPages.Profile: return hotel.ToUrl() + "/profile";
                 default: return string.Empty;
+            }
+        }
+
+        public static HGenders ConvertToHGender(string gender)
+        {
+            return (HGenders)gender.ToUpper()[0];
+        }
+
+        public static string Juice(this HBans ban)
+        {
+            switch (ban)
+            {
+                default:
+                case HBans.Day: return "RWUAM_BAN_USER_DAY";
+
+                case HBans.Hour: return "RWUAM_BAN_USER_HOUR";
+                case HBans.Permanent: return "RWUAM_BAN_USER_PERM";
+            }
+        }
+        public static HBans ConvertToHBan(string ban)
+        {
+            switch (ban)
+            {
+                default:
+                case "RWUAM_BAN_USER_DAY": return HBans.Day;
+
+                case "RWUAM_BAN_USER_HOUR": return HBans.Hour;
+                case "RWUAM_BAN_USER_PERM": return HBans.Permanent;
             }
         }
 
