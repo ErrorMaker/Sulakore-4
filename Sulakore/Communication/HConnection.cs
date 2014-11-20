@@ -242,6 +242,9 @@ namespace Sulakore.Communication
                 Addresses = null;
                 Port = SocketSkip = 0;
                 CaptureEvents = false;
+
+                _outgoingEvents.Clear();
+                _incomingEvents.Clear();
             }
         }
         #endregion
