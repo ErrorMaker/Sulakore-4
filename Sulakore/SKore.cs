@@ -37,10 +37,10 @@ namespace Sulakore
         public static string GetIpCookie()
         {
             if (!string.IsNullOrEmpty(_ipCookie)) return _ipCookie;
-            using (var webClient = new WebClient())
+            using (var webClientEx = new WebClientEx())
             {
-                webClient.Headers["User-Agent"] = ChromeAgent;
-                string body = webClient.DownloadString("http://www.Habbo.com");
+                webClientEx.Headers["User-Agent"] = ChromeAgent;
+                string body = webClientEx.DownloadString("http://www.Habbo.com");
                 return _ipCookie = (body.Contains(("setCookie")) ? "YPF8827340282Jdskjhfiw_928937459182JAX666=" + body.GetChilds("setCookie", '\'')[3] : string.Empty);
             }
         }
@@ -51,11 +51,11 @@ namespace Sulakore
 
         public static int GetPlayersOnline(HHotels hotel)
         {
-            using (var webClient = new WebClient())
+            using (var webClientEx = new WebClientEx())
             {
-                webClient.Headers["Cookie"] = GetIpCookie();
-                webClient.Headers["User-Agent"] = ChromeAgent;
-                string body = webClient.DownloadString(hotel.ToUrl() + "/login_popup");
+                webClientEx.Headers["Cookie"] = GetIpCookie();
+                webClientEx.Headers["User-Agent"] = ChromeAgent;
+                string body = webClientEx.DownloadString(hotel.ToUrl() + "/login_popup");
                 return body.Contains("stats-fig") ? int.Parse(body.GetChild("<span class=\"stats-fig\">", '<')) : -1;
             }
         }
@@ -66,11 +66,11 @@ namespace Sulakore
 
         public static int GetPlayerId(string playerName, HHotels hotel)
         {
-            using (var webClient = new WebClient())
+            using (var webClientEx = new WebClientEx())
             {
-                webClient.Headers["Cookie"] = GetIpCookie();
-                webClient.Headers["User-Agent"] = ChromeAgent;
-                string body = webClient.DownloadString(hotel.ToUrl() + "/habblet/ajax/new_habboid?habboIdName=" + playerName);
+                webClientEx.Headers["Cookie"] = GetIpCookie();
+                webClientEx.Headers["User-Agent"] = ChromeAgent;
+                string body = webClientEx.DownloadString(hotel.ToUrl() + "/habblet/ajax/new_habboid?habboIdName=" + playerName);
                 return !body.Contains("rounded rounded-red") ? int.Parse(body.GetChild("<em>", '<').Replace(" ", string.Empty)) : -1;
             }
         }
@@ -81,11 +81,11 @@ namespace Sulakore
 
         public static string GetPlayerName(int playerId, HHotels hotel)
         {
-            using (var webClient = new WebClient())
+            using (var webClientEx = new WebClientEx())
             {
-                webClient.Headers["Cookie"] = GetIpCookie();
-                webClient.Headers["User-Agent"] = ChromeAgent;
-                string body = webClient.DownloadString(string.Format("{0}/rd/{1}", hotel.ToUrl(), playerId));
+                webClientEx.Headers["Cookie"] = GetIpCookie();
+                webClientEx.Headers["User-Agent"] = ChromeAgent;
+                string body = webClientEx.DownloadString(string.Format("{0}/rd/{1}", hotel.ToUrl(), playerId));
                 return body.Contains("/home/") ? body.GetChild("<input type=\"hidden\" name=\"page\" value=\"/home/", '?') : string.Empty;
             }
         }
@@ -105,11 +105,11 @@ namespace Sulakore
 
         public static string GetPlayerMotto(string playerName, HHotels hotel)
         {
-            using (var webClient = new WebClient())
+            using (var webClientEx = new WebClientEx())
             {
-                webClient.Headers["Cookie"] = GetIpCookie();
-                webClient.Headers["User-Agent"] = ChromeAgent;
-                string body = webClient.DownloadString(hotel.ToUrl() + "/habblet/habbosearchcontent?searchString=" + playerName);
+                webClientEx.Headers["Cookie"] = GetIpCookie();
+                webClientEx.Headers["User-Agent"] = ChromeAgent;
+                string body = webClientEx.DownloadString(hotel.ToUrl() + "/habblet/habbosearchcontent?searchString=" + playerName);
                 return body.IndexOf(playerName, StringComparison.OrdinalIgnoreCase) != -1 ? body.GetChild("<b>" + playerName + "</b><br />", '<') : string.Empty;
             }
         }
@@ -120,11 +120,11 @@ namespace Sulakore
 
         public static Bitmap GetPlayerAvatar(string playerName, HHotels hotel)
         {
-            using (var webClient = new WebClient())
+            using (var webClientEx = new WebClientEx())
             {
-                webClient.Headers["Cookie"] = GetIpCookie();
-                webClient.Headers["User-Agent"] = ChromeAgent;
-                byte[] avatarData = webClient.DownloadData(hotel.ToUrl() + "/habbo-imaging/avatarimage?user=" + playerName + "&action=&direction=&head_direction=&gesture=&size=");
+                webClientEx.Headers["Cookie"] = GetIpCookie();
+                webClientEx.Headers["User-Agent"] = ChromeAgent;
+                byte[] avatarData = webClientEx.DownloadData(hotel.ToUrl() + "/habbo-imaging/avatarimage?user=" + playerName + "&action=&direction=&head_direction=&gesture=&size=");
                 using (var memoryStream = new MemoryStream(avatarData))
                     return new Bitmap(memoryStream);
             }
@@ -136,11 +136,11 @@ namespace Sulakore
 
         public static string GetPlayerFigureId(string playerName, HHotels hotel)
         {
-            using (var webClient = new WebClient())
+            using (var webClientEx = new WebClientEx())
             {
-                webClient.Headers["Cookie"] = GetIpCookie();
-                webClient.Headers["User-Agent"] = ChromeAgent;
-                string body = webClient.DownloadString(hotel.ToUrl() + "/habblet/habbosearchcontent?searchString=" + playerName);
+                webClientEx.Headers["Cookie"] = GetIpCookie();
+                webClientEx.Headers["User-Agent"] = ChromeAgent;
+                string body = webClientEx.DownloadString(hotel.ToUrl() + "/habblet/habbosearchcontent?searchString=" + playerName);
                 return body.Contains("habbo-imaging/avatar/") ? body.GetChild("habbo-imaging/avatar/", ',') : string.Empty;
             }
         }
@@ -151,11 +151,11 @@ namespace Sulakore
 
         public static string GetPlayerLastOnline(string playerName, HHotels hotel, bool exact = true)
         {
-            using (var webClient = new WebClient())
+            using (var webClientEx = new WebClientEx())
             {
-                webClient.Headers["Cookie"] = GetIpCookie();
-                webClient.Headers["User-Agent"] = ChromeAgent;
-                string body = webClient.DownloadString(hotel.ToUrl() + "/habblet/habbosearchcontent?searchString=" + playerName);
+                webClientEx.Headers["Cookie"] = GetIpCookie();
+                webClientEx.Headers["User-Agent"] = ChromeAgent;
+                string body = webClientEx.DownloadString(hotel.ToUrl() + "/habblet/habbosearchcontent?searchString=" + playerName);
 
                 if (!body.Contains("lastlogin")) return string.Empty;
 

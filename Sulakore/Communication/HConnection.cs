@@ -74,11 +74,6 @@ namespace Sulakore.Communication
         public int SocketSkip { get; set; }
         public bool CaptureEvents { get; set; }
         public HProtocols Protocol { get; private set; }
-
-        protected override IHConnection Connection
-        {
-            get { return this; }
-        }
         #endregion
 
         #region Constructor(s)
@@ -140,6 +135,7 @@ namespace Sulakore.Communication
         public int SendToServer(byte[] data)
         {
             if (!IsConnected) return 0;
+
             lock (_sendToServerLock)
             {
                 if (ClientEncrypt != null)
@@ -157,15 +153,15 @@ namespace Sulakore.Communication
         {
             _incomingEvents[header] = callback;
         }
-        public void AttachOutgoing(ushort header, Action<HMessage> callback)
-        {
-            _outgoingEvents[header] = callback;
-        }
-
         public void DetachIncoming(ushort header)
         {
             if (_incomingEvents.ContainsKey(header))
                 _incomingEvents.Remove(header);
+        }
+
+        public void AttachOutgoing(ushort header, Action<HMessage> callback)
+        {
+            _outgoingEvents[header] = callback;
         }
         public void DetachOutgoing(ushort header)
         {
@@ -354,7 +350,7 @@ namespace Sulakore.Communication
                 if (_outgoingEvents.Count > 0 && !RequestEncrypted)
                 {
                     int offset = (Protocol == HProtocols.Modern ? 4 : 3);
-                    ushort header = Protocol.DecypherShort(data, offset);
+                    ushort header = offset == 4 ? Modern.DecypherShort(data, offset) : Ancient.DecypherShort(data, offset);
                     if (_outgoingEvents.ContainsKey(header))
                     {
                         var packet = new HMessage(data, HDestinations.Server);
@@ -440,7 +436,7 @@ namespace Sulakore.Communication
                 if (_incomingEvents.Count > 0 && !ResponseEncrypted)
                 {
                     int headerOffset = (Protocol == HProtocols.Modern ? 4 : 0);
-                    ushort header = Protocol.DecypherShort(data, headerOffset);
+                    ushort header = headerOffset == 4 ? Modern.DecypherShort(data, 4) : Ancient.DecypherShort(data);
                     if (_incomingEvents.ContainsKey(header))
                     {
                         var packet = new HMessage(data, HDestinations.Server);

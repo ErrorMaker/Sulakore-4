@@ -1,3 +1,5 @@
+using System;
+
 /* Copyright
  *
  * BigInteger Class Version 1.03
@@ -118,8 +120,6 @@
  * [9] M. Joye and J.-J. Quisquater, "Efficient computation of full Lucas sequences",
  *     Electronics Letters, 32(6), 1996, pp 537-538.
 */
-using System;
-
 namespace Sulakore.Protocol.Encryption
 {
     /// <summary>

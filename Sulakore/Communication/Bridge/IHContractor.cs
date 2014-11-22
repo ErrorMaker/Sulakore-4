@@ -1,7 +1,10 @@
-﻿namespace Sulakore.Communication.Bridge
+﻿using Sulakore.Protocol;
+using System;
+namespace Sulakore.Communication.Bridge
 {
     public interface IHContractor
     {
-        int SendToClient(byte[] data);
+        void SendToClient(byte[] data);
+        void SendToServer(byte[] data);
     }
 }

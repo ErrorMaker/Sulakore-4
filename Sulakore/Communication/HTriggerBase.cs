@@ -8,8 +8,6 @@ namespace Sulakore.Communication
     public abstract class HTriggerBase : IDisposable
     {
         #region Private Fields
-        protected abstract IHConnection Connection { get; }
-
         private Action<HMessage, HMessage> _outEventDitch, _inEventDitch;
 
         private readonly Stack<HMessage> _previousOutgoing = new Stack<HMessage>();
@@ -64,98 +62,98 @@ namespace Sulakore.Communication
         protected virtual void OnHostSay(HMessage packet)
         {
             if (HostSay != null)
-                HostSay(Connection, new HostSayEventArgs(packet));
+                HostSay(this, new HostSayEventArgs(packet));
         }
         protected virtual void OnHostWalk(HMessage packet)
         {
             if (HostWalk != null)
-                HostWalk(Connection, new HostWalkEventArgs(packet));
+                HostWalk(this, new HostWalkEventArgs(packet));
         }
         protected virtual void OnHostDance(HMessage packet)
         {
             if (HostDance != null)
-                HostDance(Connection, new HostDanceEventArgs(packet));
+                HostDance(this, new HostDanceEventArgs(packet));
         }
         protected virtual void OnHostShout(HMessage packet)
         {
             if (HostShout != null)
-                HostShout(Connection, new HostShoutEventArgs(packet));
+                HostShout(this, new HostShoutEventArgs(packet));
         }
         protected virtual void OnHostGesture(HMessage packet)
         {
             if (HostGesture != null)
-                HostGesture(Connection, new HostGestureEventArgs(packet));
+                HostGesture(this, new HostGestureEventArgs(packet));
         }
         protected virtual void OnHostRoomExit(HMessage packet)
         {
             if (HostRoomExit != null)
-                HostRoomExit(Connection, new HostRoomExitEventArgs(packet));
+                HostRoomExit(this, new HostRoomExitEventArgs(packet));
         }
         protected virtual void OnHostRaiseSign(HMessage packet)
         {
             if (HostRaiseSign != null)
-                HostRaiseSign(Connection, new HostRaiseSignEventArgs(packet));
+                HostRaiseSign(this, new HostRaiseSignEventArgs(packet));
         }
         protected virtual void OnHostBanPlayer(HMessage packet)
         {
             if (HostBanPlayer != null)
-                HostBanPlayer(Connection, new HostBanPlayerEventArgs(packet));
+                HostBanPlayer(this, new HostBanPlayerEventArgs(packet));
         }
         protected virtual void OnHostMutePlayer(HMessage packet)
         {
             if (HostMutePlayer != null)
-                HostMutePlayer(Connection, new HostMutePlayerEventArgs(packet));
+                HostMutePlayer(this, new HostMutePlayerEventArgs(packet));
         }
         protected virtual void OnHostKickPlayer(HMessage packet)
         {
             if (HostKickPlayer != null)
-                HostKickPlayer(Connection, new HostKickPlayerEventArgs(packet));
+                HostKickPlayer(this, new HostKickPlayerEventArgs(packet));
         }
         protected virtual void OnHostClickPlayer(HMessage packet)
         {
             if (HostClickPlayer != null)
-                HostClickPlayer(Connection, new HostClickPlayerEventArgs(packet));
+                HostClickPlayer(this, new HostClickPlayerEventArgs(packet));
         }
         protected virtual void OnHostChangeMotto(HMessage packet)
         {
             if (HostChangeMotto != null)
-                HostChangeMotto(Connection, new HostMottoChangedEventArgs(packet));
+                HostChangeMotto(this, new HostMottoChangedEventArgs(packet));
         }
         protected virtual void OnHostTradePlayer(HMessage packet)
         {
             if (HostTradePlayer != null)
-                HostTradePlayer(Connection, new HostTradePlayerEventArgs(packet));
+                HostTradePlayer(this, new HostTradePlayerEventArgs(packet));
         }
         protected virtual void OnHostChangeStance(HMessage packet)
         {
             if (HostChangeStance != null)
-                HostChangeStance(Connection, new HostStanceChangedEventArgs(packet));
+                HostChangeStance(this, new HostStanceChangedEventArgs(packet));
         }
         protected virtual void OnHostRoomNavigate(HMessage packet)
         {
             if (HostRoomNavigate != null)
-                HostRoomNavigate(Connection, new HostRoomNavigateEventArgs(packet));
+                HostRoomNavigate(this, new HostRoomNavigateEventArgs(packet));
         }
         protected virtual void OnHostMoveFurniture(HMessage packet)
         {
             if (HostMoveFurniture != null)
-                HostMoveFurniture(Connection, new HostMoveFurnitureEventArgs(packet));
+                HostMoveFurniture(this, new HostMoveFurnitureEventArgs(packet));
         }
         protected virtual void OnHostChangeClothes(HMessage packet)
         {
             if (HostChangeClothes != null)
-                HostChangeClothes(Connection, new HostClothesChangedEventArgs(packet));
+                HostChangeClothes(this, new HostClothesChangedEventArgs(packet));
         }
 
         protected virtual void OnPlayerKickedHost(HMessage packet)
         {
             if (PlayerKickedHost != null)
-                PlayerKickedHost(Connection, new PlayerKickedHostEventArgs(packet));
+                PlayerKickedHost(this, new PlayerKickedHostEventArgs(packet));
         }
         protected virtual void OnPlayerDataLoaded(HMessage packet)
         {
             if (PlayerDataLoaded != null)
-                PlayerDataLoaded(Connection, new PlayerDataLoadedEventArgs(packet));
+                PlayerDataLoaded(this, new PlayerDataLoadedEventArgs(packet));
         }
         #endregion
 

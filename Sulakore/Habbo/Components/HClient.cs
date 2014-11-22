@@ -5,6 +5,7 @@ using System.Windows.Forms;
 
 namespace Sulakore.Habbo.Components
 {
+    [System.ComponentModel.DesignerCategory("Code")]
     public class HClient : WebBrowser
     {
         private IntPtr _ieHandle;

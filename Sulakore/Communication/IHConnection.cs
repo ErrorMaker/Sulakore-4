@@ -1,5 +1,6 @@
 ﻿using System;
 using Sulakore.Protocol.Encryption;
+using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {

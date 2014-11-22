@@ -42,12 +42,7 @@
     </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="Communication\Bridge\HContractor.cs" />
     <Compile Include="Communication\Connection Event Arguments\DataToEventArgs.cs" />
     <Compile Include="Communication\Connection Event Arguments\DisconnectedEventArgs.cs" />
     <Compile Include="Communication\Incoming Event Arguments\FurnitureDataLoadedEventArgs.cs" />
@@ -81,15 +76,11 @@
     <Compile Include="Communication\Incoming Event Arguments\PlayerDataLoadedEventArgs.cs" />
     <Compile Include="Communication\Proxy\Eavesdropper.cs" />
     <Compile Include="Communication\Proxy\EavesResponseEventArgs.cs" />
-    <Compile Include="Communication\Bridge\HContractor.cs" />
     <Compile Include="Communication\Bridge\HExtension.cs" />
     <Compile Include="Communication\Bridge\IHContractor.cs" />
     <Compile Include="Communication\Bridge\IHExtension.cs" />
     <Compile Include="Communication\HTriggerBase.cs" />
-    <Compile Include="Design\Draw.cs" />
-    <Compile Include="Habbo\Components\HClient.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Habbo\Components\HClient.cs" />
     <Compile Include="Habbo\Headers\Incoming.cs" />
     <Compile Include="Habbo\Headers\Outgoing.cs" />
     <Compile Include="Habbo\HGameData.cs" />
@@ -104,14 +95,9 @@
     <Compile Include="Internals\TcpListenerEx.cs" />
     <Compile Include="Protocol\Ancient.cs" />
     <Compile Include="Protocol\ByteUtils.cs" />
-    <Compile Include="Protocol\HEncoding.cs" />
     <Compile Include="Protocol\Modern.cs" />
-    <Compile Include="Protocol\Components\HMConstructer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Protocol\Components\HMScheduler.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Protocol\Components\HMConstructer.cs" />
+    <Compile Include="Protocol\Components\HMScheduler.cs" />
     <Compile Include="Protocol\Encryption\BigInteger.cs" />
     <Compile Include="Protocol\Encryption\Enumerators.cs" />
     <Compile Include="Protocol\Encryption\HKeyExchange.cs" />
@@ -122,11 +108,13 @@
     <Compile Include="Protocol\HSchedule.cs" />
     <Compile Include="SKore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Internals\WebClientEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Internals\WebClientEx.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

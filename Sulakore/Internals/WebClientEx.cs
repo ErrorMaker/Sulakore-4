@@ -3,13 +3,14 @@ using System.Net;
 
 namespace Sulakore
 {
+    [System.ComponentModel.DesignerCategory("Code")]
     internal class WebClientEx : WebClient
     {
         private readonly CookieContainer _cookies;
 
-        public WebClientEx(CookieContainer cookies)
+        public WebClientEx(CookieContainer cookies = null)
         {
-            _cookies = cookies;
+            _cookies = cookies ?? new CookieContainer();
         }
 
         protected override WebRequest GetWebRequest(Uri address)

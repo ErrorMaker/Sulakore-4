@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Timers;
 using System.Drawing;
 using System.Windows.Forms;
@@ -7,6 +6,7 @@ using System.Collections.Generic;
 
 namespace Sulakore.Protocol.Components
 {
+    [System.ComponentModel.DesignerCategory("Code")]
     public class HMScheduler : ListView
     {
         private readonly List<HMSchedule> _schedules;

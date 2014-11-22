@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Linq;
-using System.Globalization;
 using System.Collections.Generic;
-using Sulakore.Communication;
 
 namespace Sulakore.Protocol
 {
@@ -25,13 +23,12 @@ namespace Sulakore.Protocol
             get { return _header; }
             set
             {
-                if (!IsCorrupted && _header != value)
-                {
-                    _header = value;
-                    _buffer.RemoveRange(0, 2);
-                    _buffer.InsertRange(0, Protocol.CypherShort(value));
-                    Reconstruct();
-                }
+                if (IsCorrupted || _header == value) return;
+
+                _header = value;
+                _buffer.RemoveRange(0, 2);
+                _buffer.InsertRange(0, Protocol == HProtocols.Ancient ? Ancient.CypherShort(value) : Modern.CypherShort(value));
+                Reconstruct();
             }
         }
         public int Position { get; set; }
@@ -58,488 +55,6 @@ namespace Sulakore.Protocol
         public object[] Prepended
         {
             get { return _prepended.ToArray(); }
-        }
-        #endregion
-
-        #region Packet Identifiers
-        public bool IsHostSay
-        {
-            get
-            {
-                try
-                {
-                    int packet = 0;
-                    if (ReadString(packet) == string.Empty || ReadString(ref packet).Length > 100) return false;
-                    if ((ReadInt(packet) == 1 || ReadInt(packet) == 2 || ReadInt(packet) == 9 || ReadInt(packet) == 10) && ReadInt(packet) != 29) return false;
-                    ReadInt(ref packet);
-                    ReadInt(ref packet);
-                    if (Length > ReadString(0).Length + 12) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostSign
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadString(ref position) != "OwnAvatarMenu") return false;
-                    if (ReadString(ref position) != "click") return false;
-                    if (ReadString(ref position) != "sign") return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostExit
-        {
-            get
-            {
-                try
-                {
-                    if (ReadInt(0) != -1) return false;
-                    if (Length != 6) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostShout
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadString(position) == string.Empty || ReadString(position).Length > 100) return false;
-                    ReadString(ref position);
-                    if ((ReadInt(position) == 1 || ReadInt(position) == 2 || ReadInt(position) == 9 || ReadInt(position) == 10) && ReadInt(position) != 29) return false;
-                    ReadInt(ref position);
-                    if (Length > ReadString(0).Length + 8) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostDance
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadString(ref position) != "OwnAvatarMenu") return false;
-                    if (ReadString(ref position) != "click") return false;
-                    if (!ReadString(ref position).Contains("dance_")) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostTrade
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadString(ref position) != "InfoStand") return false;
-                    if (ReadString(ref position) != "click") return false;
-                    if (ReadString(ref position) != "RWUAM_START_TRADING") return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsCoordinate
-        {
-            get
-            {
-                try
-                {
-                    if (ReadInt(0) < 0 || ReadInt(0) >= 2000) return false;
-                    if (ReadInt(4) < 0 || ReadInt(4) >= 2000) return false;
-                    if (Length != 10) return false;
-                    return true;
-                }
-                catch
-                { return false; }
-            }
-        }
-        public bool IsHostKicked
-        {
-            get
-            {
-                try
-                {
-                    if (ReadInt(0) != 4008) return false;
-                    if (Length != 6) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostGesture
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadString(ref position) != "OwnAvatarMenu") return false;
-                    if (ReadString(ref position) != "click") return false;
-                    if (ReadString(position) != "wave" && ReadString(position) != "idle" && ReadString(position) != "blow" && ReadString(position) != "laugh") return false;
-                    ReadString(ref position);
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostNavigate
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadString(ref position) != "Navigation") return false;
-                    ReadString(ref position);
-                    if (!ReadString(ref position).Contains("go.")) return false;
-                    if (ReadString(ref position).Length < 1) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostBanPlayer
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadString(ref position) != "InfoStand") return false;
-                    if (ReadString(ref position) != "click") return false;
-                    if (!ReadString(ref position).Contains("RWUAM_BAN_USER")) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostMutePlayer
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadString(ref position) != "InfoStand") return false;
-                    if (ReadString(ref position) != "click") return false;
-                    if (!ReadString(ref position).Contains("RWUAM_MUTE_USER_")) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostKickPlayer
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadString(ref position) != "InfoStand") return false;
-                    if (ReadString(ref position) != "click") return false;
-                    if (ReadString(ref position) != "RWUAM_KICK_USER") return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostChangeData
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadInt(ref position) != -1) return false;
-                    if (!ReadString(position).Contains("hd-") || !ReadString(position).Contains("ch-") || !ReadString(position).Contains("lg-")) return false;
-                    ReadString(ref position);
-                    if (ReadString(position) != "m" && ReadString(position) != "f") return false;
-                    ReadString(ref position);
-                    if (ReadString(ref position).Length > 76) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostChangeMotto
-        {
-            get
-            {
-                try
-                {
-                    if (ReadString(0).Length > 38) return false;
-                    if (Length != ReadString(0).Length + 4) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsPossiblePlayerId
-        {
-            get
-            {
-                try
-                {
-                    if (ReadInt(0) < 0) return false;
-                    if (Length != 6) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostChangeStance
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadString(ref position) != "OwnAvatarMenu") return false;
-                    if (ReadString(ref position) != "click") return false;
-                    if (ReadString(position) != "sit" && ReadString(position) != "stand") return false;
-                    ReadString(ref position);
-                    if (ReadString(ref position) != string.Empty) return false;
-                    if (ReadInt(ref position) != 0) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostMoveFurniture
-        {
-            get
-            {
-                try
-                {
-                    if (ReadInt(0) <= 0) return false;
-                    if (ReadInt(4) < 0) return false;
-                    if (ReadInt(8) < 0) return false;
-                    if (ReadInt(12) < 0 || ReadInt(12) > 7) return false;
-                    if (Length != 18) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsHostChangeClothes
-        {
-            get
-            {
-                try
-                {
-                    if (ReadString(0) != "M" && ReadString(0) != "F") return false;
-                    if (!ReadString(3).Contains("hd-") || !ReadString(3).Contains("ch-") || !ReadString(3).Contains("lg-")) return false;
-                    if (Length > ReadString(0).Length + ReadString(3).Length + 6) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-
-        public bool IsPlayerSign
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadInt(ref position) != 1) return false;
-                    ReadInt(ref position);
-                    ReadInt(ref position);
-                    ReadInt(ref position);
-                    if (ReadString(ref position)[1] != '.') return false;
-                    if (ReadInt(position) > 7) return false;
-                    if (ReadInt(ref position) != ReadInt(ref position)) return false;
-                    if (!ReadString(position).Contains("/sign")) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsPlayerWalking
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadInt(ref position) <= 0) return false;
-                    ReadInt(ref position);
-                    ReadInt(ref position);
-                    ReadInt(ref position);
-                    if (ReadString(ref position)[1] != '.') return false;
-                    if (ReadInt(position) > 7) return false;
-                    if (ReadInt(ref position) != ReadInt(ref position)) return false;
-                    if (!ReadString(position).Contains("/mv")) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsPlayerTalking
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    ReadInt(ref position);
-                    if (ReadString(ref position) == string.Empty) return false;
-                    if (ReadInt(ref position) != 0) return false;
-                    if ((ReadInt(position) == 1 || ReadInt(position) == 2 || ReadInt(position) == 9 || ReadInt(position) == 10) && ReadInt(position) != 29) return false;
-                    ReadInt(ref position);
-                    if (ReadInt(ref position) != 0) return false;
-                    if (ReadInt(ref position) == 65535 && ReadInt(ref position) != 65535) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsPlayerEntering
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadInt(ref position) != 1) return false;
-                    ReadInt(ref position);
-                    ReadString(ref position);
-                    ReadString(ref position);
-                    if (!ReadString(ref position).Contains("hd-")) return false;
-                    ReadInt(ref position);
-                    ReadInt(ref position);
-                    ReadInt(ref position);
-                    if (!ReadString(ref position).Contains(".")) return false;
-                    ReadInt(ref position);
-                    ReadInt(ref position);
-                    if (ReadString(position) != "m" && ReadString(ref position) != "f") return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsPlayerChangeData
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadInt(ref position) == -1) return false;
-                    if (!ReadString(position).Contains("ch-") || !ReadString(position).Contains("hd-") || !ReadString(position).Contains("lg-")) return false;
-                    ReadString(ref position);
-                    if (ReadString(position) != "m" && ReadString(position) != "f") return false;
-                    ReadString(ref position);
-                    if (ReadString(ref position).Length > 76) return false;
-                    ReadInt(ref position);
-                    return true;
-                }
-                catch
-                { return false; }
-            }
-        }
-        public bool IsPlayerChangeStance
-        {
-            get
-            {
-                try
-                {
-                    int position = 0;
-                    if (ReadInt(ref position) <= 0) return false;
-                    ReadInt(ref position);
-                    ReadInt(ref position);
-                    ReadInt(ref position);
-                    if (ReadString(ref position)[1] != '.') return false;
-                    if (ReadInt(position) > 7) return false;
-                    if ((ReadInt(ref position) < 0 || ReadInt(position) > 7) || (ReadInt(position + 4) < 0 || ReadInt(ref position) > 7)) return false;
-                    if (ReadString(position).Contains("/mv") || ReadString(position).Contains("/sign")) return false;
-                    if (ReadString(position).Length != 13 && ReadString(position).Length != 2 && !ReadString(position).Contains("/sit")) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsPlayerMoveFurniture
-        {
-            get
-            {
-                try
-                {
-                    int position = 20;
-                    if (ReadInt(0) <= 0) return false;
-                    if (ReadInt(4) < 0) return false;
-                    if (ReadInt(8) < 0) return false;
-                    if (ReadInt(12) < 0) return false;
-                    if (ReadInt(16) < 0 || ReadInt(16) > 7) return false;
-                    if (!ReadString(ref position).Contains(".")) return false;
-                    if (!ReadString(ref position).Contains(".")) return false;
-                    if (ReadInt(ref position) < 0) return false;
-                    if (ReadInt(ref position) < 0) return false;
-                    ReadString(ref position);
-                    ReadInt(ref position);
-                    ReadInt(ref position);
-                    if (ReadInt(position) <= 0) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsPlayerDropFurniture
-        {
-            get
-            {
-                try
-                {
-                    int position = 20;
-                    if (ReadInt(0) <= 0) return false;
-                    if (ReadInt(4) < 0) return false;
-                    if (ReadInt(8) < 0) return false;
-                    if (ReadInt(12) < 0) return false;
-                    if (ReadInt(16) < 0 || ReadInt(16) > 7) return false;
-                    if (!ReadString(ref position).Contains(".")) return false;
-                    if (!ReadString(ref position).Contains(".")) return false;
-                    if (ReadInt(ref position) < 0) return false;
-                    if (ReadInt(ref position) < 0) return false;
-                    ReadString(ref position);
-                    ReadInt(ref position);
-                    ReadInt(ref position);
-                    if (ReadInt(ref position) <= 0) return false;
-                    if (ReadString(position).Length <= 0) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
-        }
-        public bool IsMultiplePlayerMovement
-        {
-            get
-            {
-                try
-                {
-                    string packet = ToString();
-                    if (ReadInt(0) <= 1) return false;
-                    if (!packet.Contains("/mv ") && !packet.Contains("/sit ") && !packet.Contains("/lay ")) return false;
-                    return true;
-                }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); return false; }
-            }
         }
         #endregion
 
@@ -681,7 +196,9 @@ namespace Sulakore.Protocol
         public int ReadShort(ref int index)
         {
             if (IsCorrupted) return 0;
-            return Protocol.DecypherShort(Body[index++], Body[index++]);
+
+            byte[] chunk = new byte[] { Body[index++], Body[index++] };
+            return Protocol == HProtocols.Ancient ? Ancient.DecypherShort(chunk) : Modern.DecypherShort(chunk);
         }
 
         public bool ReadBool()
@@ -860,7 +377,7 @@ namespace Sulakore.Protocol
                         case TypeCode.Int32:
                         {
                             var value = (int)chunk;
-                            buffer.AddRange(protocol.CypherInt(value));
+                            buffer.AddRange(protocol == HProtocols.Ancient ? Ancient.CypherInt(value) : Modern.CypherInt(value));
                             break;
                         }
                         case TypeCode.Boolean:
@@ -880,7 +397,8 @@ namespace Sulakore.Protocol
                             string value = chunk.ToString();
                             if (!isAncient || destination == HDestinations.Server)
                             {
-                                buffer.AddRange(protocol.CypherShort((ushort)value.Length));
+                                ushort valueLength = (ushort)value.Length;
+                                buffer.AddRange(protocol == HProtocols.Ancient ? Ancient.CypherShort(valueLength) : Modern.CypherShort(valueLength));
                                 buffer.AddRange(Encoding.Default.GetBytes(value));
                             }
                             else
@@ -904,12 +422,12 @@ namespace Sulakore.Protocol
             bool isAncient = (protocol == HProtocols.Ancient);
 
             if (isAncient && destination == HDestinations.Server) buffer.Add(64);
-            buffer.AddRange(protocol.CypherShort(header));
+            buffer.AddRange(protocol == HProtocols.Ancient ? Ancient.CypherShort(header) : Modern.CypherShort(header));
 
             buffer.AddRange(ConstructBody(destination, protocol, chunks));
 
             if (!isAncient || destination == HDestinations.Server)
-                buffer.InsertRange(isAncient ? 1 : 0, isAncient ? Ancient.CypherShort((ushort)(buffer.Count - 1)) : Modern.CypherInt(buffer.Count));//  protocol.CypherShort((ushort)(buffer.Count - (isAncient ? 1 : 0))));
+                buffer.InsertRange(isAncient ? 1 : 0, isAncient ? Ancient.CypherShort((ushort)(buffer.Count - 1)) : Modern.CypherInt(buffer.Count));
             else if (buffer[buffer.Count - 1] != 1) buffer.Add(1);
 
             return buffer.ToArray();
