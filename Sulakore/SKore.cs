@@ -242,7 +242,7 @@ namespace Sulakore
             }
         }
 
-        public static HGenders ConvertToHGender(string gender)
+        public static HGenders ToGender(string gender)
         {
             return (HGenders)gender.ToUpper()[0];
         }
@@ -258,7 +258,7 @@ namespace Sulakore
                 case HBans.Permanent: return "RWUAM_BAN_USER_PERM";
             }
         }
-        public static HBans ConvertToHBan(string ban)
+        public static HBans ToBan(string ban)
         {
             switch (ban)
             {
@@ -270,7 +270,7 @@ namespace Sulakore
             }
         }
 
-        public static HHotels ConvertToHHotel(string value)
+        public static HHotels ToHotel(string value)
         {
             if (value.Contains("game-")) value = value.GetChild("game-", '.');
             else if (value.Contains("habbo")) value = value.GetChild("habbo.");
@@ -285,7 +285,7 @@ namespace Sulakore
         public static bool IsOriginal(string gameHost, int gamePort = 0)
         {
             if (gamePort != 0 && gamePort != 30000 && gamePort != 38101) return false;
-            return gameHost == "habboo-a.akamaihd.net" || Enum.IsDefined(typeof(HHotels), ConvertToHHotel(gameHost));
+            return gameHost == "habboo-a.akamaihd.net" || Enum.IsDefined(typeof(HHotels), ToHotel(gameHost));
         }
 
         public static string GetChild(this string body, string parent)
