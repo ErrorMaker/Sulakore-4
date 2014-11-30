@@ -13,7 +13,7 @@ namespace Sulakore.Communication.Proxy
         private static bool _isRunning;
 
         private static readonly HttpListener _httpListener;
-        private static readonly List<IAsyncResult> _pendingCallbacks;
+        private static readonly List<IAsyncResult> _processingCallbacks;
         #endregion
 
         #region Eavesdropper Events
@@ -29,7 +29,7 @@ namespace Sulakore.Communication.Proxy
         static Eavesdropper()
         {
             _httpListener = new HttpListener();
-            _pendingCallbacks = new List<IAsyncResult>();
+            _processingCallbacks = new List<IAsyncResult>();
         }
         #endregion
 
@@ -49,11 +49,9 @@ namespace Sulakore.Communication.Proxy
         public static void Terminate()
         {
             _isRunning = false;
-
-            if (_pendingCallbacks.Count == 0)
+            if (_processingCallbacks.Count == 0)
             {
                 NativeMethods.DisableProxy();
-
                 if (_httpListener.IsListening)
                     _httpListener.Stop();
             }
@@ -64,7 +62,7 @@ namespace Sulakore.Communication.Proxy
         private static void CaptureClients()
         {
             if (_isRunning)
-                _pendingCallbacks.Add(_httpListener.BeginGetContext(RequestReceived, null));
+                _httpListener.BeginGetContext(RequestReceived, null);
         }
         private static void RequestReceived(IAsyncResult ar)
         {
@@ -72,9 +70,10 @@ namespace Sulakore.Communication.Proxy
             try
             {
                 HttpListenerContext context = _httpListener.EndGetContext(ar);
+                _processingCallbacks.Add(ar);
 
                 var request = (HttpWebRequest)ConstructRequest(context.Request);
-                var requestArgs = new EavesRequestEventArgs(request.RequestUri.AbsoluteUri);
+                var requestArgs = new EavesRequestEventArgs(request.RequestUri.AbsoluteUri, request.Host);
                 if (requestArgs.Cancel) context.Response.Close();
 
                 if (request.ContentLength > 0 || request.SendChunked)
@@ -123,7 +122,10 @@ namespace Sulakore.Communication.Proxy
                     {
                         var arguments = new EavesResponseEventArgs(responseData,
                             response.ResponseUri.AbsoluteUri,
-                            context.Response.ContentType == "application/x-shockwave-flash");
+                            response.ResponseUri.Host,
+                            context.Response.ContentType == "application/x-shockwave-flash",
+                            request.UserAgent,
+                            response.Cookies);
 
                         OnEavesResponse(context, arguments);
                         responseData = arguments.ResponeData;
@@ -137,12 +139,10 @@ namespace Sulakore.Communication.Proxy
             catch (Exception ex) { SKore.Debugger(ex.ToString()); }
             finally
             {
-                _pendingCallbacks.Remove(ar);
-                if (!_isRunning)
-                {
-                    _pendingCallbacks.Clear();
-                    Terminate();
-                }
+                if (_processingCallbacks.Contains(ar))
+                    _processingCallbacks.Remove(ar);
+
+                if (!_isRunning) Terminate();
             }
         }
 
