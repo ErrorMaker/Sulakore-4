@@ -54,6 +54,8 @@ namespace Sulakore.Communication.Bridge
 
         public virtual void DistributeToClient(byte[] data)
         {
+            if (Extensions.Count < 1) return;
+
             Task.Factory.StartNew(() =>
                 Parallel.ForEach(Extensions, extension =>
                     extension.OnDataToClient(data)), TaskCreationOptions.PreferFairness)
@@ -61,6 +63,8 @@ namespace Sulakore.Communication.Bridge
         }
         public virtual void DistributeToServer(byte[] data)
         {
+            if (Extensions.Count < 1) return;
+
             Task.Factory.StartNew(() =>
                 Parallel.ForEach(Extensions, extension =>
                     extension.OnDataToServer(data)), TaskCreationOptions.PreferFairness)
