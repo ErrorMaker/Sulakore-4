@@ -8,9 +8,8 @@
         int FurnitureId { get; }
         int FurnitureTypeId { get; }
 
+        int State { get; set; }
         HPoint Tile { get; set; }
         HDirections Direction { get; set; }
-
-        int State { get; set; }
     }
 }
