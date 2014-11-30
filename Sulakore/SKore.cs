@@ -168,6 +168,22 @@ namespace Sulakore
             return Task.Factory.StartNew(() => GetPlayerLastOnline(playerName, hotel, exact));
         }
 
+        public static Bitmap GetHotelBanner(string url, string cookies, string userAgent = null)
+        {
+            using (var webClientEx = new WebClientEx())
+            {
+                webClientEx.Headers["Cookie"] = cookies;
+                webClientEx.Headers["User-Agent"] = userAgent ?? ChromeAgent;
+                byte[] bannerData = webClientEx.DownloadData(url);
+                using (var memoryStream = new MemoryStream(bannerData))
+                    return new Bitmap(memoryStream);
+            }
+        }
+        public static Task<Bitmap> GetHotelBannerAsync(string url, string cookies, string userAgent = null)
+        {
+            return Task.Factory.StartNew(() => GetHotelBanner(url, cookies, userAgent));
+        }
+
         public static void ClearCache()
         {
             FileInfo[] cacheFiles = CacheDirectory.GetFiles();
