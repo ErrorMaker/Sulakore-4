@@ -5,11 +5,13 @@ namespace Sulakore.Communication.Proxy
 {
     public class EavesRequestEventArgs : CancelEventArgs
     {
-        public string Url { get; set; }
+        public string Url { get; private set; }
+        public string Host { get; private set; }
 
-        public EavesRequestEventArgs(string url)
+        public EavesRequestEventArgs(string url, string host)
         {
             Url = url;
+            Host = host;
         }
     }
 }
