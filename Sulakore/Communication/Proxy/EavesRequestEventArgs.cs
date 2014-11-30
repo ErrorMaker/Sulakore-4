@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace Sulakore.Communication.Proxy
 {
-    public sealed class EavesRequestEventArgs : CancelEventArgs
+    public class EavesRequestEventArgs : CancelEventArgs
     {
         public string Url { get; set; }
 

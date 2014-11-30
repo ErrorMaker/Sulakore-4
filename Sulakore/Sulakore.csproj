@@ -68,6 +68,11 @@
     <Compile Include="Communication\Incoming Event Arguments\PlayerStanceChangedEventArgs.cs" />
     <Compile Include="Communication\Incoming Event Arguments\PlayerDanceEventArgs.cs" />
     <Compile Include="Communication\Incoming Event Arguments\PlayerDropFurnitureEventArgs.cs" />
+    <Compile Include="Communication\Incoming Event Arguments\PlayerGestureEventArgs.cs" />
+    <Compile Include="Communication\Incoming Event Arguments\PlayerSayEventArgs.cs" />
+    <Compile Include="Communication\Incoming Event Arguments\PlayerSpeakEventArgs.cs" />
+    <Compile Include="Communication\Incoming Event Arguments\PlayerWhisperEventArgs.cs" />
+    <Compile Include="Communication\Proxy\EavesRequestEventArgs.cs" />
     <Compile Include="Habbo\HFurnitureData.cs" />
     <Compile Include="Habbo\HPlayerData.cs" />
     <Compile Include="Habbo\IHFurnitureData.cs" />
