@@ -125,7 +125,7 @@ namespace Sulakore.Protocol.Encryption
     /// <summary>
     /// Represents a large number.
     /// </summary>
-    public class BigInteger
+    public sealed class BigInteger
     {
         #region Private Fields
         private uint[] _data;
