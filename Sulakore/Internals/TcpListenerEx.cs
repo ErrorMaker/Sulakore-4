@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace Sulakore
 {
-    internal class TcpListenerEx : TcpListener
+    internal sealed class TcpListenerEx : TcpListener
     {
         public TcpListenerEx(IPAddress address, int port)
             : base(address, port)

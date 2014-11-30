@@ -4,7 +4,7 @@ using System.Net;
 namespace Sulakore
 {
     [System.ComponentModel.DesignerCategory("Code")]
-    internal class WebClientEx : WebClient
+    internal sealed class WebClientEx : WebClient
     {
         private readonly CookieContainer _cookies;
 

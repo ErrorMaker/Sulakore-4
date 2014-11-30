@@ -33,6 +33,9 @@ namespace Sulakore
 
         public static void DisableProxy()
         {
+            if (ProxyRegistry.GetValue("ProxyServer") != null)
+                ProxyRegistry.DeleteValue("ProxyServer");
+
             ProxyRegistry.SetValue("ProxyEnable", 0);
             ProxyRegistry.SetValue("ProxyOverride", "<-loopback>");
             RefreshIESettings();
