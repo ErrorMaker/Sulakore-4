@@ -1,11 +1,11 @@
 ﻿using System;
 using Sulakore.Protocol;
+using System.ComponentModel;
 
 namespace Sulakore.Communication
 {
-    public class DataToEventArgs : EventArgs
+    public class DataToEventArgs : CancelEventArgs
     {
-        public bool Skip { get; set; }
         public HMessage Packet { get; set; }
         public int Step { get; private set; }
 
