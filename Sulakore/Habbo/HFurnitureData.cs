@@ -1,5 +1,4 @@
-﻿using System;
-using Sulakore.Protocol;
+﻿using Sulakore.Protocol;
 using System.Collections.Generic;
 
 namespace Sulakore.Habbo
@@ -8,11 +7,13 @@ namespace Sulakore.Habbo
     {
         public int FurnitureOwnerId { get; private set; }
         public string FurnitureOwnerName { get; private set; }
+
         public int FurnitureId { get; private set; }
         public int FurnitureTypeId { get; private set; }
+
+        public int State { get; set; }
         public HPoint Tile { get; set; }
         public HDirections Direction { get; set; }
-        public int State { get; set; }
 
         public HFurnitureData(int furnitureOwnerId, string furnitureOwnerName,
             int furnitureId, int furnitureTypeId, HPoint tile, HDirections direction, int state)
@@ -26,55 +27,55 @@ namespace Sulakore.Habbo
             State = state;
         }
 
-        public static IEnumerable<IHFurnitureData> Extract(HMessage packet)
+        public static IList<IHFurnitureData> Extract(HMessage packet)
         {
-            string ownerName = string.Empty;
-            int totalOwners, ownerId, position = 0;
-            var furnitureDataList = new List<HFurnitureData>();
-            var furniOwners = new Dictionary<int, string>(totalOwners = packet.ReadInt(ref position));
+            int furniOwnersCapacity, position = 0;
+            var furniOwners = new Dictionary<int, string>(furniOwnersCapacity = packet.ReadInt(ref position));
+            do furniOwners.Add(packet.ReadInt(ref position), packet.ReadString(ref position));
+            while (furniOwners.Count < furniOwnersCapacity);
 
-            try
+            string z, uk_2;
+            HDirections direction;
+            int ownerId, furnitureId, furnitureTypeId, x, y, state, uk_1;
+            var furnitureDataList = new List<IHFurnitureData>(packet.ReadInt(ref position));
+            do
             {
-                do
-                {
-                    ownerId = packet.ReadInt(ref position);
-                    ownerName = packet.ReadString(ref position);
-                    furniOwners[ownerId] = ownerName;
-                }
-                while (furniOwners.Count < totalOwners);
+                furnitureId = packet.ReadInt(ref position);
+                furnitureTypeId = packet.ReadInt(ref position);
 
-                int furniCount = packet.ReadInt(ref position);
-                while (furniCount > 0)
-                {
-                    int furnitureId = packet.ReadInt(ref position);
-                    int furnitueTypeId = packet.ReadInt(ref position);
+                x = packet.ReadInt(ref position);
+                y = packet.ReadInt(ref position);
+                direction = (HDirections)packet.ReadInt(ref position);
+                z = packet.ReadString(ref position);
 
-                    int x = packet.ReadInt(ref position);
-                    int y = packet.ReadInt(ref position);
-                    HDirections direction = (HDirections)packet.ReadInt(ref position);
-                    string z = packet.ReadString(ref position);
+                packet.ReadString(ref position);
+                packet.ReadInt(ref position);
 
-                    string a1 = packet.ReadString(ref position);
-                    int a2 = packet.ReadInt(ref position);
+                uk_1 = packet.ReadInt(ref position) & 0xFF;
+                int.TryParse(packet.ReadString(ref position), out state);
 
-                    //ODC
-                    int a3 = packet.ReadInt(ref position) & 0xFF;
-                    string a4 = packet.ReadString(ref position);
-                    int state = !string.IsNullOrEmpty(a4) ? int.Parse(a4) : 0;
+                packet.ReadInt(ref position);
+                packet.ReadInt(ref position);
+                ownerId = packet.ReadInt(ref position);
+                if (furnitureTypeId < 0) uk_2 = packet.ReadString(ref position);
 
-                    int a5 = packet.ReadInt(ref position);
-                    int a6 = packet.ReadInt(ref position);
-                    ownerId = packet.ReadInt(ref position);
-
-                    string a8 = furnitueTypeId < 0 ? packet.ReadString(ref position) : string.Empty;
-
-                    furnitureDataList.Add(new HFurnitureData(ownerId, furniOwners[ownerId], furnitureId, furnitueTypeId, new HPoint(x, y, z), direction, state));
-                    furniCount--;
-                }
+                furnitureDataList.Add(new HFurnitureData(ownerId, furniOwners[ownerId], furnitureId, furnitureTypeId, new HPoint(x, y, z), direction, state));
             }
-            catch (Exception ex) { System.Windows.Forms.MessageBox.Show(ex.ToString()); }
-
+            while (furnitureDataList.Count < furnitureDataList.Capacity);
             return furnitureDataList;
+        }
+
+        public HDirections RotateLeft()
+        {
+            int direction = (int)Direction;
+            if (direction <= 0) direction = 8;
+            return Direction = (HDirections)(direction - (direction % 2 == 0 ? 2 : 3));
+        }
+        public HDirections RotateRight()
+        {
+            int direction = (int)Direction;
+            if (direction >= 6) direction = -2;
+            return Direction = (HDirections)(direction + (direction % 2 == 0 ? 2 : 3));
         }
 
         public override string ToString()
