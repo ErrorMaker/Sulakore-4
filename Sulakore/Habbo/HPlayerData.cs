@@ -27,11 +27,11 @@ namespace Sulakore.Habbo
             GroupName = groupName;
         }
 
-        public static IEnumerable<IHPlayerData> Extract(HMessage packet)
+        public static IList<IHPlayerData> Extract(HMessage packet)
         {
             int playerId, playerIndex, playerType, x, y, position = 0;
             string playerName, figureId, motto, gender, groupName, z;
-            var playerDataList = new List<HPlayerData>(packet.ReadInt(ref position));
+            var playerDataList = new List<IHPlayerData>(packet.ReadInt(ref position));
 
             do
             {
@@ -65,7 +65,7 @@ namespace Sulakore.Habbo
                         packet.ReadBool(ref position);
 
                         playerDataList.Add(new HPlayerData(playerName, playerId, playerIndex,
-                            new HPoint(x, y, z), figureId, motto, SKore.ConvertToHGender(gender), groupName));
+                            new HPoint(x, y, z), figureId, motto, SKore.ToGender(gender), groupName));
                         break;
                     }
                     case 2:
@@ -102,7 +102,7 @@ namespace Sulakore.Habbo
 
         public override string ToString()
         {
-            return string.Format("PlayerName: {0} | PlayerId: {1} | PlayerIndex: {2} | Tile: {3} | FigureId: {4}... | Motto: {5} | Gender: {6} | Group Name: {7}",
+            return string.Format("PlayerName: {0} | PlayerId: {1} | PlayerIndex: {2} | Tile: {3} | FigureId: {4}... | Motto: {5} | Gender: {6} | GroupName: {7}",
                 PlayerName, PlayerId, PlayerIndex, Tile, FigureId.Remove(10, FigureId.Length - 10), Motto, Gender, GroupName);
         }
     }
