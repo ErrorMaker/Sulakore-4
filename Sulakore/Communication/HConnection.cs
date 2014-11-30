@@ -370,7 +370,7 @@ namespace Sulakore.Communication
                         SKore.Debugger(ex.ToString());
                         return;
                     }
-                    if (!arguments.Skip) SendToServer(arguments.Packet.ToBytes());
+                    if (!arguments.Cancel) SendToServer(arguments.Packet.ToBytes());
                 }
             }
             catch (Exception ex) { SKore.Debugger(ex.ToString()); }
@@ -439,7 +439,7 @@ namespace Sulakore.Communication
                     ushort header = headerOffset == 4 ? Modern.DecypherShort(data, 4) : Ancient.DecypherShort(data);
                     if (_incomingEvents.ContainsKey(header))
                     {
-                        var packet = new HMessage(data, HDestinations.Server);
+                        var packet = new HMessage(data, HDestinations.Client);
                         Task.Factory.StartNew(() => _incomingEvents[header](packet), _eventCallFlags)
                             .ContinueWith(OnException, TaskContinuationOptions.OnlyOnFaulted);
                     }
@@ -456,7 +456,7 @@ namespace Sulakore.Communication
                         SKore.Debugger(ex.ToString());
                         return;
                     }
-                    if (!dataToEventArgs.Skip) SendToClient(dataToEventArgs.Packet.ToBytes());
+                    if (!dataToEventArgs.Cancel) SendToClient(dataToEventArgs.Packet.ToBytes());
                 }
             }
             catch (Exception ex) { SKore.Debugger(ex.ToString()); }
