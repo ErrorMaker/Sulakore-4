@@ -312,6 +312,10 @@ namespace Sulakore.Habbo
         {
             get { return _serverS != null && _serverS.Connected; }
         }
+        public HProtocols Protocol
+        {
+            get { return HProtocols.Modern; }
+        }
 
         bool IHConnection.RequestEncrypted
         {
@@ -885,7 +889,7 @@ namespace Sulakore.Habbo
                     {
                         string[] credentials = line.Split(delimiter);
                         if (credentials.Count(x => !string.IsNullOrEmpty(x)) != 3) break;
-                        accounts.Add(new HSession(credentials[0], credentials[1], SKore.ConvertToHHotel(credentials[2])));
+                        accounts.Add(new HSession(credentials[0], credentials[1], SKore.ToHotel(credentials[2])));
                         continue;
                     }
                     if (line.Contains('@') && !streamReader.EndOfStream)
@@ -894,7 +898,7 @@ namespace Sulakore.Habbo
                         string password = streamReader.ReadLine();
                         if (!streamReader.EndOfStream)
                         {
-                            HHotels hotel = SKore.ConvertToHHotel((streamReader.ReadLine()).GetChild(" / "));
+                            HHotels hotel = SKore.ToHotel((streamReader.ReadLine()).GetChild(" / "));
                             accounts.Add(new HSession(email, password, hotel));
                         }
                         else return accounts.ToArray();
