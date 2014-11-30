@@ -1,5 +1,8 @@
-﻿namespace Sulakore.Habbo.Headers
+﻿using System;
+
+namespace Sulakore.Habbo.Headers
 {
+    [Serializable]
     public struct Outgoing
     {
         public static ushort Ban { get; set; }
