@@ -1,0 +1,887 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sulakore</name>
+    </assembly>
+    <members>
+        <member name="M:Sulakore.Habbo.HGameData.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="M:Sulakore.Habbo.HGameData.Equals(System.Object)">
+            <summary>
+            Indicates whether this instance and a specified object are equal.
+            </summary>
+            <returns>
+            true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
+            </returns>
+            <param name="obj">Another object to compare to. </param><filterpriority>2</filterpriority>
+        </member>
+        <member name="T:Sulakore.Habbo.HBans">
+            <summary>
+            Specifies the different types of bans found in-game.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HBans.Hour">
+            <summary>
+            The original value for the packet is RWUAM_BAN_USER_DAY.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HBans.Day">
+            <summary>
+            The original value for the packet is RWUAM_BAN_USER_HOUR.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HBans.Permanent">
+            <summary>
+            The original value for the packet is RWUAM_BAN_USER_PERM.
+            </summary>
+        </member>
+        <member name="T:Sulakore.Habbo.HDances">
+            <summary>
+            Specifies the different types of dances your player can perform in-game.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HDances.None">
+            <summary>
+            Represents a non-dancing player.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HDances.Normal">
+            <summary>
+            Represents the default dance any player can perform.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HDances.PogoMogo">
+            <summary>
+            Represents the duck funk dance. (HC Only)
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HDances.DuckFunk">
+            <summary>
+            Represents the pogo mogo dance. (HC Only).
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HDances.TheRollie">
+            <summary>
+            Represents the rollie dance. (HC Only)
+            </summary>
+        </member>
+        <member name="T:Sulakore.Habbo.HDirections">
+            <summary>
+            Specifies the compass locations of an object/player in-game.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HDirections.North">
+            <summary>
+            Represents an object/player facing north.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HDirections.NorthEast">
+            <summary>
+            Represents an object/player facing north east.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HDirections.East">
+            <summary>
+            Represents an object/player facing east.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HDirections.SouthEast">
+            <summary>
+            Represents an object/player facing south east.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HDirections.South">
+            <summary>
+            Represents an object/player facing south.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HDirections.SouthWest">
+            <summary>
+            Represents an object/player facing south west.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HDirections.West">
+            <summary>
+            Represents an object/player facing west.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HDirections.NorthWest">
+            <summary>
+            Represents an object/player facing north west.
+            </summary>
+        </member>
+        <member name="T:Sulakore.Habbo.HGenders">
+            <summary>
+            Specifies the different gender types in-game.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HGenders.Male">
+            <summary>
+            Represents a male player.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HGenders.Female">
+            <summary>
+            Represents a female player.
+            </summary>
+        </member>
+        <member name="T:Sulakore.Habbo.HGestures">
+            <summary>
+            Specifies a set of gestures/actions a player can perform in-game.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HGestures.None">
+            <summary>
+            Represents a player without any gesture.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HGestures.Wave">
+            <summary>
+            Represents a player waving.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HGestures.BlowKiss">
+            <summary>
+            Represents a player blowing a kiss. (HC Only)
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HGestures.Laugh">
+            <summary>
+            Represents a player laughing. (HC Only)
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HGestures.Idle">
+            <summary>
+            Represents a player sleeping.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HGestures.PogoHop">
+            <summary>
+            Represents a player hopping once. (HC Only)
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HGestures.ThumbsUp">
+            <summary>
+            Represents a player raising a thumbs up.
+            </summary>
+        </member>
+        <member name="T:Sulakore.Habbo.HModels">
+            <summary>
+            Specifies the different types of room models you can create in-game.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HModels.A">
+            <summary>
+            Represents a room with 104 tiles(8x13).
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HModels.B">
+            <summary>
+            Represents a room with 94 tiles((11x10) - (4x4)).
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HModels.C">
+            <summary>
+            Represents a room with 36 tiles(6x6).
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HModels.D">
+            <summary>
+            Represents a room with 84 tiles(6x14).
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HModels.E">
+            <summary>
+            Represents a room with 80 tiles(10x8).
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HModels.F">
+            <summary>
+            Represents a room with 84 tiles((10x10) - ((2x4)x2))
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HModels.I">
+            <summary>
+            Represents a room with 416 tiles(16x26).
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HModels.J">
+            <summary>
+            Represents a room with 380 tiles((20x22) - (10x6)).
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HModels.K">
+            <summary>
+            Represents a room with 448 tiles(((24x26) - (8x10)) - ((8x4)x3)).
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HModels.L">
+            <summary>
+            Represents a room with 352 tiles((20x20) - (4x12))
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HModels.M">
+            <summary>
+            Represents a room with 704 tiles((28x28) - (10x8))
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HModels.N">
+            <summary>
+            Represents a room with 368 tiles((20x20) - (8x4)).
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HModels.S">
+            <summary>
+            Represents a room with 35 tiles(5x7).
+            </summary>
+        </member>
+        <member name="T:Sulakore.Habbo.HPages">
+            <summary>
+            Specifies the set of pages that are compatible with Sulakore.HSession[HPages].
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HPages.Me">
+            <summary>
+            Represents http://www.Habbo-/me
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HPages.Home">
+            <summary>
+            Represents http://www.Habbo-/home/-
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HPages.Client">
+            <summary>
+            Represents http://www.Habbo-/client
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HPages.Profile">
+            <summary>
+            Represents http://www.Habbo-/profile
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HPages.IdAvatars">
+            <summary>
+            Represents https://www.Habbo-/identity/avatars
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HPages.IdSettings">
+            <summary>
+            Represents http://www.Habbo-/identity/settings
+            </summary>
+        </member>
+        <member name="T:Sulakore.Habbo.HSigns">
+            <summary>
+            Specifies the different types of signs found in-game.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Random">
+            <summary>
+            Represents a random sign within the range of (0 - 18)
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Zero">
+            <summary>
+            Represents a sign with an image of the number zero.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.One">
+            <summary>
+            Represents a sign with an image of the number one.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Two">
+            <summary>
+            Represents a sign with an image of the number two.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Three">
+            <summary>
+            Represents a sign with an image of the number three.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Four">
+            <summary>
+            Represents a sign with an image of the number four.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Five">
+            <summary>
+            Represents a sign with an image of the number five.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Six">
+            <summary>
+            Represents a sign with an image of the number six.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Seven">
+            <summary>
+            Represents a sign with an image of the number seven.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Eight">
+            <summary>
+            Represents a sign with an image of the number eight.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Nine">
+            <summary>
+            Represents a sign with an image of the number nine.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Ten">
+            <summary>
+            Represents a sign with an image of the number ten.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Heart">
+            <summary>
+            Represents a sign with an image of a heart.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Skull">
+            <summary>
+            Represents a sign with an image of a skull.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Exclamation">
+            <summary>
+            Represents a sign with an image of a exclamation mark.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Soccerball">
+            <summary>
+            Represents a sign with an image of a soccerball.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Smiley">
+            <summary>
+            Represents a sign with an image of a smiley face.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Redcard">
+            <summary>
+            Represents a sign with an image of a small redcard.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Yellowcard">
+            <summary>
+            Represents a sign with an image of a small yellowcard.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSigns.Invisible">
+            <summary>
+            Represents a an empty invisible sign with no image.
+            </summary>
+        </member>
+        <member name="T:Sulakore.Habbo.HStances">
+            <summary>
+            Specifies the state of a player.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HStances.Stand">
+            <summary>
+            Represents a player that is standing.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HStances.Sit">
+            <summary>
+            Represents a player that is sitting.
+            </summary>
+        </member>
+        <member name="T:Sulakore.Habbo.HThemes">
+            <summary>
+            Specifies the different types of speech bubble themes found in-game.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Random">
+            <summary>
+            Represents a random speech bubble consisting of (White, Red, Blue, Yellow, Green, Black).
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.White">
+            <summary>
+            Represents the default(white) speech bubble.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Red">
+            <summary>
+            Represents the red speech bubble.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Blue">
+            <summary>
+            Represents the blue speech bubble.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Yellow">
+            <summary>
+            Represents the yellow speech bubble.
+            </summary>
+            
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Green">
+            <summary>
+            Represents the green speech bubble.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Black">
+            <summary>
+            Represents the black speech bubble.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Ice">
+            <summary>
+            Represents the light-blue(ice) speech bubble.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Pink">
+            <summary>
+            Represents the pink speech bubble.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Purple">
+            <summary>
+            Represents the purple speech bubble.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Gold">
+            <summary>
+            Represents the gold speech bubble.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Turquoise">
+            <summary>
+            Represents the turquoise speech bubble.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Hearts">
+            <summary>
+            Represents a speech bubble with hearts in the background.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Roses">
+            <summary>
+            Represents a speech bubble with roses in the background.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Pig">
+            <summary>
+            Represents a speech bubble with a pig in the background.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Dog">
+            <summary>
+            Represents a speech bubble with a dog in the background.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HThemes.Swords">
+            <summary>
+            Represents a speech bubble with swords in the background.
+            </summary>
+        </member>
+        <member name="T:Sulakore.Habbo.HSpeeches">
+            <summary>
+            Specifies the different types of speech modes that players can communicate with each other in-game.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSpeeches.Say">
+            <summary>
+            Represents a speech mode that makes the message publicly visible within a determined range in the room.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSpeeches.Shout">
+            <summary>
+            Represents a speech mode that makes the message public to everyone in the room.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HSpeeches.Whisper">
+            <summary>
+            Represents a speech mode that only makes the message visible to the specified target regardless of the range.
+            </summary>
+        </member>
+        <member name="T:Sulakore.Habbo.HVisibility">
+            <summary>
+            Specifies the different types of choices given on the page represented by Sulakore.HPages.Profile.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HVisibility.Nobody">
+            <summary>
+            Represents a value in-which the object being referenced has zero visibility to the public.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HVisibility.Everybody">
+            <summary>
+            Represents a value in-which the object being referenced allows the public's view.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Habbo.HVisibility.MyFriends">
+            <summary>
+            Represents a value in-which the object being referenced only allows to been seen by friends.
+            </summary>
+        </member>
+        <member name="M:Sulakore.Habbo.HPoint.ToString">
+            <summary>
+            Returns the fully qualified type name of this instance.
+            </summary>
+            <returns>
+            A <see cref="T:System.String"/> containing a fully qualified type name.
+            </returns>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="M:Sulakore.Habbo.HPoint.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="M:Sulakore.Habbo.HPoint.Equals(System.Object)">
+            <summary>
+            Indicates whether this instance and a specified object are equal.
+            </summary>
+            <returns>
+            true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
+            </returns>
+            <param name="obj">Another object to compare to. </param><filterpriority>2</filterpriority>
+        </member>
+        <member name="M:Sulakore.Habbo.HSession.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="M:Sulakore.Habbo.HSession.Equals(System.Object)">
+            <summary>
+            Indicates whether this instance and a specified object are equal.
+            </summary>
+            <returns>
+            true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
+            </returns>
+            <param name="obj">Another object to compare to. </param><filterpriority>2</filterpriority>
+        </member>
+        <member name="T:Sulakore.HHotels">
+            <summary>
+            Specifies every hotel compatible with Sulakore.
+            </summary>
+        </member>
+        <member name="F:Sulakore.HHotels.Com">
+            <summary>
+            Represents http://www.Habbo.com (United States).
+            </summary>
+        </member>
+        <member name="F:Sulakore.HHotels.ComBr">
+            <summary>
+            Represents http://www.Habbo.com.br (Brazil).
+            </summary>
+        </member>
+        <member name="F:Sulakore.HHotels.ComTr">
+            <summary>
+            Represents http://www.Habbo.com.tr (Turkey).
+            </summary>
+        </member>
+        <member name="F:Sulakore.HHotels.De">
+            <summary>
+            Represents http://www.Habbo.de (Germany).
+            </summary>
+        </member>
+        <member name="F:Sulakore.HHotels.Dk">
+            <summary>
+            Represents http://www.Habbo.dk (Denmark).
+            </summary>
+        </member>
+        <member name="F:Sulakore.HHotels.Es">
+            <summary>
+            Represents http://www.Habbo.es (Spain).
+            </summary>
+        </member>
+        <member name="F:Sulakore.HHotels.Fi">
+            <summary>
+            Represents http://www.Habbo.fi (Finland).
+            </summary>
+        </member>
+        <member name="F:Sulakore.HHotels.Fr">
+            <summary>
+            Represents http://www.Habbo.fr (France).
+            </summary>
+        </member>
+        <member name="F:Sulakore.HHotels.It">
+            <summary>
+            Represents http://www.Habbo.it (Italy).
+            </summary>
+        </member>
+        <member name="F:Sulakore.HHotels.Nl">
+            <summary>
+            Represents http://www.Habbo.nl (Netherlands).
+            </summary>
+        </member>
+        <member name="F:Sulakore.HHotels.No">
+            <summary>
+            Represents http://www.Habbo.no (Norway).
+            </summary>
+        </member>
+        <member name="F:Sulakore.HHotels.Se">
+            <summary>
+            Represents http://www.Habbo.se (Sweden).
+            </summary>
+        </member>
+        <member name="T:Sulakore.Protocol.Encryption.BigInteger">
+            <summary>
+            Represents a large number.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Protocol.Encryption.BigInteger.PrimesBelow2000">
+            <summary>
+            Contains a list of primes that are under 2000.
+            </summary>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.#ctor">
+            <summary>
+            Initializes a new instance of the BigInteger class with the default value of 0.
+            </summary>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.#ctor(System.Int64)">
+            <summary>
+            Initializes a new instance of the BigInteger class.
+            </summary>
+            <param name="value">The long value to initialize the instance with.</param>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.#ctor(System.UInt64)">
+            <summary>
+            Initializes a new instance of the BigInteger class.
+            </summary>
+            <param name="value">The ulong value to initialize the instance with.</param>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.#ctor(Sulakore.Protocol.Encryption.BigInteger)">
+            <summary>
+            Initializes a new instance of the BigInteger class.
+            </summary>
+            <param name="bigInteger">The BigInteger value to initialize the instance with.</param>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.#ctor(System.String,System.Int32)">
+            <summary>
+            Initializes a new instance of the BigInteger class.
+            </summary>
+            <param name="value">The string value to initialize the instance with the provided base.</param>
+            <param name="radix">The int value that dictates the base of the provided System.String.</param>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.#ctor(System.Byte[])">
+            <summary>
+            Initializes a new instance of the BigInteger class.
+            </summary>
+            <param name="data">The byte array value to initialize the instance with.</param>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.#ctor(System.Byte[],System.Int32)">
+            <summary>
+            Initializes a new instance of the BigInteger class.
+            </summary>
+            <param name="data">The byte array value to initialize the instance with.</param>
+            <param name="length">The int value that specifies the length to use for the provided byte array.</param>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.#ctor(System.UInt32[])">
+            <summary>
+            Initializes a new instance of the BigInteger class.
+            </summary>
+            <param name="data">The uint array value to initialize the instance with.</param>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.ToString(System.Int32)">
+            <summary>
+            Returns a string that represents the current object in the specified base.
+            </summary>
+            <param name="radix">The base type of the string representation of the current object.</param>
+            <returns>A string that represents the current object in the specified base.</returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.ToHexString">
+            <summary>
+            Returns a hex string showing the contents of the current instance.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.ModPow(Sulakore.Protocol.Encryption.BigInteger,Sulakore.Protocol.Encryption.BigInteger)">
+            <summary>
+            Modulo Exponentiation.
+            </summary>
+            <param name="exponent"></param>
+            <param name="modulus"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.BarrettReduction(Sulakore.Protocol.Encryption.BigInteger,Sulakore.Protocol.Encryption.BigInteger,Sulakore.Protocol.Encryption.BigInteger)">
+            <summary>
+            Fast calculation of modular reduction using Barrett's reduction.
+            </summary>
+            <param name="x"></param>
+            <param name="n"></param>
+            <param name="constant"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.Gcd(Sulakore.Protocol.Encryption.BigInteger)">
+            <summary>
+            Returns the greatest common denominator against the specifed BigInteger instance.
+            </summary>
+            <param name="bi">The BigInteger instance to use with the current instance.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.GenRandomBits(System.Int32,System.Random)">
+            <summary>
+            Populates the current instance with the specifed amount of random bytes.
+            </summary>
+            <param name="bits">The amount of bits to populate the current instance.</param>
+            <param name="rand">The System.Random instance to generate the random bytes.</param>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.BitCount">
+            <summary>
+            Returns the position of the most significant bit in the current instance.
+            </summary>
+            <returns>the most significant bit</returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.RabinMillerTest(System.Int32)">
+            <summary>
+            Probabilistic prime test based on Rabin-Miller's test.
+            </summary>
+            <param name="confidence">The amount of times/itterations to check the primality of the current instance.</param>
+            <returns>true if the current instance is a strong pseudoprime to randomly chosen bases, otherwise false if not prime.</returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.IsProbablePrime(System.Int32)">
+            <summary>
+            Determines whether a number is probably prime using the Rabin-Miller's test.
+            </summary>
+            <param name="confidence">The amount of times/itterations to check the primality of the current instance.</param>
+            <returns>true if the instance has a large probability of being prime, otherwise false.</returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.IsProbablePrime">
+            <summary>
+            Determines whether this BigInteger is probably prime using a combination of base 2 strong pseudoprime tests, and Lucas strong pseudoprime tests.
+            </summary>
+            <returns>true if the instance has a large probability of being prime, otherwise false.</returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.IntValue">
+            <summary>
+            Returns the lowests System.Int32 from the byte array of the current instance. (4 bytes)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.Jacobi(Sulakore.Protocol.Encryption.BigInteger,Sulakore.Protocol.Encryption.BigInteger)">
+            <summary>
+            Returns the jacobi symbol for the provided BigInteger values.
+            </summary>
+            <param name="a">The BigInteger value to use with the calculation.</param>
+            <param name="b">The BigInteger value to use with the calculation.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.GenPseudoPrime(System.Int32,System.Int32,System.Random)">
+            <summary>
+            Returns a positive BigInteger that is probably prime.
+            </summary>
+            <param name="bits">The bit size of the number you wish to generate.</param>
+            <param name="confidence">The amount of times/itterations to check the primality of the generated number.</param>
+            <param name="rand">The System.Random instance to extract pseudo values to contribute to the probable prime number.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.ModInverse(Sulakore.Protocol.Encryption.BigInteger)">
+            <summary>
+            Returns the modulo inverse of the current instance against the provided modulus parameter.
+            </summary>
+            <param name="modulus">The modulus needed for the calculation.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.ToBytes">
+            <summary>
+            Returns this instance in a byte array, the lowest index contains the most smallest byte.
+            </summary>
+            <returns>the byte array</returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.Sqrt">
+            <summary>
+            Returns the square root of this instance.
+            </summary>
+            <returns>the square root</returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.ToString">
+            <summary>
+            Returns a string that represents the current object in base 10.
+            </summary>
+            <returns>A string that represents the current object in base 10.</returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.GetHashCode">
+            <summary>
+            Serves as a hash function for a particular type.
+            </summary>
+            <returns>A hash code for the current System.Object.</returns>
+        </member>
+        <member name="M:Sulakore.Protocol.Encryption.BigInteger.Equals(System.Object)">
+            <summary>
+            Determines whether the specified System.Object is equal to the current System.Object.
+            </summary>
+            <param name="obj">The object to compare with the current object.</param>
+            <returns>true if the specified System.Object is equal to the current System.Object; otherwise, false.</returns>
+        </member>
+        <member name="P:Sulakore.Protocol.Encryption.BigInteger.DataLength">
+            <summary>
+            Number of characters used.
+            </summary>
+        </member>
+        <member name="F:Sulakore.Protocol.Encryption.PKCS1PadType.MaxByte">
+            <summary>
+            Represents a padding type that will attempt to fill a byte array with the maximuze value of a System.Byte(byte.MaxValue = 255).
+            </summary>
+        </member>
+        <member name="F:Sulakore.Protocol.Encryption.PKCS1PadType.RandomByte">
+            <summary>
+            Represents a padding type that will attempt to fill a byte array with random bytes in the range of 1 - 255.
+            </summary>
+        </member>
+        <member name="P:Sulakore.Protocol.Encryption.RsaKey.E">
+            <summary>
+            Public Exponent
+            </summary>
+        </member>
+        <member name="P:Sulakore.Protocol.Encryption.RsaKey.N">
+            <summary>
+            Public Modulus
+            </summary>
+        </member>
+        <member name="P:Sulakore.Protocol.Encryption.RsaKey.D">
+            <summary>
+            Private Exponent
+            </summary>
+        </member>
+        <member name="P:Sulakore.Protocol.Encryption.RsaKey.P">
+            <summary>
+            Secret Prime Factor ( P )
+            </summary>
+        </member>
+        <member name="P:Sulakore.Protocol.Encryption.RsaKey.Q">
+            <summary>
+            Secret Prime Factor ( Q )
+            </summary>
+        </member>
+        <member name="P:Sulakore.Protocol.Encryption.RsaKey.Dmp1">
+            <summary>
+            d mod ( p - 1 )
+            </summary>
+        </member>
+        <member name="P:Sulakore.Protocol.Encryption.RsaKey.Dmq1">
+            <summary>
+            d mod ( q - 1 )
+            </summary>
+        </member>
+        <member name="P:Sulakore.Protocol.Encryption.RsaKey.Iqmp">
+            <summary>
+            (Inverse)q mod p
+            </summary>
+        </member>
+    </members>
+</doc>
