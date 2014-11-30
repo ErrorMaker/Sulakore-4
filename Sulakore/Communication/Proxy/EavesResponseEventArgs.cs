@@ -2,7 +2,7 @@
 
 namespace Sulakore.Communication.Proxy
 {
-    public class EavesResponseEventArgs : EventArgs
+    public sealed class EavesResponseEventArgs : EventArgs
     {
         public bool IsSwf { get; private set; }
         public string Url { get; private set; }

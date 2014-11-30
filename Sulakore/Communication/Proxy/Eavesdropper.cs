@@ -9,28 +9,36 @@ namespace Sulakore.Communication.Proxy
 {
     public static class Eavesdropper
     {
+        #region Private Fields
+        private static bool _isRunning;
+
         private static readonly HttpListener _httpListener;
         private static readonly List<IAsyncResult> _pendingCallbacks;
+        #endregion
 
-        public static Action<string, bool> DebugCallback { get; set; }
+        #region Eavesdropper Events
+        public static event EventHandler<EavesRequestEventArgs> OnEavesRequest;
         public static event EventHandler<EavesResponseEventArgs> OnEavesResponse;
+        #endregion
 
+        #region Public Properties
         public static bool DisableCache { get; set; }
-        public static bool IsRunning { get; private set; }
+        #endregion
 
+        #region Constructor(s)
         static Eavesdropper()
         {
             _httpListener = new HttpListener();
             _pendingCallbacks = new List<IAsyncResult>();
         }
+        #endregion
 
+        #region Public Methods
         public static void Initiate(int port)
         {
-            if (IsRunning)
-                throw new Exception("Eavesdropper is already running, you must call the Terminate method first before you can call the Initiate method.");
+            Terminate();
 
-            IsRunning = true;
-
+            _isRunning = true;
             _httpListener.Prefixes.Clear();
             _httpListener.Prefixes.Add("http://*:" + port + "/");
             _httpListener.Start();
@@ -40,169 +48,152 @@ namespace Sulakore.Communication.Proxy
         }
         public static void Terminate()
         {
+            _isRunning = false;
+
             if (_pendingCallbacks.Count == 0)
             {
                 NativeMethods.DisableProxy();
-                if (IsRunning) _httpListener.Stop();
-            }
-            IsRunning = false;
-        }
 
+                if (_httpListener.IsListening)
+                    _httpListener.Stop();
+            }
+        }
+        #endregion
+
+        #region Private Methods
         private static void CaptureClients()
         {
-            if (IsRunning)
+            if (_isRunning)
                 _pendingCallbacks.Add(_httpListener.BeginGetContext(RequestReceived, null));
         }
         private static void RequestReceived(IAsyncResult ar)
         {
+            CaptureClients();
             try
             {
-                CaptureClients();
-                if (!IsRunning) return;
-
                 HttpListenerContext context = _httpListener.EndGetContext(ar);
-                HttpListenerRequest clientRequest = context.Request;
-                using (HttpListenerResponse clientResponse = context.Response)
+
+                var request = (HttpWebRequest)ConstructRequest(context.Request);
+                var requestArgs = new EavesRequestEventArgs(request.RequestUri.AbsoluteUri);
+                if (requestArgs.Cancel) context.Response.Close();
+
+                if (request.ContentLength > 0 || request.SendChunked)
                 {
-                    string contextLog = string.Format("Request -> ( {0} ): {1}\n", clientRequest.HttpMethod, clientRequest.RawUrl);
-
-                    #region HttpWebRequest Constructer
-                    var request = (HttpWebRequest)WebRequest.Create(clientRequest.RawUrl);
-                    request.ProtocolVersion = clientRequest.ProtocolVersion;
-                    request.Method = clientRequest.HttpMethod;
-                    request.AllowAutoRedirect = false;
-                    request.KeepAlive = false;
-                    request.Proxy = null;
-
-                    request.CookieContainer = new CookieContainer();
-                    request.CookieContainer.Add(clientRequest.Url, clientRequest.Cookies);
-
-                    var requestHeaders = (WebHeaderCollection)clientRequest.Headers;
-                    foreach (string header in requestHeaders.Keys)
+                    var requestData = new byte[request.ContentLength > 0 ? request.ContentLength : 8192];
+                    using (Stream requestStream = request.GetRequestStream())
                     {
-                        string value = requestHeaders[header];
+                        int length;
+                        while ((length = context.Request.InputStream.Read(requestData, 0, requestData.Length)) > 0)
+                            requestStream.Write(requestData, 0, requestData.Length);
+                    }
+                }
+
+                #region HttpWebResponse Constructer
+                using (var response = (HttpWebResponse)request.GetResponse())
+                {
+                    #region Safely Populate Headers
+                    var responseHeaders = response.Headers;
+                    foreach (string header in responseHeaders.Keys)
+                    {
+                        string value = responseHeaders[header];
                         switch (header)
                         {
-                            case "Connection":
-                            case "Keep-Alive":
-                            case "Proxy-Connection": continue;
+                            case "Transfer-Encoding": context.Response.SendChunked = false; break;
+                            case "Content-Length": context.Response.ContentLength64 = long.Parse(value); break;
 
-                            case "Range":
-                            {
-                                string[] ranges = value.GetChilds("bytes=", '-');
-                                if (ranges.Length > 1) request.AddRange(long.Parse(ranges[0]), long.Parse(ranges[1]));
-                                else request.AddRange(long.Parse(ranges[0]));
-                                break;
-                            }
-                            case "Host": request.Host = value; break;
-                            case "Accept": request.Accept = value; break;
-                            case "Referer": request.Referer = value; break;
-                            case "User-Agent": request.UserAgent = value; break;
-                            case "Content-Type": request.ContentType = value; break;
-                            case "Content-Length": request.ContentLength = long.Parse(value); break;
-                            case "If-Modified-Since": request.IfModifiedSince = DateTime.Parse(value); break;
-
-
-                            default: request.Headers[header] = value; break;
+                            default: context.Response.Headers[header] = value; break;
                         }
-                        contextLog += header + ": " + value + "\n";
                     }
 
                     if (DisableCache)
-                    {
-                        request.Headers["Cache-Control"] = "no-cache, no store";
-                        request.Headers["Pragma"] = "no-cache, no store";
-                    }
-
-                    if ((request.ContentLength != 0 && request.SendChunked) || request.ContentLength > 0)
-                    {
-                        request.SendChunked = false;
-                        var requestData = new byte[0];
-                        using (Stream requestStream = request.GetRequestStream())
-                        {
-                            int length;
-                            var chunk = new byte[request.ContentLength > 0 ? request.ContentLength : 8192];
-
-                            while ((length = clientRequest.InputStream.Read(chunk, 0, chunk.Length)) > 0)
-                                requestData = ByteUtils.Merge(requestData, ByteUtils.CopyBlock(chunk, 0, length));
-
-                            requestStream.Write(requestData, 0, requestData.Length);
-                        }
-                    }
+                        context.Response.Headers["Cache-Control"] = "no-cache, no store";
                     #endregion
 
-                    #region HttpWebResponse Constructer
-                    try
+                    var responseData = new byte[0];
+                    using (Stream responseStream = response.GetResponseStream())
                     {
-                        using (var response = (HttpWebResponse)request.GetResponse())
-                        {
-                            contextLog += string.Format("\nResponse <- ( Size: {0} ): {1}\n", response.ContentLength, response.ResponseUri.AbsoluteUri);
+                        int length;
+                        var chunk = new byte[response.ContentLength > 0 ? response.ContentLength : 8192];
 
-                            var responseHeaders = response.Headers;
-                            foreach (string header in responseHeaders.Keys)
-                            {
-                                string value = responseHeaders[header];
-                                switch (header)
-                                {
-                                    case "Keep-Alive": continue;
-                                    case "Content-Length": clientResponse.ContentLength64 = long.Parse(value); break;
-                                    case "Transfer-Encoding": clientResponse.SendChunked = false; break;
-                                    case "Connection": clientResponse.KeepAlive = (value == "keep-alive"); break;
-                                    default: clientResponse.Headers[header] = value; break;
-                                }
-                                contextLog += header + ": " + value + "\n";
-                            }
-
-                            if (DisableCache)
-                            {
-                                clientResponse.Headers["Cache-Control"] = "no-cache, no store";
-                                clientResponse.Headers["Pragma"] = "no-cache, no store";
-                            }
-
-                            if (DebugCallback != null)
-                                DebugCallback(Uri.UnescapeDataString(contextLog.Trim()), false);
-
-                            clientResponse.Cookies = response.Cookies;
-                            clientResponse.ContentType = response.ContentType;
-                            clientResponse.StatusCode = (int)response.StatusCode;
-                            clientResponse.ProtocolVersion = response.ProtocolVersion;
-                            clientResponse.StatusDescription = response.StatusDescription;
-                            clientResponse.RedirectLocation = response.Headers[HttpResponseHeader.Location];
-
-                            var responseData = new byte[0];
-                            using (Stream responseStream = response.GetResponseStream())
-                            {
-                                int length;
-                                var chunk = new byte[response.ContentLength > 0 ? response.ContentLength : 8192];
-
-                                while ((length = responseStream.Read(chunk, 0, chunk.Length)) > 0)
-                                    responseData = ByteUtils.Merge(responseData, ByteUtils.CopyBlock(chunk, 0, length));
-                            }
-                            if (OnEavesResponse != null)
-                            {
-                                var arguments = new EavesResponseEventArgs(responseData, response.ResponseUri.AbsoluteUri, clientResponse.ContentType == "application/x-shockwave-flash");
-                                OnEavesResponse(context, arguments);
-                                responseData = arguments.ResponeData;
-                            }
-
-                            clientResponse.ContentLength64 = responseData.Length;
-                            clientResponse.OutputStream.Write(responseData, 0, responseData.Length);
-                        }
+                        while ((length = responseStream.Read(chunk, 0, chunk.Length)) > 0)
+                            responseData = ByteUtils.Merge(responseData, ByteUtils.CopyBlock(chunk, 0, length));
                     }
-                    catch (Exception ex) { SKore.Debugger(ex.ToString()); }
-                    #endregion
+
+                    if (OnEavesResponse != null)
+                    {
+                        var arguments = new EavesResponseEventArgs(responseData,
+                            response.ResponseUri.AbsoluteUri,
+                            context.Response.ContentType == "application/x-shockwave-flash");
+
+                        OnEavesResponse(context, arguments);
+                        responseData = arguments.ResponeData;
+                    }
+
+                    context.Response.ContentLength64 = responseData.Length;
+                    context.Response.OutputStream.Write(responseData, 0, responseData.Length);
                 }
+                #endregion
             }
             catch (Exception ex) { SKore.Debugger(ex.ToString()); }
             finally
             {
                 _pendingCallbacks.Remove(ar);
-                if (!IsRunning && _pendingCallbacks.Count == 0)
+                if (!_isRunning)
                 {
-                    NativeMethods.DisableProxy();
-                    _httpListener.Stop();
+                    _pendingCallbacks.Clear();
+                    Terminate();
                 }
             }
         }
+
+        private static WebRequest ConstructRequest(HttpListenerRequest clientRequest)
+        {
+            var request = (HttpWebRequest)WebRequest.Create(clientRequest.RawUrl);
+            request.ProtocolVersion = clientRequest.ProtocolVersion;
+            request.Method = clientRequest.HttpMethod;
+            request.AllowAutoRedirect = false;
+            request.KeepAlive = false;
+            request.Proxy = null;
+
+            request.CookieContainer = new CookieContainer();
+            request.CookieContainer.Add(clientRequest.Url, clientRequest.Cookies);
+
+            #region Safely Populate Headers
+            var requestHeaders = clientRequest.Headers;
+            foreach (string header in requestHeaders.Keys)
+            {
+                string value = requestHeaders[header];
+                switch (header)
+                {
+                    case "Connection":
+                    case "Keep-Alive":
+                    case "Proxy-Connection": break;
+
+                    case "Range":
+                    {
+                        string[] ranges = value.GetChilds("bytes=", '-');
+                        request.AddRange(long.Parse(ranges[0]));
+                        if (ranges.Length > 1) request.AddRange(long.Parse(ranges[1]));
+                        break;
+                    }
+                    case "Host": request.Host = value; break;
+                    case "Accept": request.Accept = value; break;
+                    case "Referer": request.Referer = value; break;
+                    case "User-Agent": request.UserAgent = value; break;
+                    case "Content-Type": request.ContentType = value; break;
+                    case "Content-Length": request.ContentLength = long.Parse(value); break;
+                    case "If-Modified-Since": request.IfModifiedSince = DateTime.Parse(value); break;
+
+                    default: request.Headers[header] = value; break;
+                }
+            }
+
+            if (DisableCache)
+                request.Headers["Cache-Control"] = "no-cache, no store";
+            #endregion
+
+            return request;
+        }
+        #endregion
     }
 }
