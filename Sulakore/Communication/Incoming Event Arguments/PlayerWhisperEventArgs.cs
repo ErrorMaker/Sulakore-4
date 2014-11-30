@@ -3,21 +3,18 @@ using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
-    public class PlayerKickedHostEventArgs : EventArgs, IHabboEvent
+    public class PlayerWhisperEventArgs : EventArgs, IHabboEvent
     {
         private readonly HMessage _packet;
 
         public ushort Header { get; private set; }
 
-        public PlayerKickedHostEventArgs(HMessage packet)
+        public PlayerWhisperEventArgs(HMessage packet)
         {
+            throw new NotImplementedException();
+
             _packet = packet;
             Header = _packet.Header;
-        }
-
-        public override string ToString()
-        {
-            return string.Format("Header: {0}", Header);
         }
     }
 }

@@ -10,54 +10,28 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        private int? _playerIndex;
-        public int PlayerIndex
-        {
-            get
-            {
-                return (int)(_playerIndex != null ?
-                    _playerIndex :
-                    _playerIndex = _packet.ReadInt(0));
-            }
-        }
-
-        private string _figureId;
-        public string FigureId
-        {
-            get
-            {
-                return _figureId != null ?
-                    _figureId :
-                    _figureId = _packet.ReadString(4);
-            }
-        }
-
-        private HGenders? _gender;
-        public HGenders Gender
-        {
-            get
-            {
-                return (HGenders)(_gender != null ?
-                    _gender :
-                    _gender = SKore.ConvertToHGender(_packet.ReadString(6 + FigureId.Length)));
-            }
-        }
-
-        private string _motto;
-        public string Motto
-        {
-            get
-            {
-                return _motto != null ?
-                    _motto :
-                    _motto = _packet.ReadString(9 + FigureId.Length);
-            }
-        }
+        public int PlayerIndex { get; private set; }
+        public string FigureId { get; private set; }
+        public HGenders Gender { get; private set; }
+        public string Motto { get; private set; }
 
         public PlayerDataChangedEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
+
+            int position = 0;
+            PlayerIndex = _packet.ReadInt(ref position);
+            FigureId = _packet.ReadString(ref position);
+            _packet.ReadInt(ref position);
+            Gender = SKore.ToGender(_packet.ReadString(ref position));
+            Motto = _packet.ReadString(ref position);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Header: {0}, PlayerIndex: {1}, FigureId: {2}, Gender: {3}, Motto: {4}",
+                Header, PlayerIndex, FigureId, Gender, Motto);
         }
     }
 }

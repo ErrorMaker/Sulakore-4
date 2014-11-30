@@ -83,6 +83,8 @@ namespace Sulakore.Communication
 
         public PlayerStanceChangedEventArgs(HMessage packet)
         {
+            throw new NotImplementedException();
+
             _packet = packet;
             Header = _packet.Header;
         }

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Sulakore.Protocol;
 using Sulakore.Habbo;
+using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
@@ -13,70 +10,40 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        private int? _furnitureId;
-        public int FurnitureId
-        {
-            get
-            {
-                return (int)(_furnitureId != null ?
-                    _furnitureId :
-                    _furnitureId = _packet.ReadInt(0));
-            }
-        }
-
-        private int? _furnitureTypeId;
-        public int FurnitureTypeId
-        {
-            get
-            {
-                return (int)(_furnitureTypeId != null ?
-                    _furnitureTypeId :
-                    _furnitureTypeId = _packet.ReadInt(4));
-            }
-        }
-
-        private HPoint _tile;
-        public HPoint Tile
-        {
-            get
-            {
-                return _tile != HPoint.Empty ?
-                    _tile :
-                    _tile = new HPoint(_packet.ReadInt(8), _packet.ReadInt(12), _packet.ReadString(20));
-            }
-        }
-
-        private HDirections? _direction;
-        public HDirections Direction
-        {
-            get
-            {
-                return (HDirections)(_direction != null ?
-                    _direction :
-                    _direction = (HDirections)_packet.ReadInt(16));
-            }
-        }
-
-        private bool? _isRented;
-        public bool IsRented
-        {
-            get
-            {
-                if (_isRented != null) return (bool)_isRented;
-                return false;
-            }
-        }
-
-        private int? _furnitureOwnerId;
-        public int FurnitureOwnerId;
-
-        private string _furnitureOwnerName;
-        public string FurnitureOwnerName;
+        public int FurnitureId { get; private set; }
+        public int FurnitureTypeId { get; private set; }
+        public HPoint Tile { get; private set; }
+        public HDirections Direction { get; private set; }
+        public bool IsRented { get; private set; }
+        public int BuyerPlayerId { get; private set; }
+        public string BuyerPlayerName { get; private set; }
 
         public PlayerDropFurnitureEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
+
+            int position = 0;
+            FurnitureId = _packet.ReadInt(ref position);
+            FurnitureTypeId = _packet.ReadInt(ref position);
+            int x = _packet.ReadInt(ref position);
+            int y = _packet.ReadInt(ref position);
+            Direction = (HDirections)_packet.ReadInt(ref position);
+            Tile = new HPoint(x, y, _packet.ReadString(ref position));
+            _packet.ReadString(ref position);
+            _packet.ReadInt(ref position);
+            _packet.ReadInt(ref position);
+            _packet.ReadString(ref position);
+            IsRented = _packet.ReadInt(ref position) != 1;
+            _packet.ReadInt(ref position);
+            BuyerPlayerId = _packet.ReadInt(ref position);
+            BuyerPlayerName = _packet.ReadString(ref position);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Header: {0}, FurnitureId: {1}, FurnitureTypeId: {2}, Tile: {3}, Direction: {4}, IsRented: {5}, BuyerPlayerId: {6}, BuyerPlayerName: {7}",
+                Header, FurnitureId, FurnitureTypeId, Tile, Direction, IsRented, BuyerPlayerId, BuyerPlayerName);
         }
     }
 }
