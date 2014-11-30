@@ -10,21 +10,20 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        private HPoint _tile;
-        public HPoint Tile
-        {
-            get
-            {
-                return _tile != HPoint.Empty ?
-                    _tile :
-                    _tile = new HPoint(_packet.ReadInt(0), _packet.ReadInt(4));
-            }
-        }
+        public HPoint Tile { get; private set; }
 
         public HostWalkEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
+
+            Tile = new HPoint(_packet.ReadInt(0), _packet.ReadInt(4));
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Header: {0}, Tile: {1}",
+                Header, Tile);
         }
     }
 }

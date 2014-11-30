@@ -9,32 +9,22 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        private int? _roomId;
-        public int RoomId
-        {
-            get
-            {
-                return (int)(_roomId != null ?
-                    _roomId :
-                    _roomId = _packet.ReadInt(0));
-            }
-        }
-
-        private string _password;
-        public string Password
-        {
-            get
-            {
-                return _password != null ?
-                    _password :
-                    _password = _packet.ReadString(4);
-            }
-        }
+        public int RoomId { get; private set; }
+        public string Passcode { get; private set; }
 
         public HostRoomNavigateEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
+
+            RoomId = _packet.ReadInt(0);
+            Passcode = _packet.ReadString(4);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Header: {0}, RoomId: {1}, Passcode: {2}",
+                Header, RoomId, Passcode);
         }
     }
 }

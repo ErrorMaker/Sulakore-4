@@ -1,6 +1,6 @@
-﻿using Sulakore.Habbo;
+﻿using System;
+using Sulakore.Habbo;
 using Sulakore.Protocol;
-using System;
 
 namespace Sulakore.Communication
 {
@@ -10,26 +10,20 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        private HDances? _dance;
-        public HDances Dance
-        {
-            get
-            {
-                return (HDances)(_dance != null ?
-                    _dance :
-                    _dance = (HDances)_packet.ReadInt(0));
-            }
-        }
+        public HDances Dance { get; private set; }
 
         public HostDanceEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
+
+            Dance = (HDances)_packet.ReadInt(0);
         }
 
         public override string ToString()
         {
-            return string.Format("Header: {0}, Dance: {1}", Header, Dance);
+            return string.Format("Header: {0}, Dance: {1}",
+                Header, Dance);
         }
     }
 }

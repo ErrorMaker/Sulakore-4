@@ -10,32 +10,22 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        private HGenders? _gender;
-        public HGenders Gender
-        {
-            get
-            {
-                return (HGenders)(_gender != null ?
-                    _gender :
-                    _gender = SKore.ConvertToHGender(_packet.ReadString(0)));
-            }
-        }
-
-        private string _figureId;
-        public string FigureId
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(_figureId) ?
-                    _figureId :
-                    _figureId = _packet.ReadString(3);
-            }
-        }
+        public HGenders Gender { get; private set; }
+        public string FigureId { get; private set; }
 
         public HostClothesChangedEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
+
+            Gender = SKore.ToGender(_packet.ReadString(0));
+            FigureId = _packet.ReadString(3);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Header: {0}, Gender: {1}, FigureId: {2}",
+                Header, Gender, FigureId);
         }
     }
 }

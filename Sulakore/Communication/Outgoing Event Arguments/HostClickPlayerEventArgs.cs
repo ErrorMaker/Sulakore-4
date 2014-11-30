@@ -1,6 +1,6 @@
-﻿using Sulakore.Habbo;
+﻿using System;
+using Sulakore.Habbo;
 using Sulakore.Protocol;
-using System;
 
 namespace Sulakore.Communication
 {
@@ -10,32 +10,22 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        private int? _playerId;
-        public int PlayerId
-        {
-            get
-            {
-                return (int)(_playerId != null ?
-                    _playerId :
-                    _playerId = _packet.ReadInt(0));
-            }
-        }
-
-        private HPoint _tile;
-        public HPoint Tile
-        {
-            get
-            {
-                return _tile != HPoint.Empty ?
-                    _tile :
-                    _tile = new HPoint(_packet.ReadInt(0), _packet.ReadInt(4));
-            }
-        }
+        public int PlayerId { get; private set; }
+        public HPoint Tile { get; private set; }
 
         public HostClickPlayerEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
+
+            PlayerId = _packet.ReadInt(0);
+            Tile = new HPoint(_packet.ReadInt(0), _packet.ReadInt(4));
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Header: {0}, PlayerId: {1}, Tile: {2}",
+                Header, PlayerId, Tile);
         }
     }
 }

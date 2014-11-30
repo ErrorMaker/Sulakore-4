@@ -9,43 +9,24 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        private int? _playerId;
-        public int PlayerId
-        {
-            get
-            {
-                return (int)(_playerId != null ?
-                    _playerId :
-                    _playerId = _packet.ReadInt(0));
-            }
-        }
-
-        private int? _roomId;
-        public int RoomId
-        {
-            get
-            {
-                return (int)(_roomId != null ?
-                    _roomId :
-                    _roomId = _packet.ReadInt(4));
-            }
-        }
-
-        private int? _minutes;
-        public int Minutes
-        {
-            get
-            {
-                return (int)(_minutes != null ?
-                    _minutes :
-                    _minutes = _packet.ReadInt(8));
-            }
-        }
+        public int PlayerId { get; private set; }
+        public int RoomId { get; private set; }
+        public int Minutes { get; private set; }
 
         public HostMutePlayerEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
+
+            PlayerId = _packet.ReadInt(0);
+            RoomId = _packet.ReadInt(4);
+            Minutes = _packet.ReadInt(8);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Header: {0}, PlayerId: {1}, RoomId: {2}, Minutes: {3}",
+                Header, PlayerId, RoomId, Minutes);
         }
     }
 }

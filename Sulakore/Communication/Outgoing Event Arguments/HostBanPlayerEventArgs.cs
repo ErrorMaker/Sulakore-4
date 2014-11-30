@@ -10,43 +10,24 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        private int? _playerId;
-        public int PlayerId
-        {
-            get
-            {
-                return (int)(_playerId != null ?
-                    _playerId :
-                    _playerId = _packet.ReadInt(0));
-            }
-        }
-
-        private int? _roomId;
-        public int RoomId
-        {
-            get
-            {
-                return (int)(_roomId != null ?
-                    _roomId :
-                    _roomId = _packet.ReadInt(4));
-            }
-        }
-
-        private HBans? _ban;
-        public HBans Ban
-        {
-            get
-            {
-                return (HBans)(_ban != null ?
-                    _ban :
-                    _ban = SKore.ConvertToHBan(_packet.ReadString(8)));
-            }
-        }
+        public int PlayerId { get; private set; }
+        public int RoomId { get; private set; }
+        public HBans Ban { get; private set; }
 
         public HostBanPlayerEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
+
+            PlayerId = _packet.ReadInt(0);
+            RoomId = _packet.ReadInt(4);
+            Ban = SKore.ToBan(_packet.ReadString(8));
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Header: {0}, PlayerId: {1}, RoomId: {2}, Ban: {3}",
+                Header, PlayerId, RoomId, Ban);
         }
     }
 }

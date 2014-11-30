@@ -9,21 +9,20 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        private int? _playerIndex;
-        public int PlayerIndex
-        {
-            get
-            {
-                return (int)(_playerIndex != null ?
-                    _playerIndex :
-                    _playerIndex = _packet.ReadInt(0));
-            }
-        }
+        public int PlayerIndex { get; private set; }
 
         public HostTradePlayerEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
+
+            PlayerIndex = _packet.ReadInt(0);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Header: {0}, PlayerIndex: {1}",
+                Header, PlayerIndex);
         }
     }
 }

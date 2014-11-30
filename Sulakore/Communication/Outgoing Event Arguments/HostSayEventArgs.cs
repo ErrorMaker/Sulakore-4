@@ -10,32 +10,22 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        private string _message;
-        public string Message
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(_message) ?
-                    _message :
-                    _message = _packet.ReadString(0);
-            }
-        }
-
-        private HThemes? _theme;
-        public HThemes Theme
-        {
-            get
-            {
-                return (HThemes)(_theme != null ?
-                    _theme :
-                    _theme = (HThemes)_packet.ReadInt(_packet.Length - 10));
-            }
-        }
+        public string Message { get; private set; }
+        public HThemes Theme { get; private set; }
 
         public HostSayEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
+
+            Message = _packet.ReadString(0);
+            Theme = (HThemes)_packet.ReadInt(_packet.Length - 10);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Header: {0}, Message: {1}, Theme: {2}",
+                Header, Message, Theme);
         }
     }
 }

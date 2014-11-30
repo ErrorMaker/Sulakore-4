@@ -9,21 +9,20 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        private string _motto;
-        public string Motto
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(_motto) ?
-                    _motto :
-                    _motto = _packet.ReadString(0);
-            }
-        }
+        public string Motto { get; private set; }
 
         public HostMottoChangedEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
+
+            Motto = _packet.ReadString(0);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Header: {0}, Motto: {1}",
+                Header, Motto);
         }
     }
 }
