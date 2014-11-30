@@ -10,7 +10,7 @@
         void InitializeExtension();
         void DisposeExtension();
 
-        void DataToClient(byte[] data);
-        void DataToServer(byte[] data);
+        void OnDataToClient(byte[] data);
+        void OnDataToServer(byte[] data);
     }
 }
