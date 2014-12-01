@@ -102,6 +102,9 @@ namespace Sulakore.Communication
         {
             if (loopback)
             {
+                if (!File.Exists(HostsPath))
+                    File.Create(HostsPath).Close();
+
                 string[] hostsL = File.ReadAllLines(HostsPath);
                 if (!Array.Exists(hostsL, ip => Addresses.Contains(ip)))
                 {
