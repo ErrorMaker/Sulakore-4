@@ -102,5 +102,10 @@ namespace Sulakore.Communication.Bridge
             if (_outCallbacks.ContainsKey(header))
                 _outCallbacks.Remove(header);
         }
+
+        public void Unload()
+        {
+            Contractor.Unload(this);
+        }
     }
 }
