@@ -9,6 +9,6 @@ namespace Sulakore.Communication.Bridge
         void SendToClient(byte[] data);
         void SendToServer(byte[] data);
 
-        void DockExtension(IHExtension extension);
+        void Unload(IHExtension extension);
     }
 }
