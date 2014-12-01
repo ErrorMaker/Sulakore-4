@@ -84,8 +84,13 @@ namespace Sulakore.Communication.Bridge
             Connection.SendToServer(data);
         }
 
-        public void DockExtension(IHExtension extension)
+        public void Unload(IHExtension extension)
         {
+            if (Extensions.Contains(extension))
+                Extensions.Remove(extension);
+
+            //Unload from linked Domain
+
             extension.DisposeExtension();
         }
     }
