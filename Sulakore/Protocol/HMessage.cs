@@ -132,6 +132,10 @@ namespace Sulakore.Protocol
             }
         }
 
+        public HMessage(ushort header, HDestinations destination)
+            : this(header, destination, HProtocols.Modern)
+        { }
+
         public HMessage(ushort header, params object[] chunks)
             : this(header, HDestinations.Unknown, HProtocols.Modern, chunks)
         { }
