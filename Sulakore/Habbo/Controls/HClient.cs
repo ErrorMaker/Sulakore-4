@@ -3,7 +3,7 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Sulakore.Habbo.Components
+namespace Sulakore.Habbo.Controls
 {
     [System.ComponentModel.DesignerCategory("Code")]
     public class HClient : WebBrowser
