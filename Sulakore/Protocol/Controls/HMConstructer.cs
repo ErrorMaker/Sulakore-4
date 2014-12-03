@@ -2,15 +2,16 @@
 using System.Windows.Forms;
 using System.Collections.Generic;
 
-namespace Sulakore.Protocol.Components
+namespace Sulakore.Protocol.Controls
 {
     [System.ComponentModel.DesignerCategory("Code")]
     public class HMConstructer : ListView
     {
         #region Private Fields
-        private ushort _lastHeader;
         private HMessage _packet;
+        private ushort _lastHeader;
         private readonly List<object> _chunks;
+        private bool _suppressSelectionChanged;
         #endregion
 
         #region Public Properties
@@ -50,9 +51,12 @@ namespace Sulakore.Protocol.Components
         {
             _chunks = new List<object>();
 
-            var typeCol = new ColumnHeader { Name = "TypeCol", Text = "Type" };
+            SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
+            SetStyle(ControlStyles.EnableNotifyMessage, true);
+
+            var typeCol = new ColumnHeader { Name = "TypeCol", Text = "Type", Width = 60 };
             var valueCol = new ColumnHeader { Name = "ValueCol", Text = "Value", Width = 194 };
-            var encodedCol = new ColumnHeader { Name = "EncodedCol", Text = "Encoded", Width = 105 };
+            var encodedCol = new ColumnHeader { Name = "EncodedCol", Text = "Encoded", Width = 104 };
             Columns.AddRange(new[] { typeCol, valueCol, encodedCol });
 
             FullRowSelect = true;
@@ -103,6 +107,7 @@ namespace Sulakore.Protocol.Components
 
             Focus();
             Items.Add(item);
+            _suppressSelectionChanged = Items.Count > 1;
             item.Selected = true;
             EnsureVisible(Items.Count - 1);
         }
@@ -111,11 +116,16 @@ namespace Sulakore.Protocol.Components
         {
             _lastHeader = 0;
             int index = SelectedIndices[0];
+
             _chunks.RemoveAt(index);
+            _suppressSelectionChanged = (Items.Count > 1);
             Items.RemoveAt(index);
 
             if (Items.Count > 0)
+            {
+                _suppressSelectionChanged = true;
                 Items[index - (index > Items.Count - 1 ? 1 : 0)].Selected = true;
+            }
         }
         public void MoveSelectedUp()
         {
@@ -124,6 +134,7 @@ namespace Sulakore.Protocol.Components
             if (index == 0) return;
 
             object toMoveObj = _chunks[index];
+            _suppressSelectionChanged = true;
             _chunks.RemoveAt(index);
             _chunks.Insert(index - 1, toMoveObj);
 
@@ -149,6 +160,7 @@ namespace Sulakore.Protocol.Components
 
             //Focus / Highlight / Scroll
             Focus();
+            _suppressSelectionChanged = true;
             Items[index - 1].Selected = true;
             EnsureVisible(index - 1);
         }
@@ -159,6 +171,7 @@ namespace Sulakore.Protocol.Components
             if (index == Items.Count - 1) return;
 
             object toMoveObj = _chunks[index];
+            _suppressSelectionChanged = true;
             _chunks.RemoveAt(index);
             _chunks.Insert(index + 1, toMoveObj);
 
@@ -184,6 +197,7 @@ namespace Sulakore.Protocol.Components
 
             //Focus / Highlight / Scroll
             Focus();
+            _suppressSelectionChanged = true;
             Items[index + 1].Selected = true;
             EnsureVisible(index + 1);
         }
@@ -253,6 +267,16 @@ namespace Sulakore.Protocol.Components
             EndUpdate();
         }
 
+        protected override void OnNotifyMessage(Message m)
+        {
+            if (m.Msg != 0x14)
+                base.OnNotifyMessage(m);
+        }
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            _suppressSelectionChanged = (GetItemAt(e.X, e.Y) != null);
+            base.OnMouseDown(e);
+        }
         protected override void OnColumnWidthChanging(ColumnWidthChangingEventArgs e)
         {
             if (LockColumns)
@@ -261,6 +285,15 @@ namespace Sulakore.Protocol.Components
                 e.NewWidth = Columns[e.ColumnIndex].Width;
             }
             base.OnColumnWidthChanging(e);
+        }
+        protected override void OnItemSelectionChanged(ListViewItemSelectionChangedEventArgs e)
+        {
+            if (_suppressSelectionChanged && !e.IsSelected) _suppressSelectionChanged = false;
+            else
+            {
+                base.OnItemSelectionChanged(e);
+                if (e.IsSelected) _suppressSelectionChanged = false;
+            }
         }
     }
 }
