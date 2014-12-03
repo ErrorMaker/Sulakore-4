@@ -58,7 +58,7 @@ namespace Sulakore.Communication.Bridge
 
             Task.Factory.StartNew(() =>
                 Parallel.ForEach(Extensions, extension =>
-                    extension.OnDataToClient(data)), TaskCreationOptions.PreferFairness)
+                    extension.OnDataToClient(data)), TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness)
                     .ContinueWith(DistributionException, TaskContinuationOptions.OnlyOnFaulted);
         }
         public virtual void DistributeToServer(byte[] data)
@@ -67,7 +67,7 @@ namespace Sulakore.Communication.Bridge
 
             Task.Factory.StartNew(() =>
                 Parallel.ForEach(Extensions, extension =>
-                    extension.OnDataToServer(data)), TaskCreationOptions.PreferFairness)
+                    extension.OnDataToServer(data)), TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness)
                     .ContinueWith(DistributionException, TaskContinuationOptions.OnlyOnFaulted);
         }
         private void DistributionException(Task<ParallelLoopResult> task)
