@@ -85,7 +85,7 @@
     <Compile Include="Communication\Bridge\IHContractor.cs" />
     <Compile Include="Communication\Bridge\IHExtension.cs" />
     <Compile Include="Communication\HTriggerBase.cs" />
-    <Compile Include="Habbo\Components\HClient.cs" />
+    <Compile Include="Habbo\Controls\HClient.cs" />
     <Compile Include="Habbo\Headers\Incoming.cs" />
     <Compile Include="Habbo\Headers\Outgoing.cs" />
     <Compile Include="Habbo\HGameData.cs" />
@@ -101,8 +101,8 @@
     <Compile Include="Protocol\Ancient.cs" />
     <Compile Include="Protocol\ByteUtils.cs" />
     <Compile Include="Protocol\Modern.cs" />
-    <Compile Include="Protocol\Components\HMConstructer.cs" />
-    <Compile Include="Protocol\Components\HMScheduler.cs" />
+    <Compile Include="Protocol\Controls\HMConstructer.cs" />
+    <Compile Include="Protocol\Controls\HMScheduler.cs" />
     <Compile Include="Protocol\Encryption\BigInteger.cs" />
     <Compile Include="Protocol\Encryption\Enumerators.cs" />
     <Compile Include="Protocol\Encryption\HKeyExchange.cs" />
@@ -110,7 +110,6 @@
     <Compile Include="Protocol\Enumerators.cs" />
     <Compile Include="Protocol\HMessage.cs" />
     <Compile Include="Protocol\Encryption\Rc4.cs" />
-    <Compile Include="Protocol\HSchedule.cs" />
     <Compile Include="SKore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Internals\WebClientEx.cs" />
