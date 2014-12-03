@@ -7,6 +7,148 @@ namespace Sulakore.Communication
 {
     public abstract class HTriggerBase : IDisposable
     {
+        #region Subscribable Events
+        public event EventHandler<HostSayEventArgs> HostSay;
+        protected virtual void OnHostSay(HMessage packet)
+        {
+            if (HostSay != null)
+                HostSay(this, new HostSayEventArgs(packet));
+        }
+
+        public event EventHandler<HostWalkEventArgs> HostWalk;
+        protected virtual void OnHostWalk(HMessage packet)
+        {
+            if (HostWalk != null)
+                HostWalk(this, new HostWalkEventArgs(packet));
+        }
+
+        public event EventHandler<HostDanceEventArgs> HostDance;
+        protected virtual void OnHostDance(HMessage packet)
+        {
+            if (HostDance != null)
+                HostDance(this, new HostDanceEventArgs(packet));
+        }
+
+        public event EventHandler<HostShoutEventArgs> HostShout;
+        protected virtual void OnHostShout(HMessage packet)
+        {
+            if (HostShout != null)
+                HostShout(this, new HostShoutEventArgs(packet));
+        }
+
+        public event EventHandler<HostGestureEventArgs> HostGesture;
+        protected virtual void OnHostGesture(HMessage packet)
+        {
+            if (HostGesture != null)
+                HostGesture(this, new HostGestureEventArgs(packet));
+        }
+
+        public event EventHandler<HostRoomExitEventArgs> HostRoomExit;
+        protected virtual void OnHostRoomExit(HMessage packet)
+        {
+            if (HostRoomExit != null)
+                HostRoomExit(this, new HostRoomExitEventArgs(packet));
+        }
+
+        public event EventHandler<HostRaiseSignEventArgs> HostRaiseSign;
+        protected virtual void OnHostRaiseSign(HMessage packet)
+        {
+            if (HostRaiseSign != null)
+                HostRaiseSign(this, new HostRaiseSignEventArgs(packet));
+        }
+
+        public event EventHandler<HostBanPlayerEventArgs> HostBanPlayer;
+        protected virtual void OnHostBanPlayer(HMessage packet)
+        {
+            if (HostBanPlayer != null)
+                HostBanPlayer(this, new HostBanPlayerEventArgs(packet));
+        }
+
+        public event EventHandler<HostMutePlayerEventArgs> HostMutePlayer;
+        protected virtual void OnHostMutePlayer(HMessage packet)
+        {
+            if (HostMutePlayer != null)
+                HostMutePlayer(this, new HostMutePlayerEventArgs(packet));
+        }
+
+        public event EventHandler<HostKickPlayerEventArgs> HostKickPlayer;
+        protected virtual void OnHostKickPlayer(HMessage packet)
+        {
+            if (HostKickPlayer != null)
+                HostKickPlayer(this, new HostKickPlayerEventArgs(packet));
+        }
+
+        public event EventHandler<HostClickPlayerEventArgs> HostClickPlayer;
+        protected virtual void OnHostClickPlayer(HMessage packet)
+        {
+            if (HostClickPlayer != null)
+                HostClickPlayer(this, new HostClickPlayerEventArgs(packet));
+        }
+
+        public event EventHandler<HostMottoChangedEventArgs> HostChangeMotto;
+        protected virtual void OnHostChangeMotto(HMessage packet)
+        {
+            if (HostChangeMotto != null)
+                HostChangeMotto(this, new HostMottoChangedEventArgs(packet));
+        }
+
+        public event EventHandler<HostTradePlayerEventArgs> HostTradePlayer;
+        protected virtual void OnHostTradePlayer(HMessage packet)
+        {
+            if (HostTradePlayer != null)
+                HostTradePlayer(this, new HostTradePlayerEventArgs(packet));
+        }
+
+        public event EventHandler<HostStanceChangedEventArgs> HostChangeStance;
+        protected virtual void OnHostChangeStance(HMessage packet)
+        {
+            if (HostChangeStance != null)
+                HostChangeStance(this, new HostStanceChangedEventArgs(packet));
+        }
+
+        public event EventHandler<HostRoomNavigateEventArgs> HostRoomNavigate;
+        protected virtual void OnHostRoomNavigate(HMessage packet)
+        {
+            if (HostRoomNavigate != null)
+                HostRoomNavigate(this, new HostRoomNavigateEventArgs(packet));
+        }
+
+        public event EventHandler<HostMoveFurnitureEventArgs> HostMoveFurniture;
+        protected virtual void OnHostMoveFurniture(HMessage packet)
+        {
+            if (HostMoveFurniture != null)
+                HostMoveFurniture(this, new HostMoveFurnitureEventArgs(packet));
+        }
+
+        public event EventHandler<HostClothesChangedEventArgs> HostChangeClothes;
+        protected virtual void OnHostChangeClothes(HMessage packet)
+        {
+            if (HostChangeClothes != null)
+                HostChangeClothes(this, new HostClothesChangedEventArgs(packet));
+        }
+
+        public event EventHandler<PlayerKickedHostEventArgs> PlayerKickedHost;
+        protected virtual void OnPlayerKickedHost(HMessage packet)
+        {
+            if (PlayerKickedHost != null)
+                PlayerKickedHost(this, new PlayerKickedHostEventArgs(packet));
+        }
+
+        public event EventHandler<PlayerDataLoadedEventArgs> PlayerDataLoaded;
+        protected virtual void OnPlayerDataLoaded(HMessage packet)
+        {
+            if (PlayerDataLoaded != null)
+                PlayerDataLoaded(this, new PlayerDataLoadedEventArgs(packet));
+        }
+
+        public event EventHandler<FurnitureDataLoadedEventArgs> FurnitureDataLoaded;
+        protected virtual void OnFurnitureDataLoaded(HMessage packet)
+        {
+            if (FurnitureDataLoaded != null)
+                FurnitureDataLoaded(this, new FurnitureDataLoadedEventArgs(packet));
+        }
+        #endregion
+
         #region Private Fields
         private Action<HMessage, HMessage> _outEventDitch, _inEventDitch;
 
@@ -34,129 +176,7 @@ namespace Sulakore.Communication
         }
         #endregion
 
-        #region Game Connection Events
-        public event EventHandler<HostSayEventArgs> HostSay;
-        public event EventHandler<HostWalkEventArgs> HostWalk;
-        public event EventHandler<HostDanceEventArgs> HostDance; //
-        public event EventHandler<HostShoutEventArgs> HostShout;
-        public event EventHandler<HostGestureEventArgs> HostGesture; //
-        public event EventHandler<HostRoomExitEventArgs> HostRoomExit;
-        public event EventHandler<HostRaiseSignEventArgs> HostRaiseSign; //
-        public event EventHandler<HostBanPlayerEventArgs> HostBanPlayer;
-        public event EventHandler<HostMutePlayerEventArgs> HostMutePlayer;
-        public event EventHandler<HostKickPlayerEventArgs> HostKickPlayer;
-        public event EventHandler<HostClickPlayerEventArgs> HostClickPlayer;
-        public event EventHandler<HostMottoChangedEventArgs> HostChangeMotto;
-        public event EventHandler<HostTradePlayerEventArgs> HostTradePlayer;
-        public event EventHandler<HostStanceChangedEventArgs> HostChangeStance; //
-        public event EventHandler<HostRoomNavigateEventArgs> HostRoomNavigate;
-        public event EventHandler<HostMoveFurnitureEventArgs> HostMoveFurniture;
-        public event EventHandler<HostClothesChangedEventArgs> HostChangeClothes;
-
-        public event EventHandler<PlayerKickedHostEventArgs> PlayerKickedHost;
-        public event EventHandler<PlayerDataLoadedEventArgs> PlayerDataLoaded; //
-        public event EventHandler<FurnitureDataLoadedEventArgs> FurnitureDataLoaded;
-        #endregion
-
-        #region Game Connection Event Overrides
-        protected virtual void OnHostSay(HMessage packet)
-        {
-            if (HostSay != null)
-                HostSay(this, new HostSayEventArgs(packet));
-        }
-        protected virtual void OnHostWalk(HMessage packet)
-        {
-            if (HostWalk != null)
-                HostWalk(this, new HostWalkEventArgs(packet));
-        }
-        protected virtual void OnHostDance(HMessage packet)
-        {
-            if (HostDance != null)
-                HostDance(this, new HostDanceEventArgs(packet));
-        }
-        protected virtual void OnHostShout(HMessage packet)
-        {
-            if (HostShout != null)
-                HostShout(this, new HostShoutEventArgs(packet));
-        }
-        protected virtual void OnHostGesture(HMessage packet)
-        {
-            if (HostGesture != null)
-                HostGesture(this, new HostGestureEventArgs(packet));
-        }
-        protected virtual void OnHostRoomExit(HMessage packet)
-        {
-            if (HostRoomExit != null)
-                HostRoomExit(this, new HostRoomExitEventArgs(packet));
-        }
-        protected virtual void OnHostRaiseSign(HMessage packet)
-        {
-            if (HostRaiseSign != null)
-                HostRaiseSign(this, new HostRaiseSignEventArgs(packet));
-        }
-        protected virtual void OnHostBanPlayer(HMessage packet)
-        {
-            if (HostBanPlayer != null)
-                HostBanPlayer(this, new HostBanPlayerEventArgs(packet));
-        }
-        protected virtual void OnHostMutePlayer(HMessage packet)
-        {
-            if (HostMutePlayer != null)
-                HostMutePlayer(this, new HostMutePlayerEventArgs(packet));
-        }
-        protected virtual void OnHostKickPlayer(HMessage packet)
-        {
-            if (HostKickPlayer != null)
-                HostKickPlayer(this, new HostKickPlayerEventArgs(packet));
-        }
-        protected virtual void OnHostClickPlayer(HMessage packet)
-        {
-            if (HostClickPlayer != null)
-                HostClickPlayer(this, new HostClickPlayerEventArgs(packet));
-        }
-        protected virtual void OnHostChangeMotto(HMessage packet)
-        {
-            if (HostChangeMotto != null)
-                HostChangeMotto(this, new HostMottoChangedEventArgs(packet));
-        }
-        protected virtual void OnHostTradePlayer(HMessage packet)
-        {
-            if (HostTradePlayer != null)
-                HostTradePlayer(this, new HostTradePlayerEventArgs(packet));
-        }
-        protected virtual void OnHostChangeStance(HMessage packet)
-        {
-            if (HostChangeStance != null)
-                HostChangeStance(this, new HostStanceChangedEventArgs(packet));
-        }
-        protected virtual void OnHostRoomNavigate(HMessage packet)
-        {
-            if (HostRoomNavigate != null)
-                HostRoomNavigate(this, new HostRoomNavigateEventArgs(packet));
-        }
-        protected virtual void OnHostMoveFurniture(HMessage packet)
-        {
-            if (HostMoveFurniture != null)
-                HostMoveFurniture(this, new HostMoveFurnitureEventArgs(packet));
-        }
-        protected virtual void OnHostChangeClothes(HMessage packet)
-        {
-            if (HostChangeClothes != null)
-                HostChangeClothes(this, new HostClothesChangedEventArgs(packet));
-        }
-
-        protected virtual void OnPlayerKickedHost(HMessage packet)
-        {
-            if (PlayerKickedHost != null)
-                PlayerKickedHost(this, new PlayerKickedHostEventArgs(packet));
-        }
-        protected virtual void OnPlayerDataLoaded(HMessage packet)
-        {
-            if (PlayerDataLoaded != null)
-                PlayerDataLoaded(this, new PlayerDataLoadedEventArgs(packet));
-        }
-        #endregion
-
+        #region Virtual Methods
         protected virtual void ProcessOutgoing(byte[] data)
         {
             var packet = new HMessage(data, HDestinations.Server);
@@ -183,6 +203,59 @@ namespace Sulakore.Communication
                 }
             }
         }
+        protected virtual void ProcessIncoming(byte[] data)
+        {
+            var packet = new HMessage(data, HDestinations.Client);
+            try
+            {
+                HMessage previousIncoming = _previousIncoming.Count > 0 ? _previousIncoming.Pop() : null;
+                if (LockEvents && _lockedIncoming.ContainsKey(packet.Header))
+                {
+                    _lockedIncoming[packet.Header](packet);
+                    packet = null;
+                }
+                else ProcessIncoming(previousIncoming, ref packet);
+            }
+            catch (Exception ex)
+            {
+                SKore.Debugger(ex.ToString());
+            }
+            finally
+            {
+                if (packet != null)
+                {
+                    packet.Position = 0;
+                    _previousIncoming.Push(packet);
+                }
+            }
+        }
+
+        public virtual void Dispose()
+        {
+            SKore.Unsubscribe(ref HostSay);
+            SKore.Unsubscribe(ref HostRoomExit);
+            SKore.Unsubscribe(ref HostWalk);
+            SKore.Unsubscribe(ref HostRaiseSign);
+            SKore.Unsubscribe(ref HostDance);
+            SKore.Unsubscribe(ref HostShout);
+            SKore.Unsubscribe(ref HostTradePlayer);
+            SKore.Unsubscribe(ref HostGesture);
+            SKore.Unsubscribe(ref HostRoomNavigate);
+            SKore.Unsubscribe(ref HostBanPlayer);
+            SKore.Unsubscribe(ref HostMutePlayer);
+            SKore.Unsubscribe(ref HostKickPlayer);
+            SKore.Unsubscribe(ref HostClickPlayer);
+            SKore.Unsubscribe(ref HostChangeMotto);
+            SKore.Unsubscribe(ref HostChangeStance);
+            SKore.Unsubscribe(ref HostMoveFurniture);
+            SKore.Unsubscribe(ref HostChangeClothes);
+
+            SKore.Unsubscribe(ref PlayerKickedHost);
+            SKore.Unsubscribe(ref PlayerDataLoaded);
+        }
+        #endregion
+
+        #region Private Methods
         private void ProcessOutgoing(HMessage previous, ref HMessage current)
         {
             if (_outEventDitch != null)
@@ -223,33 +296,6 @@ namespace Sulakore.Communication
             else
             {
 
-            }
-        }
-
-        protected virtual void ProcessIncoming(byte[] data)
-        {
-            var packet = new HMessage(data, HDestinations.Client);
-            try
-            {
-                HMessage previousIncoming = _previousIncoming.Count > 0 ? _previousIncoming.Pop() : null;
-                if (LockEvents && _lockedIncoming.ContainsKey(packet.Header))
-                {
-                    _lockedIncoming[packet.Header](packet);
-                    packet = null;
-                }
-                else ProcessIncoming(previousIncoming, ref packet);
-            }
-            catch (Exception ex)
-            {
-                SKore.Debugger(ex.ToString());
-            }
-            finally
-            {
-                if (packet != null)
-                {
-                    packet.Position = 0;
-                    _previousIncoming.Push(packet);
-                }
             }
         }
         private void ProcessIncoming(HMessage previous, ref HMessage current)
@@ -313,29 +359,6 @@ namespace Sulakore.Communication
                 }
             }
         }
-
-        public virtual void Dispose()
-        {
-            SKore.Unsubscribe(ref HostSay);
-            SKore.Unsubscribe(ref HostRoomExit);
-            SKore.Unsubscribe(ref HostWalk);
-            SKore.Unsubscribe(ref HostRaiseSign);
-            SKore.Unsubscribe(ref HostDance);
-            SKore.Unsubscribe(ref HostShout);
-            SKore.Unsubscribe(ref HostTradePlayer);
-            SKore.Unsubscribe(ref HostGesture);
-            SKore.Unsubscribe(ref HostRoomNavigate);
-            SKore.Unsubscribe(ref HostBanPlayer);
-            SKore.Unsubscribe(ref HostMutePlayer);
-            SKore.Unsubscribe(ref HostKickPlayer);
-            SKore.Unsubscribe(ref HostClickPlayer);
-            SKore.Unsubscribe(ref HostChangeMotto);
-            SKore.Unsubscribe(ref HostChangeStance);
-            SKore.Unsubscribe(ref HostMoveFurniture);
-            SKore.Unsubscribe(ref HostChangeClothes);
-
-            SKore.Unsubscribe(ref PlayerKickedHost);
-            SKore.Unsubscribe(ref PlayerDataLoaded);
-        }
+        #endregion
     }
 }
