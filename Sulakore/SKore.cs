@@ -49,7 +49,7 @@ namespace Sulakore
             return Task.Factory.StartNew(() => GetIpCookie());
         }
 
-        public static int GetPlayersOnline(HHotels hotel)
+        public static int GetPlayersOnline(HHotel hotel)
         {
             using (var webClientEx = new WebClientEx())
             {
@@ -59,12 +59,12 @@ namespace Sulakore
                 return body.Contains("stats-fig") ? int.Parse(body.GetChild("<span class=\"stats-fig\">", '<')) : -1;
             }
         }
-        public static Task<int> GetPlayersOnlineAsync(HHotels hotel)
+        public static Task<int> GetPlayersOnlineAsync(HHotel hotel)
         {
             return Task.Factory.StartNew(() => GetPlayersOnline(hotel));
         }
 
-        public static int GetPlayerId(string playerName, HHotels hotel)
+        public static int GetPlayerId(string playerName, HHotel hotel)
         {
             using (var webClientEx = new WebClientEx())
             {
@@ -74,12 +74,12 @@ namespace Sulakore
                 return !body.Contains("rounded rounded-red") ? int.Parse(body.GetChild("<em>", '<').Replace(" ", string.Empty)) : -1;
             }
         }
-        public static Task<int> GetPlayerIdAsync(string playerName, HHotels hotel)
+        public static Task<int> GetPlayerIdAsync(string playerName, HHotel hotel)
         {
             return Task.Factory.StartNew(() => GetPlayerId(playerName, hotel));
         }
 
-        public static string GetPlayerName(int playerId, HHotels hotel)
+        public static string GetPlayerName(int playerId, HHotel hotel)
         {
             using (var webClientEx = new WebClientEx())
             {
@@ -89,21 +89,21 @@ namespace Sulakore
                 return body.Contains("/home/") ? body.GetChild("<input type=\"hidden\" name=\"page\" value=\"/home/", '?') : string.Empty;
             }
         }
-        public static Task<string> GetPlayerNameAsync(int playerId, HHotels hotel)
+        public static Task<string> GetPlayerNameAsync(int playerId, HHotel hotel)
         {
             return Task.Factory.StartNew(() => GetPlayerName(playerId, hotel));
         }
 
-        public static bool CheckPlayerName(string playerName, HHotels hotel)
+        public static bool CheckPlayerName(string playerName, HHotel hotel)
         {
             return GetPlayerId(playerName, hotel) == -1;
         }
-        public static Task<bool> CheckPlayerNameAsync(string playerName, HHotels hotel)
+        public static Task<bool> CheckPlayerNameAsync(string playerName, HHotel hotel)
         {
             return Task.Factory.StartNew(() => CheckPlayerName(playerName, hotel));
         }
 
-        public static string GetPlayerMotto(string playerName, HHotels hotel)
+        public static string GetPlayerMotto(string playerName, HHotel hotel)
         {
             using (var webClientEx = new WebClientEx())
             {
@@ -113,12 +113,12 @@ namespace Sulakore
                 return body.IndexOf(playerName, StringComparison.OrdinalIgnoreCase) != -1 ? body.GetChild("<b>" + playerName + "</b><br />", '<') : string.Empty;
             }
         }
-        public static Task<string> GetPlayerMottoAsync(string playerName, HHotels hotel)
+        public static Task<string> GetPlayerMottoAsync(string playerName, HHotel hotel)
         {
             return Task.Factory.StartNew(() => GetPlayerMotto(playerName, hotel));
         }
 
-        public static Bitmap GetPlayerAvatar(string playerName, HHotels hotel)
+        public static Bitmap GetPlayerAvatar(string playerName, HHotel hotel)
         {
             using (var webClientEx = new WebClientEx())
             {
@@ -129,12 +129,12 @@ namespace Sulakore
                     return new Bitmap(memoryStream);
             }
         }
-        public static Task<Bitmap> GetPlayerAvatarAsync(string playerName, HHotels hotel)
+        public static Task<Bitmap> GetPlayerAvatarAsync(string playerName, HHotel hotel)
         {
             return Task.Factory.StartNew(() => GetPlayerAvatar(playerName, hotel));
         }
 
-        public static string GetPlayerFigureId(string playerName, HHotels hotel)
+        public static string GetPlayerFigureId(string playerName, HHotel hotel)
         {
             using (var webClientEx = new WebClientEx())
             {
@@ -144,12 +144,12 @@ namespace Sulakore
                 return body.Contains("habbo-imaging/avatar/") ? body.GetChild("habbo-imaging/avatar/", ',') : string.Empty;
             }
         }
-        public static Task<string> GetPlayerFigureIdAsync(string playerName, HHotels hotel)
+        public static Task<string> GetPlayerFigureIdAsync(string playerName, HHotel hotel)
         {
             return Task.Factory.StartNew(() => GetPlayerFigureId(playerName, hotel));
         }
 
-        public static string GetPlayerLastOnline(string playerName, HHotels hotel, bool exact = true)
+        public static string GetPlayerLastOnline(string playerName, HHotel hotel, bool exact = true)
         {
             using (var webClientEx = new WebClientEx())
             {
@@ -163,7 +163,7 @@ namespace Sulakore
                 return exact ? body.Split('"')[1] : body.Split('>')[1].Split('<')[0];
             }
         }
-        public static Task<string> GetPlayerLastOnlineAsync(string playerName, HHotels hotel, bool exact = true)
+        public static Task<string> GetPlayerLastOnlineAsync(string playerName, HHotel hotel, bool exact = true)
         {
             return Task.Factory.StartNew(() => GetPlayerLastOnline(playerName, hotel, exact));
         }
@@ -206,87 +206,87 @@ namespace Sulakore
             Event = subscriptions.Aggregate(Event, (current, subscription) => current - (EventHandler<T>)subscription);
         }
 
-        public static int GetGamePort(this HHotels hotel)
+        public static int GetGamePort(this HHotel hotel)
         {
-            return hotel == HHotels.Com ? 38101 : 30000;
+            return hotel == HHotel.Com ? 38101 : 30000;
         }
-        public static string ToDomain(this HHotels hotel)
+        public static string ToDomain(this HHotel hotel)
         {
             string outCome = hotel.ToString().ToLower();
-            if (hotel == HHotels.ComBr || hotel == HHotels.ComTr)
+            if (hotel == HHotel.ComBr || hotel == HHotel.ComTr)
                 outCome = "com." + outCome.Substring(3, 2);
             return outCome;
         }
-        public static string GetGameHost(this HHotels hotel)
+        public static string GetGameHost(this HHotel hotel)
         {
-            return string.Format("game-{0}.habbo.com", hotel == HHotels.Com ? "us" : hotel.ToDomain().Replace("com.", string.Empty));
+            return string.Format("game-{0}.habbo.com", hotel == HHotel.Com ? "us" : hotel.ToDomain().Replace("com.", string.Empty));
         }
-        public static string[] GetAddresses(this HHotels hotel)
+        public static string[] GetAddresses(this HHotel hotel)
         {
             return Dns.GetHostAddresses(GetGameHost(hotel)).Select(ip => ip.ToString()).ToArray();
         }
-        public static string ToUrl(this HHotels hotel, bool https = false)
+        public static string ToUrl(this HHotel hotel, bool https = false)
         {
             return (https ? "https://www.Habbo." : "http://www.Habbo.") + hotel.ToDomain();
         }
 
-        public static int Juice(this HSigns sign)
+        public static int Juice(this HSign sign)
         {
-            if (sign != HSigns.Random) return (int)sign;
+            if (sign != HSign.Random) return (int)sign;
 
             lock (RandomSignLock)
                 return RandomSignGenerator.Next(0, 19);
         }
-        public static int Juice(this HThemes theme)
+        public static int Juice(this HTheme theme)
         {
-            if (theme != HThemes.Random) return (int)theme;
+            if (theme != HTheme.Random) return (int)theme;
 
             lock (RandomThemeLock)
                 return RandomThemeGenerator.Next(0, 30);
         }
-        public static string Juice(this HPages page, HHotels hotel)
+        public static string Juice(this HPage page, HHotel hotel)
         {
             switch (page)
             {
-                case HPages.Client: return hotel.ToUrl() + "/client";
-                case HPages.Home: return hotel.ToUrl() + "/home/";
-                case HPages.IdAvatars: return hotel.ToUrl() + "/identity/avatars";
-                case HPages.IdSettings: return hotel.ToUrl() + "/identity/settings";
-                case HPages.Me: return hotel.ToUrl() + "/me";
-                case HPages.Profile: return hotel.ToUrl() + "/profile";
+                case HPage.Client: return hotel.ToUrl() + "/client";
+                case HPage.Home: return hotel.ToUrl() + "/home/";
+                case HPage.IdAvatars: return hotel.ToUrl() + "/identity/avatars";
+                case HPage.IdSettings: return hotel.ToUrl() + "/identity/settings";
+                case HPage.Me: return hotel.ToUrl() + "/me";
+                case HPage.Profile: return hotel.ToUrl() + "/profile";
                 default: return string.Empty;
             }
         }
 
-        public static HGenders ToGender(string gender)
+        public static HGender ToGender(string gender)
         {
-            return (HGenders)gender.ToUpper()[0];
+            return (HGender)gender.ToUpper()[0];
         }
 
-        public static string Juice(this HBans ban)
-        {
-            switch (ban)
-            {
-                default:
-                case HBans.Day: return "RWUAM_BAN_USER_DAY";
-
-                case HBans.Hour: return "RWUAM_BAN_USER_HOUR";
-                case HBans.Permanent: return "RWUAM_BAN_USER_PERM";
-            }
-        }
-        public static HBans ToBan(string ban)
+        public static string Juice(this HBan ban)
         {
             switch (ban)
             {
                 default:
-                case "RWUAM_BAN_USER_DAY": return HBans.Day;
+                case HBan.Day: return "RWUAM_BAN_USER_DAY";
 
-                case "RWUAM_BAN_USER_HOUR": return HBans.Hour;
-                case "RWUAM_BAN_USER_PERM": return HBans.Permanent;
+                case HBan.Hour: return "RWUAM_BAN_USER_HOUR";
+                case HBan.Permanent: return "RWUAM_BAN_USER_PERM";
+            }
+        }
+        public static HBan ToBan(string ban)
+        {
+            switch (ban)
+            {
+                default:
+                case "RWUAM_BAN_USER_DAY": return HBan.Day;
+
+                case "RWUAM_BAN_USER_HOUR": return HBan.Hour;
+                case "RWUAM_BAN_USER_PERM": return HBan.Permanent;
             }
         }
 
-        public static HHotels ToHotel(string value)
+        public static HHotel ToHotel(string value)
         {
             if (value.Contains("game-")) value = value.GetChild("game-", '.');
             else if (value.Contains("habbo")) value = value.GetChild("habbo.");
@@ -295,13 +295,13 @@ namespace Sulakore
             if (value == "us") value = "com";
             if (value == "br" || value == "tr") value = "com" + value;
 
-            HHotels hotel;
-            return Enum.TryParse(value, true, out hotel) ? hotel : (HHotels)(-1);
+            HHotel hotel;
+            return Enum.TryParse(value, true, out hotel) ? hotel : (HHotel)(-1);
         }
         public static bool IsOriginal(string gameHost, int gamePort = 0)
         {
             if (gamePort != 0 && gamePort != 30000 && gamePort != 38101) return false;
-            return gameHost == "habboo-a.akamaihd.net" || Enum.IsDefined(typeof(HHotels), ToHotel(gameHost));
+            return gameHost == "habboo-a.akamaihd.net" || Enum.IsDefined(typeof(HHotel), ToHotel(gameHost));
         }
 
         public static string GetChild(this string body, string parent)
