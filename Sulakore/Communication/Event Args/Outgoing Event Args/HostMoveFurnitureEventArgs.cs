@@ -12,7 +12,7 @@ namespace Sulakore.Communication
 
         public int FurnitureId { get; private set; }
         public HPoint Tile { get; private set; }
-        public HDirections Direction { get; private set; }
+        public HDirection Direction { get; private set; }
 
         public HostMoveFurnitureEventArgs(HMessage packet)
         {
@@ -21,7 +21,7 @@ namespace Sulakore.Communication
 
             FurnitureId = _packet.ReadInt(0);
             Tile = new HPoint(_packet.ReadInt(4), _packet.ReadInt(8));
-            Direction = (HDirections)_packet.ReadInt(12);
+            Direction = (HDirection)_packet.ReadInt(12);
         }
 
         public override string ToString()

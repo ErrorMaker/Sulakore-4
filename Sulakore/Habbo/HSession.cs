@@ -53,7 +53,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!string.IsNullOrEmpty(_urlToken)) return _urlToken;
-                LoadResource(HPages.Profile);
+                LoadResource(HPage.Profile);
                 return _urlToken;
             }
         }
@@ -64,7 +64,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!string.IsNullOrEmpty(_csrfToken)) return _csrfToken;
-                LoadResource(HPages.Profile);
+                LoadResource(HPage.Profile);
                 return _urlToken;
             }
         }
@@ -75,7 +75,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!string.IsNullOrEmpty(_playerName)) return _playerName;
-                LoadResource(HPages.Profile);
+                LoadResource(HPage.Profile);
                 return _playerName;
             }
         }
@@ -86,7 +86,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!string.IsNullOrEmpty(_lastSignIn)) return _lastSignIn;
-                LoadResource(HPages.Me);
+                LoadResource(HPage.Me);
                 return _lastSignIn;
             }
         }
@@ -97,7 +97,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!string.IsNullOrEmpty(_createdOn)) return _createdOn;
-                LoadResource(HPages.Home);
+                LoadResource(HPage.Home);
                 return _createdOn;
             }
         }
@@ -108,7 +108,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!string.IsNullOrEmpty(_userHash)) return _userHash;
-                LoadResource(HPages.Client);
+                LoadResource(HPage.Client);
                 return _userHash;
             }
         }
@@ -119,7 +119,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!string.IsNullOrEmpty(_motto)) return _motto;
-                LoadResource(HPages.Me);
+                LoadResource(HPage.Me);
                 return _motto;
             }
         }
@@ -130,7 +130,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!_firstTimeLoadProfile) return _homepageVisible;
-                LoadResource(HPages.Profile);
+                LoadResource(HPage.Profile);
                 return _homepageVisible;
             }
         }
@@ -141,7 +141,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!_firstTimeLoadProfile) return _friendRequestAllowed;
-                LoadResource(HPages.Profile);
+                LoadResource(HPage.Profile);
                 return _friendRequestAllowed;
             }
         }
@@ -152,7 +152,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!_firstTimeLoadProfile) return _showOnlineStatus;
-                LoadResource(HPages.Profile);
+                LoadResource(HPage.Profile);
                 return _showOnlineStatus;
             }
         }
@@ -163,7 +163,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!_firstTimeLoadProfile) return _offlineMessaging;
-                LoadResource(HPages.Profile);
+                LoadResource(HPage.Profile);
                 return _offlineMessaging;
             }
         }
@@ -174,18 +174,18 @@ namespace Sulakore.Habbo
             get
             {
                 if (_firstTimeLoadProfile) return _friendsCanFollow;
-                LoadResource(HPages.Profile);
+                LoadResource(HPage.Profile);
                 return _friendsCanFollow;
             }
         }
 
-        private HGenders _gender;
-        public HGenders Gender
+        private HGender _gender;
+        public HGender Gender
         {
             get
             {
-                if (_gender != HGenders.Unknown) return _gender;
-                LoadResource(HPages.Profile);
+                if (_gender != HGender.Unknown) return _gender;
+                LoadResource(HPage.Profile);
                 return _gender;
             }
         }
@@ -196,14 +196,14 @@ namespace Sulakore.Habbo
             get
             {
                 if (_age != 0) return _age;
-                LoadResource(HPages.Profile);
+                LoadResource(HPage.Profile);
                 return _age;
             }
         }
 
         public string Email { get; private set; }
         public string Password { get; private set; }
-        public HHotels Hotel { get; private set; }
+        public HHotel Hotel { get; private set; }
 
         public int PlayerId { get; private set; }
         public string ClientStarting { get; set; }
@@ -221,7 +221,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!_gameData.IsEmpty) return _gameData;
-                LoadResource(HPages.Client);
+                LoadResource(HPage.Client);
                 return _gameData;
             }
         }
@@ -232,7 +232,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!string.IsNullOrEmpty(_flashClientUrl)) return _flashClientUrl;
-                LoadResource(HPages.Client);
+                LoadResource(HPage.Client);
                 return _flashClientUrl;
             }
         }
@@ -243,7 +243,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!string.IsNullOrEmpty(_flashClientBuild)) return _flashClientBuild;
-                LoadResource(HPages.Client);
+                LoadResource(HPage.Client);
                 return _flashClientBuild;
             }
         }
@@ -254,7 +254,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (_port != 0) return _port;
-                LoadResource(HPages.Client);
+                LoadResource(HPage.Client);
                 return _port;
             }
         }
@@ -265,7 +265,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!string.IsNullOrEmpty(_host)) return _host;
-                LoadResource(HPages.Client);
+                LoadResource(HPage.Client);
                 return _host;
             }
         }
@@ -276,7 +276,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (_addresses != null && _addresses.Length > 0) return _addresses;
-                LoadResource(HPages.Client);
+                LoadResource(HPage.Client);
                 return _addresses;
             }
         }
@@ -287,7 +287,7 @@ namespace Sulakore.Habbo
             get
             {
                 if (!string.IsNullOrEmpty(_ssoTicket)) return _ssoTicket;
-                LoadResource(HPages.Client);
+                LoadResource(HPage.Client);
                 return _ssoTicket;
             }
         }
@@ -312,9 +312,9 @@ namespace Sulakore.Habbo
         {
             get { return _serverS != null && _serverS.Connected; }
         }
-        public HProtocols Protocol
+        public HProtocol Protocol
         {
-            get { return HProtocols.Modern; }
+            get { return HProtocol.Modern; }
         }
 
         bool IHConnection.RequestEncrypted
@@ -330,7 +330,7 @@ namespace Sulakore.Habbo
             ServicePointManager.DefaultConnectionLimit = int.MaxValue;
             ServicePointManager.ServerCertificateValidationCallback = ValidateCertificate;
         }
-        public HSession(string email, string password, HHotels hotel)
+        public HSession(string email, string password, HHotel hotel)
         {
             Email = email;
             Password = password;
@@ -345,7 +345,7 @@ namespace Sulakore.Habbo
         #endregion
 
         #region Indexer(s)
-        public string this[HPages page]
+        public string this[HPage page]
         {
             get { return LoadResource(page); }
         }
@@ -415,7 +415,7 @@ namespace Sulakore.Habbo
 
                         if (redirectingTo.EndsWith("/me"))
                         {
-                            HandleResource(HPages.Me, ref body);
+                            HandleResource(HPage.Me, ref body);
                             return true;
                         }
                     }
@@ -494,7 +494,7 @@ namespace Sulakore.Habbo
 
                             if (redirectingTo.EndsWith("/me"))
                             {
-                                HandleResource(HPages.Me, ref body);
+                                HandleResource(HPage.Me, ref body);
                                 return true;
                             }
                         }
@@ -558,7 +558,7 @@ namespace Sulakore.Habbo
 
         public string RenewTicket()
         {
-            LoadResource(HPages.Client);
+            LoadResource(HPage.Client);
             return _ssoTicket;
         }
         public Task<string> RenewTicketAsync()
@@ -617,7 +617,7 @@ namespace Sulakore.Habbo
 
         public int SendToServer(ushort header, params object[] chunks)
         {
-            return SendToServer(HMessage.Construct(header, HDestinations.Server, HProtocols.Modern, chunks));
+            return SendToServer(HMessage.Construct(header, HDestination.Server, HProtocol.Modern, chunks));
         }
         public Task<int> SendToServerAsync(ushort header, params object[] chunks)
         {
@@ -630,7 +630,7 @@ namespace Sulakore.Habbo
             {
                 if (DataToServer != null)
                 {
-                    try { DataToServer(this, new DataToEventArgs(data, HDestinations.Server, ++_toServerS)); }
+                    try { DataToServer(this, new DataToEventArgs(data, HDestination.Server, ++_toServerS)); }
                     catch (Exception ex) { SKore.Debugger(ex.ToString()); }
                 }
 
@@ -708,7 +708,7 @@ namespace Sulakore.Habbo
             _showOnlineStatus = false;
             _offlineMessaging = false;
             _friendsCanFollow = false;
-            _gender = HGenders.Unknown;
+            _gender = HGender.Unknown;
             _age = 0;
             ClientStarting = string.Empty;
             _gameData = HGameData.Empty;
@@ -749,41 +749,41 @@ namespace Sulakore.Habbo
             }
         }
 
-        private string LoadResource(HPages page)
+        private string LoadResource(HPage page)
         {
             using (var webClientEx = new WebClientEx(Cookies))
             {
-                string url = page.Juice(Hotel) + (page == HPages.Home ? PlayerName : string.Empty);
+                string url = page.Juice(Hotel) + (page == HPage.Home ? PlayerName : string.Empty);
                 webClientEx.Headers["User-Agent"] = SKore.ChromeAgent;
                 string body = webClientEx.DownloadString(url);
                 HandleResource(page, ref body);
                 return body;
             }
         }
-        private void HandleResource(HPages page, ref string body)
+        private void HandleResource(HPage page, ref string body)
         {
             PlayerId = int.Parse(body.GetChild("var habboId = ", ';'));
             _playerName = body.GetChild("var habboName = \"", '\"');
             _age = int.Parse(body.GetChild("kvage=", ';'));
-            _gender = (HGenders)Char.ToUpper(body.GetChild("kvgender=", ';')[0]);
+            _gender = (HGender)Char.ToUpper(body.GetChild("kvgender=", ';')[0]);
             _csrfToken = body.GetChild("<meta name=\"csrf-token\" content=\"", '\"');
 
             switch (page)
             {
-                case HPages.Me:
+                case HPage.Me:
                 {
                     string[] infoBoxes = body.GetChilds("<div class=\"content\">", '<');
                     _motto = infoBoxes[6].Split('>')[1];
                     _lastSignIn = infoBoxes[12].Split('>')[1];
                     break;
                 }
-                case HPages.Home:
+                case HPage.Home:
                 {
                     _createdOn = body.GetChild("<div class=\"birthday date\">", '<');
                     _motto = body.GetChild("<div class=\"profile-motto\">", '<');
                     break;
                 }
-                case HPages.Profile:
+                case HPage.Profile:
                 {
                     _firstTimeLoadProfile = false;
                     _urlToken = body.GetChild("name=\"urlToken\" value=\"", '\"');
@@ -795,7 +795,7 @@ namespace Sulakore.Habbo
                     _friendsCanFollow = body.GetChild("name=\"followFriendMode\" value=\"1\"").Contains("checked");
                     break;
                 }
-                case HPages.Client:
+                case HPage.Client:
                 {
                     _host = body.GetChild("\"connection.info.host\" : \"", '\"');
                     _port = int.Parse(body.GetChild("\"connection.info.port\" : \"", '\"').Split(',')[0]);
@@ -855,7 +855,7 @@ namespace Sulakore.Habbo
                         ResponseEncrypted = (dLength > data.Length - 4 || dLength < 6);
                     }
 
-                    byte[][] chunks = ResponseEncrypted ? new[] { data } : ByteUtils.Split(ref _serverC, data, HDestinations.Client, HProtocols.Modern);
+                    byte[][] chunks = ResponseEncrypted ? new[] { data } : ByteUtils.Split(ref _serverC, data, HDestination.Client, HProtocol.Modern);
                     #endregion
                     foreach (byte[] chunk in chunks)
                     {
@@ -864,7 +864,7 @@ namespace Sulakore.Habbo
                         ++_toClientS;
                         if (DataToClient != null)
                         {
-                            try { DataToClient(this, new DataToEventArgs(chunk, HDestinations.Client, _toClientS)); }
+                            try { DataToClient(this, new DataToEventArgs(chunk, HDestination.Client, _toClientS)); }
                             catch (Exception ex) { SKore.Debugger(ex.ToString()); }
                         }
                     }
@@ -898,7 +898,7 @@ namespace Sulakore.Habbo
                         string password = streamReader.ReadLine();
                         if (!streamReader.EndOfStream)
                         {
-                            HHotels hotel = SKore.ToHotel((streamReader.ReadLine()).GetChild(" / "));
+                            HHotel hotel = SKore.ToHotel((streamReader.ReadLine()).GetChild(" / "));
                             accounts.Add(new HSession(email, password, hotel));
                         }
                         else return accounts.ToArray();

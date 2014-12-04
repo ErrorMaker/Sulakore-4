@@ -12,7 +12,7 @@ namespace Sulakore.Communication
 
         public int PlayerIndex { get; private set; }
         public string Message { get; private set; }
-        public HThemes Theme { get; private set; }
+        public HTheme Theme { get; private set; }
 
         public PlayerSayEventArgs(HMessage packet)
         {
@@ -24,7 +24,7 @@ namespace Sulakore.Communication
             _packet.ReadInt(ref position);
             Message = _packet.ReadString(ref position);
             _packet.ReadInt(ref position);
-            Theme = (HThemes)_packet.ReadInt(ref position);
+            Theme = (HTheme)_packet.ReadInt(ref position);
         }
 
         public override string ToString()

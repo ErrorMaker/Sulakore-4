@@ -12,7 +12,7 @@ namespace Sulakore.Communication
 
         public int PlayerIndex { get; private set; }
         public string FigureId { get; private set; }
-        public HGenders Gender { get; private set; }
+        public HGender Gender { get; private set; }
         public string Motto { get; private set; }
 
         public PlayerDataChangedEventArgs(HMessage packet)

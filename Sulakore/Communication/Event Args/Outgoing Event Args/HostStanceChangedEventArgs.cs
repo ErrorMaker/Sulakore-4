@@ -10,14 +10,14 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        public HStances Stance { get; private set; }
+        public HStance Stance { get; private set; }
 
         public HostStanceChangedEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
 
-            Stance = (HStances)_packet.ReadInt(0);
+            Stance = (HStance)_packet.ReadInt(0);
         }
 
         public override string ToString()

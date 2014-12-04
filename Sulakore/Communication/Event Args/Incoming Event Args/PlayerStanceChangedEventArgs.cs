@@ -32,39 +32,39 @@ namespace Sulakore.Communication
             }
         }
 
-        private HDirections? _headDirection;
-        public HDirections HeadDirection
+        private HDirection? _headDirection;
+        public HDirection HeadDirection
         {
             get
             {
-                return (HDirections)(_headDirection != null ?
+                return (HDirection)(_headDirection != null ?
                     _headDirection :
-                    _headDirection = (HDirections)_packet.ReadInt(18 + Tile.Z.Length));
+                    _headDirection = (HDirection)_packet.ReadInt(18 + Tile.Z.Length));
             }
         }
 
-        private HDirections? _bodyDirection;
-        public HDirections BodyDirection
+        private HDirection? _bodyDirection;
+        public HDirection BodyDirection
         {
             get
             {
-                return (HDirections)(_bodyDirection != null ?
+                return (HDirection)(_bodyDirection != null ?
                     _bodyDirection :
-                    _bodyDirection = (HDirections)_packet.ReadInt(22 + Tile.Z.Length));
+                    _bodyDirection = (HDirection)_packet.ReadInt(22 + Tile.Z.Length));
             }
         }
 
-        private HStances? _stance;
-        public HStances Stance
+        private HStance? _stance;
+        public HStance Stance
         {
             get
             {
-                if (_stance != null) return (HStances)_stance;
+                if (_stance != null) return (HStance)_stance;
 
                 string action = _packet.ReadString(26 + Tile.Z.Length);
                 _empowered = action.Contains("flatctrl");
 
-                return (HStances)(_stance = action.Contains("/sit") ? HStances.Sit : HStances.Stand);
+                return (HStance)(_stance = action.Contains("/sit") ? HStance.Sit : HStance.Stand);
             }
         }
 
@@ -75,7 +75,7 @@ namespace Sulakore.Communication
             {
                 if (_empowered != null) return (bool)_empowered;
                 string action = _packet.ReadString(26 + Tile.Z.Length);
-                _stance = action.Contains("/sit") ? HStances.Sit : HStances.Stand;
+                _stance = action.Contains("/sit") ? HStance.Sit : HStance.Stand;
 
                 return (bool)(_empowered = action.Contains("flatctrl"));
             }

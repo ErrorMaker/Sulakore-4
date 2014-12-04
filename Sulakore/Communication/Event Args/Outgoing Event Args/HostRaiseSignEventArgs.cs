@@ -10,14 +10,14 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        public HSigns Sign { get; private set; }
+        public HSign Sign { get; private set; }
 
         public HostRaiseSignEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
 
-            Sign = (HSigns)_packet.ReadInt(0);
+            Sign = (HSign)_packet.ReadInt(0);
         }
 
         public override string ToString()

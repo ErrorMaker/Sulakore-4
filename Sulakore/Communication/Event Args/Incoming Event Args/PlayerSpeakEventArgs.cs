@@ -12,7 +12,7 @@ namespace Sulakore.Communication
 
         public int PlayerIndex { get; private set; }
         public string Message { get; private set; }
-        public HThemes Theme { get; private set; }
+        public HTheme Theme { get; private set; }
         public HSpeeches Speech { get; private set; }
 
         public PlayerSpeakEventArgs(HMessage packet)

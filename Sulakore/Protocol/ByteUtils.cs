@@ -20,7 +20,7 @@ namespace Sulakore.Protocol
                 data.AddRange(chunk);
             return data.ToArray();
         }
-        public static byte[][] Split(ref byte[] cache, byte[] data, HDestinations destination, HProtocols protocol)
+        public static byte[][] Split(ref byte[] cache, byte[] data, HDestination destination, HProtocol protocol)
         {
             lock (SplitLock)
             {
@@ -31,7 +31,7 @@ namespace Sulakore.Protocol
                 }
 
                 var chunks = new List<byte[]>();
-                if (protocol == HProtocols.Ancient && destination == HDestinations.Client)
+                if (protocol == HProtocol.Ancient && destination == HDestination.Client)
                 {
                     if (!data.Contains((byte)1)) cache = data;
                     else
@@ -51,7 +51,7 @@ namespace Sulakore.Protocol
                 }
                 else
                 {
-                    bool isAncient = (protocol == HProtocols.Ancient);
+                    bool isAncient = (protocol == HProtocol.Ancient);
                     int offset = isAncient ? 3 : 4;
                     int length = isAncient ? Ancient.DecypherShort(data, 1) : Modern.DecypherInt(data);
 

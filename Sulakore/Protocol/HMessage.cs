@@ -27,7 +27,7 @@ namespace Sulakore.Protocol
 
                 _header = value;
                 _buffer.RemoveRange(0, 2);
-                _buffer.InsertRange(0, Protocol == HProtocols.Ancient ? Ancient.CypherShort(value) : Modern.CypherShort(value));
+                _buffer.InsertRange(0, Protocol == HProtocol.Ancient ? Ancient.CypherShort(value) : Modern.CypherShort(value));
                 Reconstruct();
             }
         }
@@ -35,8 +35,8 @@ namespace Sulakore.Protocol
         public int Length { get; private set; }
         public byte[] Body { get; private set; }
         public bool IsCorrupted { get; private set; }
-        public HProtocols Protocol { get; private set; }
-        public HDestinations Destination { get; private set; }
+        public HProtocol Protocol { get; private set; }
+        public HDestination Destination { get; private set; }
 
         public object[] Written
         {
@@ -67,18 +67,18 @@ namespace Sulakore.Protocol
         }
 
         public HMessage(byte[] data)
-            : this(data, HDestinations.Unknown)
+            : this(data, HDestination.Server)
         { }
 
         public HMessage(string packet)
-            : this(ToBytes(packet), HDestinations.Unknown)
+            : this(ToBytes(packet), HDestination.Server)
         { }
 
-        public HMessage(string packet, HDestinations destination)
+        public HMessage(string packet, HDestination destination)
             : this(ToBytes(packet), destination)
         { }
 
-        public HMessage(byte[] data, HDestinations destination)
+        public HMessage(byte[] data, HDestination destination)
             : this()
         {
             if (data == null) throw new NullReferenceException();
@@ -90,7 +90,7 @@ namespace Sulakore.Protocol
 
             if (!isAncientHeader && data.Length >= 6 && Modern.DecypherInt(data) == data.Length - 4)
             {
-                Protocol = HProtocols.Modern;
+                Protocol = HProtocol.Modern;
 
                 _header = Modern.DecypherShort(data, 4);
                 Append(ByteUtils.CopyBlock(data, 4, data.Length - 4));
@@ -98,10 +98,10 @@ namespace Sulakore.Protocol
                 if (data.Length == 6)
                     _logWriting = true;
             }
-            else if ((destination == HDestinations.Server && isAncientHeader) || (!hasByteZero && data.Length >= 5 && Ancient.DecypherShort(data, 1) == data.Length - 3))
+            else if ((destination == HDestination.Server && isAncientHeader) || (!hasByteZero && data.Length >= 5 && Ancient.DecypherShort(data, 1) == data.Length - 3))
             {
-                Destination = HDestinations.Server;
-                Protocol = HProtocols.Ancient;
+                Destination = HDestination.Server;
+                Protocol = HProtocol.Ancient;
 
                 _header = Ancient.DecypherShort(data, isAncientHeader ? 0 : 3);
                 Append(isAncientHeader ? data : ByteUtils.CopyBlock(data, 3, data.Length - 3));
@@ -109,10 +109,10 @@ namespace Sulakore.Protocol
                 if (data.Length == 5 || isAncientHeader)
                     _logWriting = true;
             }
-            else if (isAncientHeader || (!hasByteZero && data.Length >= 3 && data[data.Length - 1] == 1 && Destination != HDestinations.Server))
+            else if (isAncientHeader || (!hasByteZero && data.Length >= 3 && data[data.Length - 1] == 1 && Destination != HDestination.Server))
             {
-                Destination = HDestinations.Client;
-                Protocol = HProtocols.Ancient;
+                Destination = HDestination.Client;
+                Protocol = HProtocol.Ancient;
 
                 if (isAncientHeader) data = new byte[] { data[0], data[1], 1 };
                 _header = Ancient.DecypherShort(data);
@@ -132,15 +132,15 @@ namespace Sulakore.Protocol
             }
         }
 
-        public HMessage(ushort header, HDestinations destination)
-            : this(header, destination, HProtocols.Modern)
+        public HMessage(ushort header, HDestination destination)
+            : this(header, destination, HProtocol.Modern)
         { }
 
         public HMessage(ushort header, params object[] chunks)
-            : this(header, HDestinations.Unknown, HProtocols.Modern, chunks)
+            : this(header, HDestination.Server, HProtocol.Modern, chunks)
         { }
 
-        public HMessage(ushort header, HDestinations destination, HProtocols protocol, params object[] chunks)
+        public HMessage(ushort header, HDestination destination, HProtocol protocol, params object[] chunks)
             : this(Construct(header, destination, protocol, chunks), destination)
         {
             _logWriting = true;
@@ -166,12 +166,12 @@ namespace Sulakore.Protocol
 
             switch (Protocol)
             {
-                case HProtocols.Modern:
+                case HProtocol.Modern:
                 {
                     if (index + 4 > Body.Length) return 0;
                     return Modern.DecypherInt(Body[index++], Body[index++], Body[index++], Body[index++]);
                 }
-                case HProtocols.Ancient:
+                case HProtocol.Ancient:
                 {
                     int length = (Body[index] >> 3) & 7;
                     if (length < 1) length++;
@@ -202,7 +202,7 @@ namespace Sulakore.Protocol
             if (IsCorrupted) return 0;
 
             byte[] chunk = new byte[] { Body[index++], Body[index++] };
-            return Protocol == HProtocols.Ancient ? Ancient.DecypherShort(chunk) : Modern.DecypherShort(chunk);
+            return Protocol == HProtocol.Ancient ? Ancient.DecypherShort(chunk) : Modern.DecypherShort(chunk);
         }
 
         public bool ReadBool()
@@ -222,8 +222,8 @@ namespace Sulakore.Protocol
 
             switch (Protocol)
             {
-                case HProtocols.Modern: return Body[index++] == 1;
-                case HProtocols.Ancient: return Body[index++] == 'I';
+                case HProtocol.Modern: return Body[index++] == 1;
+                case HProtocol.Ancient: return Body[index++] == 'I';
                 default: return false;
             }
         }
@@ -242,14 +242,14 @@ namespace Sulakore.Protocol
         public string ReadString(ref int index)
         {
             if (IsCorrupted) return string.Empty;
-            if (Protocol == HProtocols.Modern || (Protocol == HProtocols.Ancient && Destination == HDestinations.Server))
+            if (Protocol == HProtocol.Modern || (Protocol == HProtocol.Ancient && Destination == HDestination.Server))
             {
                 int sLength = ReadShort(ref index);
                 byte[] sData = ByteUtils.CopyBlock(Body, (index += sLength) - sLength, sLength);
                 return Encoding.Default.GetString(sData);
             }
 
-            if (Protocol != HProtocols.Ancient || Destination != HDestinations.Client) return string.Empty;
+            if (Protocol != HProtocol.Ancient || Destination != HDestination.Client) return string.Empty;
 
             string chunk = _rawBody.Substring(index).Split((char)2)[0];
             index += chunk.Length + 1;
@@ -275,7 +275,7 @@ namespace Sulakore.Protocol
             if (IsCorrupted) return;
             if (_logWriting) _appended.AddRange(chunks);
             byte[] constructed = ConstructBody(Destination, Protocol, chunks);
-            if (Protocol == HProtocols.Ancient && Destination == HDestinations.Client)
+            if (Protocol == HProtocol.Ancient && Destination == HDestination.Client)
             {
                 _buffer.InsertRange(_buffer.Count - 1, constructed);
                 Reconstruct();
@@ -357,15 +357,12 @@ namespace Sulakore.Protocol
 
         public static byte[] Construct(ushort header, params object[] chunks)
         {
-            return Construct(header, HDestinations.Unknown, HProtocols.Modern, chunks);
+            return Construct(header, HDestination.Server, HProtocol.Modern, chunks);
         }
-        public static byte[] ConstructBody(HDestinations destination, HProtocols protocol, params object[] chunks)
+        public static byte[] ConstructBody(HDestination destination, HProtocol protocol, params object[] chunks)
         {
-            if (protocol == HProtocols.Unknown) throw new Exception("You must specify a supported Sulakore.Protocol.HProtocols object for this method. (Ancient / Modern)");
-            if (protocol == HProtocols.Ancient && destination == HDestinations.Unknown) throw new Exception("Cannot construct the body of a Sulakore.Protocol.HProtocols.Ancient type packet without a valid Sulakore.Protocol.HDestinations object. (Client / Server)");
-
             var buffer = new List<byte>();
-            bool isAncient = (protocol == HProtocols.Ancient);
+            bool isAncient = (protocol == HProtocol.Ancient);
 
             for (int i = 0; i < chunks.Length; i++)
             {
@@ -381,7 +378,7 @@ namespace Sulakore.Protocol
                         case TypeCode.Int32:
                         {
                             var value = (int)chunk;
-                            buffer.AddRange(protocol == HProtocols.Ancient ? Ancient.CypherInt(value) : Modern.CypherInt(value));
+                            buffer.AddRange(protocol == HProtocol.Ancient ? Ancient.CypherInt(value) : Modern.CypherInt(value));
                             break;
                         }
                         case TypeCode.Boolean:
@@ -399,10 +396,10 @@ namespace Sulakore.Protocol
                         default:
                         {
                             string value = chunk.ToString();
-                            if (!isAncient || destination == HDestinations.Server)
+                            if (!isAncient || destination == HDestination.Server)
                             {
                                 ushort valueLength = (ushort)value.Length;
-                                buffer.AddRange(protocol == HProtocols.Ancient ? Ancient.CypherShort(valueLength) : Modern.CypherShort(valueLength));
+                                buffer.AddRange(protocol == HProtocol.Ancient ? Ancient.CypherShort(valueLength) : Modern.CypherShort(valueLength));
                                 buffer.AddRange(Encoding.Default.GetBytes(value));
                             }
                             else
@@ -417,20 +414,17 @@ namespace Sulakore.Protocol
             }
             return buffer.ToArray();
         }
-        public static byte[] Construct(ushort header, HDestinations destination, HProtocols protocol, params object[] chunks)
+        public static byte[] Construct(ushort header, HDestination destination, HProtocol protocol, params object[] chunks)
         {
-            if (protocol == HProtocols.Unknown) throw new Exception("You must specify a supported Sulakore.Protocol.HProtocols object for this method. (Ancient / Modern)");
-            if (protocol == HProtocols.Ancient && destination == HDestinations.Unknown) throw new Exception("Cannot construct the body of a Sulakore.Protocol.HProtocols.Ancient type packet without a valid Sulakore.Protocol.HDestinations object. (Client / Server)");
-
             var buffer = new List<byte>();
-            bool isAncient = (protocol == HProtocols.Ancient);
+            bool isAncient = (protocol == HProtocol.Ancient);
 
-            if (isAncient && destination == HDestinations.Server) buffer.Add(64);
-            buffer.AddRange(protocol == HProtocols.Ancient ? Ancient.CypherShort(header) : Modern.CypherShort(header));
+            if (isAncient && destination == HDestination.Server) buffer.Add(64);
+            buffer.AddRange(protocol == HProtocol.Ancient ? Ancient.CypherShort(header) : Modern.CypherShort(header));
 
             buffer.AddRange(ConstructBody(destination, protocol, chunks));
 
-            if (!isAncient || destination == HDestinations.Server)
+            if (!isAncient || destination == HDestination.Server)
                 buffer.InsertRange(isAncient ? 1 : 0, isAncient ? Ancient.CypherShort((ushort)(buffer.Count - 1)) : Modern.CypherInt(buffer.Count));
             else if (buffer[buffer.Count - 1] != 1) buffer.Add(1);
 

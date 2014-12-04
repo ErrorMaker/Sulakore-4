@@ -10,7 +10,7 @@ namespace Sulakore.Communication
 
         public ushort Header { get; private set; }
 
-        public HGenders Gender { get; private set; }
+        public HGender Gender { get; private set; }
         public string FigureId { get; private set; }
 
         public HostClothesChangedEventArgs(HMessage packet)

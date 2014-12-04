@@ -1,7 +1,6 @@
 ﻿using System;
 using Sulakore.Protocol;
 using System.Collections.Generic;
-using Sulakore.Habbo;
 
 namespace Sulakore.Communication
 {
@@ -174,12 +173,15 @@ namespace Sulakore.Communication
                 }
             }
         }
+
+        public abstract bool CaptureEvents { get; set; }
         #endregion
 
         #region Virtual Methods
         protected virtual void ProcessOutgoing(byte[] data)
         {
-            var packet = new HMessage(data, HDestinations.Server);
+            if (!CaptureEvents) return;
+            var packet = new HMessage(data, HDestination.Server);
             try
             {
                 HMessage previousOutgoing = _previousOutgoing.Count > 0 ? _previousOutgoing.Pop() : null;
@@ -205,7 +207,8 @@ namespace Sulakore.Communication
         }
         protected virtual void ProcessIncoming(byte[] data)
         {
-            var packet = new HMessage(data, HDestinations.Client);
+            if (!CaptureEvents) return;
+            var packet = new HMessage(data, HDestination.Client);
             try
             {
                 HMessage previousIncoming = _previousIncoming.Count > 0 ? _previousIncoming.Pop() : null;
@@ -228,30 +231,6 @@ namespace Sulakore.Communication
                     _previousIncoming.Push(packet);
                 }
             }
-        }
-
-        public virtual void Dispose()
-        {
-            SKore.Unsubscribe(ref HostSay);
-            SKore.Unsubscribe(ref HostRoomExit);
-            SKore.Unsubscribe(ref HostWalk);
-            SKore.Unsubscribe(ref HostRaiseSign);
-            SKore.Unsubscribe(ref HostDance);
-            SKore.Unsubscribe(ref HostShout);
-            SKore.Unsubscribe(ref HostTradePlayer);
-            SKore.Unsubscribe(ref HostGesture);
-            SKore.Unsubscribe(ref HostRoomNavigate);
-            SKore.Unsubscribe(ref HostBanPlayer);
-            SKore.Unsubscribe(ref HostMutePlayer);
-            SKore.Unsubscribe(ref HostKickPlayer);
-            SKore.Unsubscribe(ref HostClickPlayer);
-            SKore.Unsubscribe(ref HostChangeMotto);
-            SKore.Unsubscribe(ref HostChangeStance);
-            SKore.Unsubscribe(ref HostMoveFurniture);
-            SKore.Unsubscribe(ref HostChangeClothes);
-
-            SKore.Unsubscribe(ref PlayerKickedHost);
-            SKore.Unsubscribe(ref PlayerDataLoaded);
         }
         #endregion
 
@@ -358,6 +337,54 @@ namespace Sulakore.Communication
                     OnHostDance(actionPacket); break;
                 }
             }
+        }
+        #endregion
+
+        #region IDisposable Implementation
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                CaptureEvents = LockEvents = false;
+
+                if (_previousOutgoing != null)
+                    _previousOutgoing.Clear();
+
+                if (_previousIncoming != null)
+                    _previousIncoming.Clear();
+
+                if (_lockedOutgoing != null)
+                    _lockedOutgoing.Clear();
+
+                if (_lockedIncoming != null)
+                    _lockedIncoming.Clear();
+
+                _outEventDitch = _inEventDitch = null;
+            }
+
+            SKore.Unsubscribe(ref HostSay);
+            SKore.Unsubscribe(ref HostRoomExit);
+            SKore.Unsubscribe(ref HostWalk);
+            SKore.Unsubscribe(ref HostRaiseSign);
+            SKore.Unsubscribe(ref HostDance);
+            SKore.Unsubscribe(ref HostShout);
+            SKore.Unsubscribe(ref HostTradePlayer);
+            SKore.Unsubscribe(ref HostGesture);
+            SKore.Unsubscribe(ref HostRoomNavigate);
+            SKore.Unsubscribe(ref HostBanPlayer);
+            SKore.Unsubscribe(ref HostMutePlayer);
+            SKore.Unsubscribe(ref HostKickPlayer);
+            SKore.Unsubscribe(ref HostClickPlayer);
+            SKore.Unsubscribe(ref HostChangeMotto);
+            SKore.Unsubscribe(ref HostChangeStance);
+            SKore.Unsubscribe(ref HostMoveFurniture);
+            SKore.Unsubscribe(ref HostChangeClothes);
+            SKore.Unsubscribe(ref PlayerKickedHost);
+            SKore.Unsubscribe(ref PlayerDataLoaded);
         }
         #endregion
     }

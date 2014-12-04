@@ -4,11 +4,11 @@ namespace Sulakore.Communication.Bridge
 {
     public interface IHContractor
     {
-        HProtocols Protocol { get; }
+        HProtocol Protocol { get; }
 
         void SendToClient(byte[] data);
         void SendToServer(byte[] data);
 
-        void Unload(IHExtension extension);
+        void InitiateUnload(IHExtension extension);
     }
 }

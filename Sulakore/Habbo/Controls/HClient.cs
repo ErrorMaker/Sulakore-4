@@ -62,23 +62,23 @@ namespace Sulakore.Habbo.Controls
             Enter();
         }
 
-        public void Sign(HSigns sign)
+        public void Sign(HSign sign)
         {
             Say(":sign " + sign.Juice());
         }
-        public void Stance(HStances stance)
+        public void Stance(HStance stance)
         {
             Say(":" + stance.ToString());
         }
-        public void Gesture(HGestures gesture)
+        public void Gesture(HGesture gesture)
         {
             switch (gesture)
             {
-                case HGestures.Wave: Say("o/"); break;
-                case HGestures.Idle: Say(":idle"); break;
-                case HGestures.ThumbsUp: Say("_b"); break;
-                case HGestures.BlowKiss: Say(":kiss"); break;
-                case HGestures.Laugh: Say(":whisper  :D"); break;
+                case HGesture.Wave: Say("o/"); break;
+                case HGesture.Idle: Say(":idle"); break;
+                case HGesture.ThumbsUp: Say("_b"); break;
+                case HGesture.BlowKiss: Say(":kiss"); break;
+                case HGesture.Laugh: Say(":whisper  :D"); break;
             }
         }
     }

@@ -1,80 +1,58 @@
 ﻿using System;
 using System.IO;
-using Sulakore.Protocol;
+using System.Linq;
 using System.Reflection;
+using Sulakore.Protocol;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace Sulakore.Communication.Bridge
 {
-    public abstract class HContractor : IHContractor
+    public sealed class HContractor : MarshalByRefObject, IHContractor
     {
-        protected readonly List<IHExtension> Extensions = new List<IHExtension>();
+        #region Private Fields
+        private readonly IList<IHExtension> _extensionList;
+        private readonly object _unloadAllLock, _unloadLock, _setAllExtStateLock;
+        private readonly IDictionary<IHExtension, AppDomain> _extensionDictionary;
 
-        public HProtocols Protocol
+        private static readonly string _currentAssemblyName, _hExtensionProxyFullName;
+
+        private const string InitialExtensionDirectory = "Extensions";
+        private const BindingFlags ProxyBindingFlags = (BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance);
+        #endregion
+
+        #region Public Properties
+        public HProtocol Protocol
         {
             get { return Connection.Protocol; }
         }
-        public abstract IHConnection Connection { get; }
+        public IHConnection Connection { get; set; }
+        #endregion
 
-        public virtual IHExtension LoadExtension(string path, AppDomain domain = null)
+        #region Constructor(s)
+        static HContractor()
         {
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path) ||
-                !path.EndsWith(".dll")) return null;
-
-            domain = domain ?? AppDomain.CurrentDomain;
-            const string ExtensionsDirName = "Extensions";
-
-            if (!Directory.Exists(ExtensionsDirName))
-                Directory.CreateDirectory(ExtensionsDirName);
-
-            var extensionInfo = new FileInfo(path);
-            string suffixName = Guid.NewGuid().ToString().Remove(0, 24);
-            string extName = extensionInfo.Name.Split('.')[0];
-            string newPath = Path.Combine(Environment.CurrentDirectory, ExtensionsDirName, string.Format("{0}({1}).dll", extName, suffixName));
-            extensionInfo.CopyTo(newPath, true);
-
-            Type ihExtensionType = typeof(IHExtension);
-            IHExtension extension = null;
-
-            var extensionAssembly = Assembly.LoadFile(newPath);
-            Type[] extensionTypes = extensionAssembly.GetTypes();
-
-            foreach (Type extensionType in extensionTypes)
-            {
-                if (extensionType.IsInterface || extensionType.IsAbstract) continue;
-                if (extensionType.GetInterface(ihExtensionType.FullName, true) == null) continue;
-
-                extension = (IHExtension)domain.CreateInstanceFromAndUnwrap(newPath, extensionType.FullName);
-                extension.Contractor = this;
-                Extensions.Add(extension);
-            }
-            return extension;
+            _hExtensionProxyFullName = typeof(HExtensionProxy).FullName;
+            _currentAssemblyName = Assembly.GetExecutingAssembly().GetName().Name;
         }
-
-        public virtual void DistributeToClient(byte[] data)
+        public HContractor()
         {
-            if (Extensions.Count < 1) return;
-
-            Task.Factory.StartNew(() =>
-                Parallel.ForEach(Extensions, extension =>
-                    extension.OnDataToClient(data)), TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness)
-                    .ContinueWith(DistributionException, TaskContinuationOptions.OnlyOnFaulted);
+            _unloadLock = new object();
+            _unloadAllLock = new object();
+            _setAllExtStateLock = new object();
+            _extensionList = new List<IHExtension>();
+            _extensionDictionary = new Dictionary<IHExtension, AppDomain>();
         }
-        public virtual void DistributeToServer(byte[] data)
-        {
-            if (Extensions.Count < 1) return;
+        #endregion
 
-            Task.Factory.StartNew(() =>
-                Parallel.ForEach(Extensions, extension =>
-                    extension.OnDataToServer(data)), TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness)
-                    .ContinueWith(DistributionException, TaskContinuationOptions.OnlyOnFaulted);
-        }
-        private void DistributionException(Task<ParallelLoopResult> task)
+        #region Private Methods
+        private void DistributionException(Task task)
         {
             SKore.Debugger(task.Exception.ToString());
         }
+        #endregion
 
+        #region Public Methods
         public void SendToClient(byte[] data)
         {
             Connection.SendToClient(data);
@@ -84,14 +62,114 @@ namespace Sulakore.Communication.Bridge
             Connection.SendToServer(data);
         }
 
-        public void Unload(IHExtension extension)
+        public void DistributeIncoming(byte[] data)
         {
-            if (Extensions.Contains(extension))
-                Extensions.Remove(extension);
+            if (_extensionDictionary.Count < 1) return;
 
-            //Unload from linked Domain
-
-            extension.DisposeExtension();
+            IHExtension[] extensions = _extensionDictionary.Keys.ToArray();
+            foreach (IHExtension extension in extensions)
+                Task.Factory.StartNew(() => extension.DataToClient(data), TaskCreationOptions.PreferFairness)
+                    .ContinueWith(DistributionException, TaskContinuationOptions.OnlyOnFaulted);
         }
+        public void DistributeOutgoing(byte[] data)
+        {
+            if (_extensionDictionary.Count < 1) return;
+
+            IHExtension[] extensions = _extensionDictionary.Keys.ToArray();
+            foreach (IHExtension extension in extensions)
+                Task.Factory.StartNew(() => extension.DataToServer(data), TaskCreationOptions.PreferFairness)
+                    .ContinueWith(DistributionException, TaskContinuationOptions.OnlyOnFaulted);
+        }
+
+        public void SetAllExtensionsState(HExtensionState state)
+        {
+            lock (_setAllExtStateLock)
+            {
+                IHExtension[] extensions = _extensionList.ToArray();
+                foreach (IHExtension extension in extensions) extension.SetExtensionState(state);
+            }
+        }
+        public void SetExtensionStateAt(HExtensionState state, int index)
+        {
+            if (index < 0 || index >= _extensionDictionary.Count) return;
+            _extensionList[index].SetExtensionState(state);
+        }
+        public void SetExtensionState(HExtensionState state, IHExtension extension)
+        {
+            extension.SetExtensionState(state);
+        }
+
+        public void UnloadAllExtensions()
+        {
+            lock (_unloadAllLock)
+            {
+                IHExtension[] extensions = _extensionList.ToArray(); 
+                foreach (IHExtension extension in extensions) InitiateUnload(extension);
+            }
+        }
+        public void UnloadExtensionAt(int index)
+        {
+            if (index < 0 || index >= _extensionList.Count) return;
+            InitiateUnload(_extensionList[index]);
+        }
+        public void InitiateUnload(IHExtension extension)
+        {
+            lock (_unloadLock)
+            {
+                try
+                {
+                    if (extension == null || !_extensionDictionary.ContainsKey(extension)) return;
+
+                    AppDomain extensionDomain = _extensionDictionary[extension];
+                    _extensionDictionary.Remove(extension);
+                    _extensionList.Remove(extension);
+                    extension.DisposeExtension();
+
+                    AppDomain.Unload(extensionDomain);
+                    extensionDomain = null;
+
+                    File.Delete(extension.Location);
+                    extension = null;
+
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
+                catch (AppDomainUnloadedException) { }
+            }
+        }
+
+        public IHExtension LoadExtension(string path)
+        {
+            HExtensionProxy loadedExtension = null;
+
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path) || !path.EndsWith(".dll"))
+                return loadedExtension;
+
+            if (!Directory.Exists(InitialExtensionDirectory))
+                Directory.CreateDirectory(InitialExtensionDirectory);
+
+            string randomId = Guid.NewGuid().ToString().Remove(0, 24);
+            string extensionName = Path.GetFileNameWithoutExtension(path);
+            string copiedTo = Path.Combine(Environment.CurrentDirectory, InitialExtensionDirectory, string.Format("{0}({1}).dll", extensionName, randomId));
+            File.Copy(path, copiedTo);
+
+            AppDomain extensionDomain = AppDomain.CreateDomain(randomId);
+            loadedExtension = (HExtensionProxy)extensionDomain.CreateInstanceAndUnwrap(_currentAssemblyName,
+                _hExtensionProxyFullName, false, ProxyBindingFlags, null, new[] { copiedTo }, null, null);
+
+            loadedExtension.Contractor = this;
+            loadedExtension.Location = copiedTo;
+            loadedExtension.Identifier = randomId;
+
+            _extensionList.Add(loadedExtension);
+            _extensionDictionary.Add(loadedExtension, extensionDomain);
+
+            return loadedExtension;
+        }
+        public override object InitializeLifetimeService()
+        {
+            return null;
+        }
+        #endregion
     }
 }

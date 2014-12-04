@@ -13,10 +13,10 @@ namespace Sulakore.Habbo
 
         public int State { get; set; }
         public HPoint Tile { get; set; }
-        public HDirections Direction { get; set; }
+        public HDirection Direction { get; set; }
 
         public HFurnitureData(int furnitureOwnerId, string furnitureOwnerName,
-            int furnitureId, int furnitureTypeId, HPoint tile, HDirections direction, int state)
+            int furnitureId, int furnitureTypeId, HPoint tile, HDirection direction, int state)
         {
             FurnitureOwnerId = furnitureOwnerId;
             FurnitureOwnerName = furnitureOwnerName;
@@ -27,6 +27,19 @@ namespace Sulakore.Habbo
             State = state;
         }
 
+        public HDirection RotateLeft()
+        {
+            int direction = (int)Direction;
+            if (direction <= 0) direction = 8;
+            return Direction = (HDirection)(direction - (direction % 2 == 0 ? 2 : 3));
+        }
+        public HDirection RotateRight()
+        {
+            int direction = (int)Direction;
+            if (direction >= 6) direction = -2;
+            return Direction = (HDirection)(direction + (direction % 2 == 0 ? 2 : 3));
+        }
+
         public static IList<IHFurnitureData> Extract(HMessage packet)
         {
             int furniOwnersCapacity, position = 0;
@@ -35,7 +48,7 @@ namespace Sulakore.Habbo
             while (furniOwners.Count < furniOwnersCapacity);
 
             string z, uk_2;
-            HDirections direction;
+            HDirection direction;
             int ownerId, furnitureId, furnitureTypeId, x, y, state, uk_1;
             var furnitureDataList = new List<IHFurnitureData>(packet.ReadInt(ref position));
             do
@@ -45,7 +58,7 @@ namespace Sulakore.Habbo
 
                 x = packet.ReadInt(ref position);
                 y = packet.ReadInt(ref position);
-                direction = (HDirections)packet.ReadInt(ref position);
+                direction = (HDirection)packet.ReadInt(ref position);
                 z = packet.ReadString(ref position);
 
                 packet.ReadString(ref position);
@@ -63,19 +76,6 @@ namespace Sulakore.Habbo
             }
             while (furnitureDataList.Count < furnitureDataList.Capacity);
             return furnitureDataList;
-        }
-
-        public HDirections RotateLeft()
-        {
-            int direction = (int)Direction;
-            if (direction <= 0) direction = 8;
-            return Direction = (HDirections)(direction - (direction % 2 == 0 ? 2 : 3));
-        }
-        public HDirections RotateRight()
-        {
-            int direction = (int)Direction;
-            if (direction >= 6) direction = -2;
-            return Direction = (HDirections)(direction + (direction % 2 == 0 ? 2 : 3));
         }
 
         public override string ToString()

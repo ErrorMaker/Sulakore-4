@@ -10,6 +10,6 @@
 
         int State { get; set; }
         HPoint Tile { get; set; }
-        HDirections Direction { get; set; }
+        HDirection Direction { get; set; }
     }
 }

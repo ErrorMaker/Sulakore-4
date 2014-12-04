@@ -15,27 +15,27 @@ namespace Sulakore.Protocol.Controls
         #endregion
 
         #region Public Properties
-        private HDestinations _destination;
-        public HDestinations Destination
+        private HDestination _destination;
+        public HDestination Destination
         {
             get { return _destination; }
             set
             {
-                if (value == HDestinations.Unknown || value == _destination) return;
+                if (value == _destination) return;
 
                 _destination = value;
-                if (_protocol == HProtocols.Ancient && _chunks.Count > 0)
+                if (_protocol == HProtocol.Ancient && _chunks.Count > 0)
                     ReconstructList(true);
             }
         }
 
-        private HProtocols _protocol;
-        public HProtocols Protocol
+        private HProtocol _protocol;
+        public HProtocol Protocol
         {
             get { return _protocol; }
             set
             {
-                if (value == HProtocols.Unknown || value == _protocol) return;
+                if (value == _protocol) return;
 
                 _protocol = value;
                 if (_chunks.Count > 0)
@@ -68,8 +68,8 @@ namespace Sulakore.Protocol.Controls
             UseCompatibleStateImageBehavior = false;
             View = View.Details;
             LockColumns = true;
-            _destination = HDestinations.Server;
-            _protocol = HProtocols.Modern;
+            _destination = HDestination.Server;
+            _protocol = HProtocol.Modern;
         }
         #endregion
 
@@ -91,10 +91,10 @@ namespace Sulakore.Protocol.Controls
 
             string encodedLength = string.Empty;
             string encoded = HMessage.ToString(HMessage.ConstructBody(Destination, Protocol, value));
-            if (Destination == HDestinations.Server || Protocol == HProtocols.Modern)
+            if (Destination == HDestination.Server || Protocol == HProtocol.Modern)
             {
                 ushort valueLength = (ushort)value.Length;
-                byte[] data = Protocol == HProtocols.Ancient ? Ancient.CypherShort(valueLength) : Modern.CypherShort(valueLength);
+                byte[] data = Protocol == HProtocol.Ancient ? Ancient.CypherShort(valueLength) : Modern.CypherShort(valueLength);
                 encodedLength = HMessage.ToString(data) + " | ";
             }
             AddItemChunk("String", value, encoded, string.Format("Length: {0}{1}\n", encodedLength, value.Length));
@@ -218,10 +218,10 @@ namespace Sulakore.Protocol.Controls
 
             if (value is string)
             {
-                if ((Destination == HDestinations.Server && Protocol == HProtocols.Ancient) || Protocol == HProtocols.Modern)
+                if ((Destination == HDestination.Server && Protocol == HProtocol.Ancient) || Protocol == HProtocol.Modern)
                 {
                     ushort valueLength = (ushort)value.ToString().Length;
-                    byte[] data = Protocol == HProtocols.Ancient ? Ancient.CypherShort(valueLength) : Modern.CypherShort(valueLength);
+                    byte[] data = Protocol == HProtocol.Ancient ? Ancient.CypherShort(valueLength) : Modern.CypherShort(valueLength);
                     encodedLength = HMessage.ToString(data) + " | ";
                 }
             }
@@ -253,10 +253,10 @@ namespace Sulakore.Protocol.Controls
                 if (value != null)
                 {
                     string encodedLength = string.Empty;
-                    if ((Destination == HDestinations.Server && Protocol == HProtocols.Ancient) || Protocol == HProtocols.Modern)
+                    if ((Destination == HDestination.Server && Protocol == HProtocol.Ancient) || Protocol == HProtocol.Modern)
                     {
                         ushort valueLength = (ushort)value.Length;
-                        byte[] data = Protocol == HProtocols.Ancient ? Ancient.CypherShort(valueLength) : Modern.CypherShort(valueLength);
+                        byte[] data = Protocol == HProtocol.Ancient ? Ancient.CypherShort(valueLength) : Modern.CypherShort(valueLength);
                         encodedLength = HMessage.ToString(data) + " | ";
                     }
 

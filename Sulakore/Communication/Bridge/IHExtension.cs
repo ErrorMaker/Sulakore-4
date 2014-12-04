@@ -2,15 +2,18 @@
 {
     public interface IHExtension
     {
-        string Authors { get; }
+        string Name { get; }
+        string Author { get; }
         string Version { get; }
-        string Identifier { get; }
+        string Location { get; set; }
+        string Identifier { get; set; }
         IHContractor Contractor { get; set; }
 
-        void InitializeExtension();
         void DisposeExtension();
+        void InitializeExtension();
+        void SetExtensionState(HExtensionState state);
 
-        void OnDataToClient(byte[] data);
-        void OnDataToServer(byte[] data);
+        void DataToClient(byte[] data);
+        void DataToServer(byte[] data);
     }
 }

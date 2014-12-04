@@ -9,7 +9,7 @@ namespace Sulakore.Communication
         public HMessage Packet { get; set; }
         public int Step { get; private set; }
 
-        public DataToEventArgs(byte[] data, HDestinations destination, int step)
+        public DataToEventArgs(byte[] data, HDestination destination, int step)
         {
             Step = step;
             Packet = new HMessage(data, destination);

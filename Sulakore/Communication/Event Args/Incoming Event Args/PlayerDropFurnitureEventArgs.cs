@@ -13,7 +13,7 @@ namespace Sulakore.Communication
         public int FurnitureId { get; private set; }
         public int FurnitureTypeId { get; private set; }
         public HPoint Tile { get; private set; }
-        public HDirections Direction { get; private set; }
+        public HDirection Direction { get; private set; }
         public bool IsRented { get; private set; }
         public int BuyerPlayerId { get; private set; }
         public string BuyerPlayerName { get; private set; }
@@ -28,7 +28,7 @@ namespace Sulakore.Communication
             FurnitureTypeId = _packet.ReadInt(ref position);
             int x = _packet.ReadInt(ref position);
             int y = _packet.ReadInt(ref position);
-            Direction = (HDirections)_packet.ReadInt(ref position);
+            Direction = (HDirection)_packet.ReadInt(ref position);
             Tile = new HPoint(x, y, _packet.ReadString(ref position));
             _packet.ReadString(ref position);
             _packet.ReadInt(ref position);

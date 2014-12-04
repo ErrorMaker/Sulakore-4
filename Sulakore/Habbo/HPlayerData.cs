@@ -5,17 +5,19 @@ namespace Sulakore.Habbo
 {
     public class HPlayerData : IHPlayerData
     {
-        public string PlayerName { get; private set; }
         public int PlayerId { get; private set; }
         public int PlayerIndex { get; private set; }
+        public string PlayerName { get; private set; }
+
         public HPoint Tile { get; private set; }
-        public string FigureId { get; private set; }
+        public HGender Gender { get; private set; }
+
         public string Motto { get; private set; }
-        public HGenders Gender { get; private set; }
+        public string FigureId { get; private set; }
         public string GroupName { get; private set; }
 
         public HPlayerData(string playerName, int playerId, int playerIndex,
-            HPoint tile, string figureId, string motto, HGenders gender, string groupName)
+            HPoint tile, string figureId, string motto, HGender gender, string groupName)
         {
             PlayerName = playerName;
             PlayerId = playerId;

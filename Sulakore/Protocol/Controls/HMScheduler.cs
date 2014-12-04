@@ -3,8 +3,8 @@ using System.Timers;
 using System.Drawing;
 using System.Collections;
 using System.Windows.Forms;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace Sulakore.Protocol.Controls
 {
@@ -196,11 +196,11 @@ namespace Sulakore.Protocol.Controls
         #endregion
     }
 
-    public class HSchedule : IDisposable
+    public sealed class HSchedule : IDisposable
     {
         #region Subscribable Events
         public event EventHandler<ScheduleTriggeredEventArgs> ScheduleTriggered;
-        protected virtual void OnScheduleTriggered(int burstCount, int burstLeft, bool isFinalBurst)
+        private void OnScheduleTriggered(int burstCount, int burstLeft, bool isFinalBurst)
         {
             if (ScheduleTriggered != null)
             {
@@ -212,6 +212,7 @@ namespace Sulakore.Protocol.Controls
         #endregion
 
         #region Private Fields
+        private readonly object _tickerLock;
         private readonly System.Timers.Timer _ticker;
         #endregion
 
@@ -225,6 +226,8 @@ namespace Sulakore.Protocol.Controls
         #region Constructor(s)
         public HSchedule(HMessage packet, int interval, int burst)
         {
+            _tickerLock = new object();
+
             Packet = packet;
             Interval = interval;
             Burst = burst;
@@ -252,9 +255,8 @@ namespace Sulakore.Protocol.Controls
 
         public void Dispose()
         {
-            SKore.Unsubscribe(ref ScheduleTriggered);
-
             Stop();
+            SKore.Unsubscribe(ref ScheduleTriggered);
             _ticker.Dispose();
         }
         #endregion
@@ -262,17 +264,19 @@ namespace Sulakore.Protocol.Controls
         #region Private Methods
         private void Ticker_Elapsed(object sender, ElapsedEventArgs e)
         {
-            _ticker.Stop();
-            int tmpBurst = Burst, burstCount;
-            for (int i = 0; i < tmpBurst && IsRunning; i++)
+            lock (_tickerLock)
             {
-                burstCount = i + 1;
-                OnScheduleTriggered(burstCount,
-                     tmpBurst - burstCount,
-                    burstCount >= tmpBurst);
+                _ticker.Stop();
+                int tmpBurst = Burst, burstCount;
+                for (int i = 0; i < tmpBurst && IsRunning; i++)
+                {
+                    burstCount = i + 1;
+                    OnScheduleTriggered(burstCount,
+                         tmpBurst - burstCount,
+                        burstCount >= tmpBurst);
+                }
+                if (IsRunning) _ticker.Start();
             }
-
-            if (IsRunning) _ticker.Start();
         }
         #endregion
     }

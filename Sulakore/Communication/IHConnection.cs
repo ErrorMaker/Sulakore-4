@@ -14,7 +14,7 @@ namespace Sulakore.Communication
         int Port { get; }
         string Host { get; }
         string[] Addresses { get; }
-        HProtocols Protocol { get; }
+        HProtocol Protocol { get; }
 
         Rc4 ServerDecrypt { get; set; }
         Rc4 ServerEncrypt { get; set; }

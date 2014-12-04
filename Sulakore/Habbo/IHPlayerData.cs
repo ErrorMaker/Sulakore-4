@@ -4,13 +4,15 @@ namespace Sulakore.Habbo
 {
     public interface IHPlayerData
     {
-        string PlayerName { get; }
         int PlayerId { get; }
         int PlayerIndex { get; }
+        string PlayerName { get; }
+
         HPoint Tile { get; }
-        string FigureId { get; }
+        HGender Gender { get; }
+
         string Motto { get; }
-        HGenders Gender { get; }
+        string FigureId { get; }
         string GroupName { get; }
     }
 }

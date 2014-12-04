@@ -12,7 +12,7 @@ namespace Sulakore.Communication
 
         public int PlayerId { get; private set; }
         public int RoomId { get; private set; }
-        public HBans Ban { get; private set; }
+        public HBan Ban { get; private set; }
 
         public HostBanPlayerEventArgs(HMessage packet)
         {

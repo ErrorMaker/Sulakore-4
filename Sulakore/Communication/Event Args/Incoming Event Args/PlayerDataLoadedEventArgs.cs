@@ -22,7 +22,7 @@ namespace Sulakore.Communication
             LoadedPlayers = new ReadOnlyCollection<IHPlayerData>(HPlayerData.Extract(packet));
         }
 
-        public IList<IHPlayerData> PlayersByGender(HGenders gender)
+        public IList<IHPlayerData> PlayersByGender(HGender gender)
         {
             throw new NotImplementedException();
         }
