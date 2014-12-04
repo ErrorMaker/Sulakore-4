@@ -3,7 +3,7 @@
     /// <summary>
     /// Specifies every hotel compatible with Sulakore.
     /// </summary>
-    public enum HHotels
+    public enum HHotel
     {
         /// <summary>
         /// Represents http://www.Habbo.com (United States).
