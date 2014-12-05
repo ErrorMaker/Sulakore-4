@@ -13,14 +13,19 @@ namespace Sulakore.Communication
         public int PlayerIndex { get; private set; }
         public string Message { get; private set; }
         public HTheme Theme { get; private set; }
-        public HSpeeches Speech { get; private set; }
+        public HSpeech Speech { get; private set; }
 
-        public PlayerSpeakEventArgs(HMessage packet)
+        public PlayerSpeakEventArgs(HMessage packet, HSpeech speech)
         {
-            throw new NotImplementedException();
-
             _packet = packet;
             Header = _packet.Header;
+            Speech = speech;
+
+            int position = 0;
+            PlayerIndex = _packet.ReadInt(ref position);
+            Message = _packet.ReadString(ref position);
+            _packet.ReadInt(ref position);
+            Theme = (HTheme)_packet.ReadInt(ref position);
         }
 
         public override string ToString()

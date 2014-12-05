@@ -71,9 +71,7 @@
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerDanceEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerDropFurnitureEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerGestureEventArgs.cs" />
-    <Compile Include="Communication\Event Args\Incoming Event Args\PlayerSayEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerSpeakEventArgs.cs" />
-    <Compile Include="Communication\Event Args\Incoming Event Args\PlayerWhisperEventArgs.cs" />
     <Compile Include="Communication\Proxy\EavesRequestEventArgs.cs" />
     <Compile Include="Habbo\Enums\HBan.cs" />
     <Compile Include="Habbo\Enums\HDance.cs" />
