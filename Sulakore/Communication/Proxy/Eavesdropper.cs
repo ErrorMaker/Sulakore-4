@@ -73,9 +73,12 @@ namespace Sulakore.Communication.Proxy
                 _processingCallbacks.Add(ar);
 
                 var request = (HttpWebRequest)ConstructRequest(context.Request);
-                var requestArgs = new EavesRequestEventArgs(request.RequestUri.AbsoluteUri, request.Host);
-                if (requestArgs.Cancel) context.Response.Close();
-
+                if (OnEavesRequest != null)
+                {
+                    var requestArgs = new EavesRequestEventArgs(request.RequestUri.AbsoluteUri, request.Host);
+                    OnEavesRequest(context, requestArgs);
+                    if (requestArgs.Cancel) context.Response.Close();
+                }
                 if (request.ContentLength > 0 || request.SendChunked)
                 {
                     var requestData = new byte[request.ContentLength > 0 ? request.ContentLength : 8192];
