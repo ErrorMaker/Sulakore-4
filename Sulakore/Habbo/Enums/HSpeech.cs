@@ -3,7 +3,7 @@
     /// <summary>
     /// Specifies the different types of speech modes that players can communicate with each other in-game.
     /// </summary>
-    public enum HSpeeches
+    public enum HSpeech
     {
         /// <summary>
         /// Represents a speech mode that makes the message publicly visible within a determined range in the room.
