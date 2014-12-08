@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Sulakore.Protocol;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -15,7 +15,7 @@ namespace Sulakore.Communication.Bridge
         private readonly object _unloadAllLock, _unloadLock, _setAllExtStateLock;
         private readonly IDictionary<IHExtension, AppDomain> _extensionDictionary;
 
-        private static readonly string _currentAssemblyName, _hExtensionProxyFullName;
+        private static readonly string _currentAssemblyName, _hExtensionFullName, _ihExtensionFullName;
 
         private const string InitialExtensionDirectory = "Extensions";
         private const BindingFlags ProxyBindingFlags = (BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance);
@@ -32,7 +32,8 @@ namespace Sulakore.Communication.Bridge
         #region Constructor(s)
         static HContractor()
         {
-            _hExtensionProxyFullName = typeof(HExtensionProxy).FullName;
+            _hExtensionFullName = typeof(HExtension).FullName;
+            _ihExtensionFullName = typeof(IHExtension).FullName;
             _currentAssemblyName = Assembly.GetExecutingAssembly().GetName().Name;
         }
         public HContractor()
@@ -68,7 +69,7 @@ namespace Sulakore.Communication.Bridge
 
             IHExtension[] extensions = _extensionDictionary.Keys.ToArray();
             foreach (IHExtension extension in extensions)
-                Task.Factory.StartNew(() => extension.DataToClient(data), TaskCreationOptions.PreferFairness)
+                Task.Factory.StartNew(() => extension.DataToClient(data), TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness)
                     .ContinueWith(DistributionException, TaskContinuationOptions.OnlyOnFaulted);
         }
         public void DistributeOutgoing(byte[] data)
@@ -77,7 +78,7 @@ namespace Sulakore.Communication.Bridge
 
             IHExtension[] extensions = _extensionDictionary.Keys.ToArray();
             foreach (IHExtension extension in extensions)
-                Task.Factory.StartNew(() => extension.DataToServer(data), TaskCreationOptions.PreferFairness)
+                Task.Factory.StartNew(() => extension.DataToServer(data), TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness)
                     .ContinueWith(DistributionException, TaskContinuationOptions.OnlyOnFaulted);
         }
 
@@ -103,7 +104,7 @@ namespace Sulakore.Communication.Bridge
         {
             lock (_unloadAllLock)
             {
-                IHExtension[] extensions = _extensionList.ToArray(); 
+                IHExtension[] extensions = _extensionList.ToArray();
                 foreach (IHExtension extension in extensions) InitiateUnload(extension);
             }
         }
@@ -140,7 +141,7 @@ namespace Sulakore.Communication.Bridge
 
         public IHExtension LoadExtension(string path)
         {
-            HExtensionProxy loadedExtension = null;
+            HExtension loadedExtension = null;
 
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path) || !path.EndsWith(".dll"))
                 return loadedExtension;
@@ -153,19 +154,16 @@ namespace Sulakore.Communication.Bridge
             string copiedTo = Path.Combine(Environment.CurrentDirectory, InitialExtensionDirectory, string.Format("{0}({1}).dll", extensionName, randomId));
             File.Copy(path, copiedTo);
 
-            AppDomain extensionDomain = AppDomain.CreateDomain(randomId);
-            loadedExtension = (HExtensionProxy)extensionDomain.CreateInstanceAndUnwrap(_currentAssemblyName,
-                _hExtensionProxyFullName, false, ProxyBindingFlags, null, new[] { copiedTo }, null, null);
-
-            loadedExtension.Contractor = this;
-            loadedExtension.Location = copiedTo;
-            loadedExtension.Identifier = randomId;
+            var extensionDomain = AppDomain.CreateDomain(randomId);
+            var extensionLoader = (HExtensionLoader)Activator.CreateInstance(typeof(HExtensionLoader), copiedTo, this);
+            loadedExtension = extensionLoader.Extension;
 
             _extensionList.Add(loadedExtension);
             _extensionDictionary.Add(loadedExtension, extensionDomain);
 
             return loadedExtension;
         }
+
         public override object InitializeLifetimeService()
         {
             return null;
