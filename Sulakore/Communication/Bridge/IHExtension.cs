@@ -5,9 +5,8 @@
         string Name { get; }
         string Author { get; }
         string Version { get; }
-        string Location { get; set; }
-        string Identifier { get; set; }
-        IHContractor Contractor { get; set; }
+        string Location { get; }
+        IHContractor Contractor { get; }
 
         void DisposeExtension();
         void InitializeExtension();
