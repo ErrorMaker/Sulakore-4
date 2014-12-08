@@ -162,7 +162,11 @@ namespace Sulakore.Protocol
         }
         public int ReadInt(ref int index)
         {
-            if (IsCorrupted || index >= Body.Length) return 0;
+            return ReadInt(ref index, Protocol);
+        }
+        protected int ReadInt(ref int index, HProtocol protocol)
+        {
+            if (index >= Body.Length) return 0;
 
             switch (Protocol)
             {
@@ -186,22 +190,26 @@ namespace Sulakore.Protocol
             }
         }
 
-        public int ReadShort()
+        public ushort ReadShort()
         {
             int index = Position;
-            int value = ReadShort(ref index);
+            ushort value = ReadShort(ref index);
             Position = index;
             return value;
         }
-        public int ReadShort(int index)
+        public ushort ReadShort(int index)
         {
             return ReadShort(ref index);
         }
-        public int ReadShort(ref int index)
+        public ushort ReadShort(ref int index)
         {
-            if (IsCorrupted) return 0;
+            return ReadShort(ref index, Protocol);
+        }
+        protected ushort ReadShort(ref int index, HProtocol protocol)
+        {
+            if (index >= Body.Length || index + 2 > Body.Length) return 0;
 
-            byte[] chunk = new byte[] { Body[index++], Body[index++] };
+            var chunk = new byte[] { Body[index++], Body[index++] };
             return Protocol == HProtocol.Ancient ? Ancient.DecypherShort(chunk) : Modern.DecypherShort(chunk);
         }
 
@@ -218,7 +226,11 @@ namespace Sulakore.Protocol
         }
         public bool ReadBool(ref int index)
         {
-            if (IsCorrupted) return false;
+            return ReadBool(ref index, Protocol);
+        }
+        protected bool ReadBool(ref int index, HProtocol protocol)
+        {
+            if (index >= Body.Length || index + 1 > Body.Length) return false;
 
             switch (Protocol)
             {
@@ -241,19 +253,24 @@ namespace Sulakore.Protocol
         }
         public string ReadString(ref int index)
         {
-            if (IsCorrupted) return string.Empty;
-            if (Protocol == HProtocol.Modern || (Protocol == HProtocol.Ancient && Destination == HDestination.Server))
+            return ReadString(ref index, Protocol, Destination);
+        }
+        protected string ReadString(ref int index, HProtocol protocol, HDestination destination)
+        {
+            if (index >= Body.Length) return string.Empty;
+
+            if (destination == HDestination.Server || protocol == HProtocol.Modern)
             {
-                int sLength = ReadShort(ref index);
-                byte[] sData = ByteUtils.CopyBlock(Body, (index += sLength) - sLength, sLength);
-                return Encoding.Default.GetString(sData);
+                ushort length = ReadShort(ref index, protocol);
+                byte[] data = ByteUtils.CopyBlock(Body, (index += length) - length, length);
+                return Encoding.Default.GetString(data);
             }
-
-            if (Protocol != HProtocol.Ancient || Destination != HDestination.Client) return string.Empty;
-
-            string chunk = _rawBody.Substring(index).Split((char)2)[0];
-            index += chunk.Length + 1;
-            return chunk;
+            else
+            {
+                string chunk = _rawBody.Substring(index).Split((char)2)[0];
+                index += chunk.Length + 1;
+                return chunk;
+            }
         }
         #endregion
 
@@ -272,8 +289,8 @@ namespace Sulakore.Protocol
         }
         public void Append(params object[] chunks)
         {
-            if (IsCorrupted) return;
             if (_logWriting) _appended.AddRange(chunks);
+
             byte[] constructed = ConstructBody(Destination, Protocol, chunks);
             if (Protocol == HProtocol.Ancient && Destination == HDestination.Client)
             {
@@ -297,8 +314,8 @@ namespace Sulakore.Protocol
         }
         public void Prepend(params object[] chunks)
         {
-            if (IsCorrupted) return;
             if (_logWriting) _prepended.AddRange(chunks);
+
             byte[] constructed = ConstructBody(Destination, Protocol, chunks);
             Prepend(constructed);
         }
