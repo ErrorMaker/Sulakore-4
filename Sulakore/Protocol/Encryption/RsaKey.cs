@@ -154,7 +154,7 @@ namespace Sulakore.Protocol.Encryption
         {
             var outCome = new byte[length];
 
-            for (int i = data.Length - 1; (i >= 0 && length > 11);)
+            for (int i = data.Length - 1; (i >= 0 && length > 11); )
                 outCome[--length] = data[i--];
 
             outCome[--length] = 0;
