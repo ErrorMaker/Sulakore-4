@@ -364,22 +364,22 @@
             Represents a an empty invisible sign with no image.
             </summary>
         </member>
-        <member name="T:Sulakore.Habbo.HSpeeches">
+        <member name="T:Sulakore.Habbo.HSpeech">
             <summary>
             Specifies the different types of speech modes that players can communicate with each other in-game.
             </summary>
         </member>
-        <member name="F:Sulakore.Habbo.HSpeeches.Say">
+        <member name="F:Sulakore.Habbo.HSpeech.Say">
             <summary>
             Represents a speech mode that makes the message publicly visible within a determined range in the room.
             </summary>
         </member>
-        <member name="F:Sulakore.Habbo.HSpeeches.Shout">
+        <member name="F:Sulakore.Habbo.HSpeech.Shout">
             <summary>
             Represents a speech mode that makes the message public to everyone in the room.
             </summary>
         </member>
-        <member name="F:Sulakore.Habbo.HSpeeches.Whisper">
+        <member name="F:Sulakore.Habbo.HSpeech.Whisper">
             <summary>
             Represents a speech mode that only makes the message visible to the specified target regardless of the range.
             </summary>
@@ -611,6 +611,16 @@
             Represents http://www.Habbo.se (Sweden).
             </summary>
         </member>
+        <member name="F:Sulakore.Protocol.Encryption.PKCS1PadType.MaxByte">
+            <summary>
+            Represents a padding type that will attempt to fill a byte array with the maximuze value of a System.Byte(byte.MaxValue = 255).
+            </summary>
+        </member>
+        <member name="F:Sulakore.Protocol.Encryption.PKCS1PadType.RandomByte">
+            <summary>
+            Represents a padding type that will attempt to fill a byte array with random bytes in the range of 1 - 255.
+            </summary>
+        </member>
         <member name="T:Sulakore.Protocol.Encryption.BigInteger">
             <summary>
             Represents a large number.
@@ -804,16 +814,6 @@
         <member name="P:Sulakore.Protocol.Encryption.BigInteger.DataLength">
             <summary>
             Number of characters used.
-            </summary>
-        </member>
-        <member name="F:Sulakore.Protocol.Encryption.PKCS1PadType.MaxByte">
-            <summary>
-            Represents a padding type that will attempt to fill a byte array with the maximuze value of a System.Byte(byte.MaxValue = 255).
-            </summary>
-        </member>
-        <member name="F:Sulakore.Protocol.Encryption.PKCS1PadType.RandomByte">
-            <summary>
-            Represents a padding type that will attempt to fill a byte array with random bytes in the range of 1 - 255.
             </summary>
         </member>
         <member name="P:Sulakore.Protocol.Encryption.RsaKey.E">
