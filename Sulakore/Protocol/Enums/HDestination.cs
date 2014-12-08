@@ -2,7 +2,7 @@
 {
     public enum HDestination
     {
-        Server = 0,
-        Client = 1
+        Client = 0,
+        Server = 1
     }
 }
