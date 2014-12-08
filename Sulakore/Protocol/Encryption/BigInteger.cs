@@ -832,7 +832,7 @@ namespace Sulakore.Protocol.Encryption
             while (bufLen > 1 && buffer[bufLen - 1] == 0)
                 bufLen--;
 
-            for (int count = shift; count > 0;)
+            for (int count = shift; count > 0; )
             {
                 if (count < shiftAmount)
                     shiftAmount = count;
@@ -894,7 +894,7 @@ namespace Sulakore.Protocol.Encryption
             while (bufLen > 1 && buffer[bufLen - 1] == 0)
                 bufLen--;
 
-            for (int count = shift; count > 0;)
+            for (int count = shift; count > 0; )
             {
                 if (count < shiftAmount)
                 {
