@@ -4,7 +4,7 @@ using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
-    public class PlayerDropFurnitureEventArgs : EventArgs, IHabboEvent
+    public class PlayerDropFurnitureEventArgs : EventArgs, IHabboEvent, IHFurnitureData
     {
         private readonly HMessage _packet;
 
@@ -12,11 +12,13 @@ namespace Sulakore.Communication
 
         public int FurnitureId { get; private set; }
         public int FurnitureTypeId { get; private set; }
-        public HPoint Tile { get; private set; }
-        public HDirection Direction { get; private set; }
+        public HPoint Tile { get; set; }
+        public HDirection Direction { get; set; }
         public bool IsRented { get; private set; }
-        public int BuyerPlayerId { get; private set; }
-        public string BuyerPlayerName { get; private set; }
+        public int FurnitureOwnerId { get; private set; }
+        public string FurnitureOwnerName { get; private set; }
+
+        int IHFurnitureData.State { get; set; }
 
         public PlayerDropFurnitureEventArgs(HMessage packet)
         {
@@ -36,14 +38,14 @@ namespace Sulakore.Communication
             _packet.ReadString(ref position);
             IsRented = _packet.ReadInt(ref position) != 1;
             _packet.ReadInt(ref position);
-            BuyerPlayerId = _packet.ReadInt(ref position);
-            BuyerPlayerName = _packet.ReadString(ref position);
+            FurnitureOwnerId = _packet.ReadInt(ref position);
+            FurnitureOwnerName = _packet.ReadString(ref position);
         }
 
         public override string ToString()
         {
-            return string.Format("Header: {0}, FurnitureId: {1}, FurnitureTypeId: {2}, Tile: {3}, Direction: {4}, IsRented: {5}, BuyerPlayerId: {6}, BuyerPlayerName: {7}",
-                Header, FurnitureId, FurnitureTypeId, Tile, Direction, IsRented, BuyerPlayerId, BuyerPlayerName);
+            return string.Format("Header: {0}, FurnitureId: {1}, FurnitureTypeId: {2}, Tile: {3}, Direction: {4}, IsRented: {5}, FurnitureOwnerId: {6}, FurnitureOwnerName: {7}",
+                Header, FurnitureId, FurnitureTypeId, Tile, Direction, IsRented, FurnitureOwnerId, FurnitureOwnerName);
         }
     }
 }
