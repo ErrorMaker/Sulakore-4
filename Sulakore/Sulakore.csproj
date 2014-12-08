@@ -44,10 +44,12 @@
   <ItemGroup>
     <Compile Include="Communication\Bridge\Enums\HExtensionState.cs" />
     <Compile Include="Communication\Bridge\HContractor.cs" />
-    <Compile Include="Communication\Bridge\HExtensionProxy.cs" />
+    <Compile Include="Communication\Bridge\HExtensionLoader.cs" />
+    <Compile Include="Communication\Bridge\HTriggers.cs" />
     <Compile Include="Communication\Event Args\DataToEventArgs.cs" />
     <Compile Include="Communication\Event Args\DisconnectedEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\FurnitureDataLoadedEventArgs.cs" />
+    <Compile Include="Communication\Event Args\Incoming Event Args\PlayerMoveFurnitureEventArgs.cs" />
     <Compile Include="Communication\Event Args\Outgoing Event Args\HostBanPlayerEventArgs.cs" />
     <Compile Include="Communication\Event Args\Outgoing Event Args\HostClothesChangedEventArgs.cs" />
     <Compile Include="Communication\Event Args\Outgoing Event Args\HostMottoChangedEventArgs.cs" />
@@ -79,7 +81,7 @@
     <Compile Include="Habbo\Enums\HGender.cs" />
     <Compile Include="Habbo\Enums\HGesture.cs" />
     <Compile Include="Habbo\Enums\HModel.cs" />
-    <Compile Include="Habbo\Enums\HPages.cs" />
+    <Compile Include="Habbo\Enums\HPage.cs" />
     <Compile Include="Habbo\Enums\HSign.cs" />
     <Compile Include="Habbo\Enums\HSpeech.cs" />
     <Compile Include="Habbo\Enums\HStance.cs" />
@@ -111,13 +113,13 @@
     <Compile Include="Internals\TcpListenerEx.cs" />
     <Compile Include="Protocol\Ancient.cs" />
     <Compile Include="Protocol\ByteUtils.cs" />
+    <Compile Include="Protocol\Encryption\Enums\PKCS1PadType.cs" />
     <Compile Include="Protocol\Enums\HDestination.cs" />
     <Compile Include="Protocol\Enums\HProtocol.cs" />
     <Compile Include="Protocol\Modern.cs" />
     <Compile Include="Protocol\Controls\HMConstructer.cs" />
     <Compile Include="Protocol\Controls\HMScheduler.cs" />
     <Compile Include="Protocol\Encryption\BigInteger.cs" />
-    <Compile Include="Protocol\Encryption\Enumerators.cs" />
     <Compile Include="Protocol\Encryption\HKeyExchange.cs" />
     <Compile Include="Protocol\Encryption\RsaKey.cs" />
     <Compile Include="Protocol\HMessage.cs" />
