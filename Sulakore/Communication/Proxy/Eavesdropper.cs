@@ -152,6 +152,7 @@ namespace Sulakore.Communication.Proxy
         private static WebRequest ConstructRequest(HttpListenerRequest clientRequest)
         {
             var request = (HttpWebRequest)WebRequest.Create(clientRequest.RawUrl);
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             request.ProtocolVersion = clientRequest.ProtocolVersion;
             request.Method = clientRequest.HttpMethod;
             request.AllowAutoRedirect = false;
