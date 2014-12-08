@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Sulakore.Communication.Bridge
 {
-    public abstract class HExtension : HTriggerBase, IHExtension
+    public abstract class HExtension : MarshalByRefObject, IHExtension
     {
         #region Private Fields
         private readonly Dictionary<ushort, Action<HMessage>> _inCallbacks = new Dictionary<ushort, Action<HMessage>>();
@@ -16,18 +16,34 @@ namespace Sulakore.Communication.Bridge
         public abstract string Name { get; }
         public abstract string Author { get; }
         public abstract string Version { get; }
-        public abstract string Location { get; set; }
 
-        string IHExtension.Identifier { get; set; }
-        public IHContractor Contractor { get; set; }
-        public override bool CaptureEvents { get; set; }
+        public string Location { get; private set; }
+        public IHContractor Contractor { get; private set; }
+
+        public bool LockEvents
+        {
+            get { return Triggers.LockEvents; }
+            set { Triggers.LockEvents = value; }
+        }
+        public bool CaptureEvents
+        {
+            get { return Triggers.CaptureEvents; }
+            set { Triggers.CaptureEvents = value; }
+        }
+        public HTriggers Triggers { get; private set; }
+        #endregion
+
+        #region Constructor(s)
+        public HExtension(string path, IHContractor contractor)
+        {
+            Location = path;
+            Contractor = contractor;
+        }
         #endregion
 
         #region Protected/Explicit Methods
         void IHExtension.DisposeExtension()
         {
-            base.Dispose();
-
             _inCallbacks.Clear();
             _outCallbacks.Clear();
 
@@ -37,6 +53,8 @@ namespace Sulakore.Communication.Bridge
 
         void IHExtension.InitializeExtension()
         {
+            Triggers = new HTriggers();
+
             OnInitialized();
         }
         protected abstract void OnInitialized();
@@ -61,7 +79,8 @@ namespace Sulakore.Communication.Bridge
             }
 
             OnDataToClient(data);
-            if (CaptureEvents) Task.Factory.StartNew(() => ProcessIncoming(data), TaskCreationOptions.PreferFairness);
+            if (CaptureEvents) Task.Factory.StartNew(() =>
+                Triggers.ProcessIncoming(data), TaskCreationOptions.PreferFairness);
         }
         protected abstract void OnDataToClient(byte[] data);
 
@@ -79,7 +98,8 @@ namespace Sulakore.Communication.Bridge
             }
 
             OnDataToServer(data);
-            if (CaptureEvents) Task.Factory.StartNew(() => ProcessOutgoing(data), TaskCreationOptions.PreferFairness);
+            if (CaptureEvents) Task.Factory.StartNew(() =>
+                Triggers.ProcessOutgoing(data), TaskCreationOptions.PreferFairness);
         }
         protected abstract void OnDataToServer(byte[] data);
         #endregion
@@ -103,6 +123,11 @@ namespace Sulakore.Communication.Bridge
         public void AttachOut(ushort header, Action<HMessage> callback)
         {
             _outCallbacks[header] = callback;
+        }
+
+        public override object InitializeLifetimeService()
+        {
+            return null;
         }
 
         public void Unload()
