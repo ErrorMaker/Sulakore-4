@@ -1,5 +1,5 @@
-Copyright (c) 2014 The Old Nut Man
-All Rights Reserved.
+Sulakore Copyright (c) 2014 The Old Nut Man
+(https://github.com/ArachisH/Sulakore)
 
 RsaKey are derivative works of the jsbn library
 (http://www-cs-students.stanford.edu/~tjw/jsbn/)
