@@ -118,10 +118,6 @@ namespace Sulakore.Editor
 
                 _buffer = compressedStream.ToArray();
                 _buffer[0] = (byte)'C';
-
-                var l = new List<byte>(_buffer);
-                l.Reverse();
-                var x = l.ToArray();
             }
         }
         private void Decompress()
