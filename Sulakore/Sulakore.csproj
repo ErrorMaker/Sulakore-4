@@ -75,6 +75,13 @@
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerGestureEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerSpeakEventArgs.cs" />
     <Compile Include="Communication\Proxy\EavesRequestEventArgs.cs" />
+    <Compile Include="Editor\RecordHeader.cs" />
+    <Compile Include="Editor\ShockwaveFlash.cs" />
+    <Compile Include="Editor\Tags\DefineBinaryDataTag.cs" />
+    <Compile Include="Editor\Tags\Enums\FlashTagType.cs" />
+    <Compile Include="Editor\Tags\IFlashTag.cs" />
+    <Compile Include="Editor\Rect.cs" />
+    <Compile Include="Editor\Tags\UnsupportedTag.cs" />
     <Compile Include="Habbo\Enums\HBan.cs" />
     <Compile Include="Habbo\Enums\HDance.cs" />
     <Compile Include="Habbo\Enums\HDirection.cs" />
