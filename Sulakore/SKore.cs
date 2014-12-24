@@ -6,6 +6,7 @@ using Sulakore.Habbo;
 using System.Drawing;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Sulakore
 {
@@ -13,14 +14,17 @@ namespace Sulakore
     {
         #region Private Fields
         private static string _ipCookie;
+
         private static readonly DirectoryInfo CacheDirectory;
         private static readonly string FlashSharedObjectsPath;
         private static readonly object RandomSignLock, RandomThemeLock;
         private static readonly Random RandomSignGenerator, RandomThemeGenerator;
+        private static readonly IDictionary<string, IDictionary<HHotel, int>> _playerIds;
+        private static readonly IDictionary<int, IDictionary<HHotel, string>> _playerNames;
         #endregion
 
         #region Public Fields
-        public const string ChromeAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.104 Safari/537.36";
+        public const string ChromeAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36";
         #endregion
 
         static SKore()
@@ -29,8 +33,9 @@ namespace Sulakore
             RandomThemeLock = new object();
             RandomSignGenerator = new Random();
             RandomThemeGenerator = new Random();
+            _playerIds = new Dictionary<string, IDictionary<HHotel, int>>();
+            _playerNames = new Dictionary<int, IDictionary<HHotel, string>>();
             CacheDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.InternetCache));
-
             FlashSharedObjectsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Macromedia\\Flash Player\\#SharedObjects";
         }
 
@@ -39,6 +44,7 @@ namespace Sulakore
             if (!string.IsNullOrEmpty(_ipCookie)) return _ipCookie;
             using (var webClientEx = new WebClientEx())
             {
+                webClientEx.Proxy = null;
                 webClientEx.Headers["User-Agent"] = ChromeAgent;
                 string body = webClientEx.DownloadString("http://www.Habbo.com");
                 return _ipCookie = (body.Contains(("setCookie")) ? "YPF8827340282Jdskjhfiw_928937459182JAX666=" + body.GetChilds("setCookie", '\'')[3] : string.Empty);
@@ -53,6 +59,7 @@ namespace Sulakore
         {
             using (var webClientEx = new WebClientEx())
             {
+                webClientEx.Proxy = null;
                 webClientEx.Headers["Cookie"] = GetIpCookie();
                 webClientEx.Headers["User-Agent"] = ChromeAgent;
                 string body = webClientEx.DownloadString(hotel.ToUrl() + "/login_popup");
@@ -66,12 +73,22 @@ namespace Sulakore
 
         public static int GetPlayerId(string playerName, HHotel hotel)
         {
+            if (_playerIds.ContainsKey(playerName))
+                return _playerIds[playerName][hotel];
+
             using (var webClientEx = new WebClientEx())
             {
+                webClientEx.Proxy = null;
                 webClientEx.Headers["Cookie"] = GetIpCookie();
                 webClientEx.Headers["User-Agent"] = ChromeAgent;
                 string body = webClientEx.DownloadString(hotel.ToUrl() + "/habblet/ajax/new_habboid?habboIdName=" + playerName);
-                return !body.Contains("rounded rounded-red") ? int.Parse(body.GetChild("<em>", '<').Replace(" ", string.Empty)) : -1;
+                int value = !body.Contains("rounded rounded-red") ? int.Parse(body.GetChild("<em>", '<').Replace(" ", string.Empty)) : -1;
+
+                _playerIds[playerName] = new Dictionary<HHotel, int>()
+                {
+                    { hotel, value }
+                };
+                return value;
             }
         }
         public static Task<int> GetPlayerIdAsync(string playerName, HHotel hotel)
@@ -81,12 +98,22 @@ namespace Sulakore
 
         public static string GetPlayerName(int playerId, HHotel hotel)
         {
+            if (_playerNames.ContainsKey(playerId))
+                return _playerNames[playerId][hotel];
+
             using (var webClientEx = new WebClientEx())
             {
+                webClientEx.Proxy = null;
                 webClientEx.Headers["Cookie"] = GetIpCookie();
                 webClientEx.Headers["User-Agent"] = ChromeAgent;
                 string body = webClientEx.DownloadString(string.Format("{0}/rd/{1}", hotel.ToUrl(), playerId));
-                return body.Contains("/home/") ? body.GetChild("<input type=\"hidden\" name=\"page\" value=\"/home/", '?') : string.Empty;
+                string value = body.Contains("/home/") ? body.GetChild("<input type=\"hidden\" name=\"page\" value=\"/home/", '?') : string.Empty;
+
+                _playerNames[playerId] = new Dictionary<HHotel, string>()
+                {
+                    { hotel, value }
+                };
+                return value;
             }
         }
         public static Task<string> GetPlayerNameAsync(int playerId, HHotel hotel)
@@ -107,6 +134,7 @@ namespace Sulakore
         {
             using (var webClientEx = new WebClientEx())
             {
+                webClientEx.Proxy = null;
                 webClientEx.Headers["Cookie"] = GetIpCookie();
                 webClientEx.Headers["User-Agent"] = ChromeAgent;
                 string body = webClientEx.DownloadString(hotel.ToUrl() + "/habblet/habbosearchcontent?searchString=" + playerName);
@@ -122,6 +150,7 @@ namespace Sulakore
         {
             using (var webClientEx = new WebClientEx())
             {
+                webClientEx.Proxy = null;
                 webClientEx.Headers["Cookie"] = GetIpCookie();
                 webClientEx.Headers["User-Agent"] = ChromeAgent;
                 byte[] avatarData = webClientEx.DownloadData(hotel.ToUrl() + "/habbo-imaging/avatarimage?user=" + playerName + "&action=&direction=&head_direction=&gesture=&size=");
@@ -138,6 +167,7 @@ namespace Sulakore
         {
             using (var webClientEx = new WebClientEx())
             {
+                webClientEx.Proxy = null;
                 webClientEx.Headers["Cookie"] = GetIpCookie();
                 webClientEx.Headers["User-Agent"] = ChromeAgent;
                 string body = webClientEx.DownloadString(hotel.ToUrl() + "/habblet/habbosearchcontent?searchString=" + playerName);
@@ -153,6 +183,7 @@ namespace Sulakore
         {
             using (var webClientEx = new WebClientEx())
             {
+                webClientEx.Proxy = null;
                 webClientEx.Headers["Cookie"] = GetIpCookie();
                 webClientEx.Headers["User-Agent"] = ChromeAgent;
                 string body = webClientEx.DownloadString(hotel.ToUrl() + "/habblet/habbosearchcontent?searchString=" + playerName);
@@ -172,6 +203,7 @@ namespace Sulakore
         {
             using (var webClientEx = new WebClientEx(cookies))
             {
+                webClientEx.Proxy = null;
                 webClientEx.Headers["User-Agent"] = userAgent ?? ChromeAgent;
                 byte[] bannerData = webClientEx.DownloadData(url);
                 using (var memoryStream = new MemoryStream(bannerData))
