@@ -37,9 +37,17 @@ namespace Sulakore.Communication
 
             foreach (IHFurnitureData furniture in LoadedFurniture)
             {
-                furnitureByTypeId[furniture.FurnitureTypeId].Add(furniture);
-                furnitureByPlayerId[furniture.FurnitureOwnerId].Add(furniture);
-                furnitureByPlayerName[furniture.FurnitureOwnerName].Add(furniture);
+                if (furnitureByTypeId.ContainsKey(furniture.FurnitureTypeId))
+                    furnitureByTypeId[furniture.FurnitureTypeId].Add(furniture);
+                else furnitureByTypeId.Add(furniture.FurnitureTypeId, new List<IHFurnitureData>() { furniture });
+
+                if (furnitureByPlayerId.ContainsKey(furniture.FurnitureOwnerId))
+                    furnitureByPlayerId[furniture.FurnitureOwnerId].Add(furniture);
+                else furnitureByPlayerId.Add(furniture.FurnitureOwnerId, new List<IHFurnitureData>() { furniture });
+
+                if (furnitureByPlayerName.ContainsKey(furniture.FurnitureOwnerName))
+                    furnitureByPlayerName[furniture.FurnitureOwnerName].Add(furniture);
+                else furnitureByPlayerName.Add(furniture.FurnitureOwnerName, new List<IHFurnitureData>() { furniture });
 
                 furnitureIds.Add(furniture.FurnitureId);
 
