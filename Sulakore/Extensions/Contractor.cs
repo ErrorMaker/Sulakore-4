@@ -80,7 +80,7 @@ namespace Sulakore.Extensions
 
             string extensionId = Guid.NewGuid().ToString();
             string extensionName = Path.GetFileNameWithoutExtension(path);
-            string extensionPath = Path.Combine(ExtDirName, string.Format("{0}({1}).dll", extensionName, extensionId));
+            string extensionPath = Path.Combine(Environment.CurrentDirectory, ExtDirName, string.Format("{0}({1}).dll", extensionName, extensionId));
             File.Copy(path, extensionPath);
 
             byte[] extensionData = File.ReadAllBytes(extensionPath);
@@ -94,6 +94,7 @@ namespace Sulakore.Extensions
                 extension = (IExtension)Activator.CreateInstance(extensionType);
                 extension.Location = extensionPath;
                 extension.Contractor = this;
+                extension.Version = FileVersionInfo.GetVersionInfo(extensionPath).FileVersion;
 
                 _extensions.Add(extension);
                 break;
