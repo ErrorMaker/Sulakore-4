@@ -4,6 +4,7 @@
     {
         string Name { get; }
         string Author { get; }
+        string Version { get; set; }
         string Location { get; set; }
         IContractor Contractor { get; set; }
 
