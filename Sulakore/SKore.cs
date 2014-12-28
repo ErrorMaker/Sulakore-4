@@ -2,17 +2,19 @@
 using System.IO;
 using System.Net;
 using System.Linq;
-using Sulakore.Habbo;
 using System.Drawing;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using Sulakore.Habbo;
+
 namespace Sulakore
 {
+    /// <summary>
+    /// Provides static methods for extracting public information from a specific hotel, and method extensions.
+    /// </summary>
     public static class SKore
     {
-        #region Private Fields
         private static string _ipCookie;
 
         private static readonly DirectoryInfo CacheDirectory;
@@ -21,11 +23,8 @@ namespace Sulakore
         private static readonly Random RandomSignGenerator, RandomThemeGenerator;
         private static readonly IDictionary<string, IDictionary<HHotel, int>> _playerIds;
         private static readonly IDictionary<int, IDictionary<HHotel, string>> _playerNames;
-        #endregion
 
-        #region Public Fields
         public const string ChromeAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36";
-        #endregion
 
         static SKore()
         {
@@ -39,6 +38,10 @@ namespace Sulakore
             FlashSharedObjectsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Macromedia\\Flash Player\\#SharedObjects";
         }
 
+        /// <summary>
+        /// Returns a cookie containing your external IP address that is required by most hotels to retrieve a remote resource from their host.
+        /// </summary>
+        /// <returns></returns>
         public static string GetIpCookie()
         {
             if (!string.IsNullOrEmpty(_ipCookie)) return _ipCookie;
@@ -55,6 +58,11 @@ namespace Sulakore
             return Task.Factory.StartNew(() => GetIpCookie());
         }
 
+        /// <summary>
+        /// Returns the current online player count for the specified hotel.
+        /// </summary>
+        /// <param name="hotel">The hotel to retrieve the online player count from.</param>
+        /// <returns></returns>
         public static int GetPlayersOnline(HHotel hotel)
         {
             using (var webClientEx = new WebClientEx())
@@ -71,6 +79,12 @@ namespace Sulakore
             return Task.Factory.StartNew(() => GetPlayersOnline(hotel));
         }
 
+        /// <summary>
+        /// Returns the player id relative to the specified player name, and hotel.
+        /// </summary>
+        /// <param name="playerName">The name of the player of whom to grab the id from.</param>
+        /// <param name="hotel">The hotel where the specified player name exists on.</param>
+        /// <returns></returns>
         public static int GetPlayerId(string playerName, HHotel hotel)
         {
             if (_playerIds.ContainsKey(playerName))
@@ -96,6 +110,12 @@ namespace Sulakore
             return Task.Factory.StartNew(() => GetPlayerId(playerName, hotel));
         }
 
+        /// <summary>
+        /// Returns the player name relative to the specified player id, and hotel.
+        /// </summary>
+        /// <param name="playerId">The id of the player of whom to grab the name from.</param>
+        /// <param name="hotel">The hotel where the specified player id exists on.</param>
+        /// <returns></returns>
         public static string GetPlayerName(int playerId, HHotel hotel)
         {
             if (_playerNames.ContainsKey(playerId))
@@ -121,6 +141,12 @@ namespace Sulakore
             return Task.Factory.StartNew(() => GetPlayerName(playerId, hotel));
         }
 
+        /// <summary>
+        /// Determines whether the specified player name is taken relative to the hotel.
+        /// </summary>
+        /// <param name="playerName">The name of the player to check for availability.</param>
+        /// <param name="hotel">The hotel in which to check the availability of the player name.</param>
+        /// <returns></returns>
         public static bool CheckPlayerName(string playerName, HHotel hotel)
         {
             return GetPlayerId(playerName, hotel) == -1;
@@ -130,6 +156,12 @@ namespace Sulakore
             return Task.Factory.StartNew(() => CheckPlayerName(playerName, hotel));
         }
 
+        /// <summary>
+        /// Returns the player motto relative to the specified player name, and hotel.
+        /// </summary>
+        /// <param name="playerName">The name of the player of whom to grab the motto from.</param>
+        /// <param name="hotel">The hotel where the specified player name exists on.</param>
+        /// <returns></returns>
         public static string GetPlayerMotto(string playerName, HHotel hotel)
         {
             using (var webClientEx = new WebClientEx())
@@ -146,6 +178,12 @@ namespace Sulakore
             return Task.Factory.StartNew(() => GetPlayerMotto(playerName, hotel));
         }
 
+        /// <summary>
+        /// Returns the player avatar relative to the specified player name, and hotel.
+        /// </summary>
+        /// <param name="playerName">The name of the player of whom to grab the avatar from.</param>
+        /// <param name="hotel">The hotel where the specified player name exists on.</param>
+        /// <returns></returns>
         public static Bitmap GetPlayerAvatar(string playerName, HHotel hotel)
         {
             using (var webClientEx = new WebClientEx())
@@ -163,6 +201,12 @@ namespace Sulakore
             return Task.Factory.StartNew(() => GetPlayerAvatar(playerName, hotel));
         }
 
+        /// <summary>
+        /// Returns the player figure id relative to the specified player name, and hotel.
+        /// </summary>
+        /// <param name="playerName">The name of the player of whom to grab the player figure id from.</param>
+        /// <param name="hotel">The hotel where the specified player name exists on.</param>
+        /// <returns></returns>
         public static string GetPlayerFigureId(string playerName, HHotel hotel)
         {
             using (var webClientEx = new WebClientEx())
@@ -179,7 +223,14 @@ namespace Sulakore
             return Task.Factory.StartNew(() => GetPlayerFigureId(playerName, hotel));
         }
 
-        public static string GetPlayerLastOnline(string playerName, HHotel hotel, bool exact = true)
+        /// <summary>
+        /// Returns the player's last online date relative to the specified player name, and hotel.
+        /// </summary>
+        /// <param name="playerName">The name of the player of whom to grab the player's last online date from.</param>
+        /// <param name="hotel">The hotel where the specified player name exists on.</param>
+        /// <param name="exact">true to return the time span; otherwise, false for the full date of when the player was last online.</param>
+        /// <returns></returns>
+        public static DateTime GetPlayerLastOnline(string playerName, HHotel hotel)
         {
             using (var webClientEx = new WebClientEx())
             {
@@ -188,31 +239,15 @@ namespace Sulakore
                 webClientEx.Headers["User-Agent"] = ChromeAgent;
                 string body = webClientEx.DownloadString(hotel.ToUrl() + "/habblet/habbosearchcontent?searchString=" + playerName);
 
-                if (!body.Contains("lastlogin")) return string.Empty;
+                if (!body.Contains("lastlogin")) return DateTime.MinValue;
 
                 body = body.GetChild("<div class=\"lastlogin\">").GetChild("span title=");
-                return exact ? body.Split('"')[1] : body.Split('>')[1].Split('<')[0];
+                return DateTime.Parse(body.Split('"')[1]);
             }
         }
-        public static Task<string> GetPlayerLastOnlineAsync(string playerName, HHotel hotel, bool exact = true)
+        public static Task<DateTime> GetPlayerLastOnlineAsync(string playerName, HHotel hotel)
         {
-            return Task.Factory.StartNew(() => GetPlayerLastOnline(playerName, hotel, exact));
-        }
-
-        public static Bitmap GetHotelBanner(string url, CookieContainer cookies, string userAgent = null)
-        {
-            using (var webClientEx = new WebClientEx(cookies))
-            {
-                webClientEx.Proxy = null;
-                webClientEx.Headers["User-Agent"] = userAgent ?? ChromeAgent;
-                byte[] bannerData = webClientEx.DownloadData(url);
-                using (var memoryStream = new MemoryStream(bannerData))
-                    return new Bitmap(memoryStream);
-            }
-        }
-        public static Task<Bitmap> GetHotelBannerAsync(string url, CookieContainer cookies, string userAgent = null)
-        {
-            return Task.Factory.StartNew(() => GetHotelBanner(url, cookies, userAgent));
+            return Task.Factory.StartNew(() => GetPlayerLastOnline(playerName, hotel));
         }
 
         public static void ClearCache()
@@ -229,6 +264,13 @@ namespace Sulakore
 
             if (Directory.Exists(FlashSharedObjectsPath))
                 Directory.Delete(FlashSharedObjectsPath, true);
+        }
+
+        public static void Unsubscribe(ref EventHandler Event)
+        {
+            if (Event == null) return;
+            Delegate[] subscriptions = Event.GetInvocationList();
+            Event = subscriptions.Aggregate(Event, (current, subscription) => current - (EventHandler)subscription);
         }
         public static void Unsubscribe<T>(ref EventHandler<T> Event) where T : EventArgs
         {
@@ -346,11 +388,6 @@ namespace Sulakore
         public static string[] GetChilds(this string body, string parent, char delimiter)
         {
             return GetChild(body, parent).Split(new[] { delimiter }, StringSplitOptions.RemoveEmptyEntries);
-        }
-
-        internal static void Debugger(string message)
-        {
-            Debug.WriteLine(message);
         }
     }
 }
