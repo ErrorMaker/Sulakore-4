@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Sulakore.Communication.Proxy
+namespace Sulakore.Communication
 {
     public class EavesRequestEventArgs : CancelEventArgs
     {
