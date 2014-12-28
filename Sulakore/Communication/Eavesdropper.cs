@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using Sulakore.Protocol;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Sulakore.Communication.Proxy
+using Sulakore.Protocol;
+using System.Diagnostics;
+
+namespace Sulakore.Communication
 {
     public static class Eavesdropper
     {
@@ -128,7 +130,8 @@ namespace Sulakore.Communication.Proxy
                             response.ResponseUri.Host,
                             context.Response.ContentType == "application/x-shockwave-flash",
                             request.UserAgent,
-                            response.Cookies);
+                            response.Cookies,
+                            response.Headers["Set-Cookie"]);
 
                         OnEavesResponse(context, arguments);
                         responseData = arguments.ResponeData;
@@ -139,7 +142,7 @@ namespace Sulakore.Communication.Proxy
                 }
                 #endregion
             }
-            catch (Exception ex) { SKore.Debugger(ex.ToString()); }
+            catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
             finally
             {
                 if (_processingCallbacks.Contains(ar))
