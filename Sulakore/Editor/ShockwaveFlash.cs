@@ -56,7 +56,7 @@ namespace Sulakore.Editor
         public ShockwaveFlash(byte[] data)
         {
             if (data.Length < 8)
-                throw new Exception("Not enough data to parse Macromedia Flash file header.");
+                throw new Exception("Not enough data to parse file header.");
 
             _header = new byte[2];
             _trailer = new byte[4];
