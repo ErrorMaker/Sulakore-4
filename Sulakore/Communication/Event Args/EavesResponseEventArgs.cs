@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace Sulakore.Communication.Proxy
+namespace Sulakore.Communication
 {
     public class EavesResponseEventArgs : EventArgs
     {
@@ -10,9 +10,10 @@ namespace Sulakore.Communication.Proxy
         public byte[] ResponeData { get; set; }
         public string Host { get; private set; }
         public string UserAgent { get; private set; }
+        public string RawCookies { get; private set; }
         public CookieContainer Cookies { get; private set; }
 
-        public EavesResponseEventArgs(byte[] responseData, string url, string host, bool isSwf, string userAgent, CookieCollection cookies)
+        public EavesResponseEventArgs(byte[] responseData, string url, string host, bool isSwf, string userAgent, CookieCollection cookies, string rawCookies)
         {
             ResponeData = responseData;
             Url = url;
