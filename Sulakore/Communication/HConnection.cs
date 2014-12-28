@@ -7,35 +7,60 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Sulakore.Protocol.Encryption;
+using System.Diagnostics;
 
 namespace Sulakore.Communication
 {
-    public class HConnection : HTriggerBase, IHConnection, IDisposable
+    public class HConnection : HTriggers, IHConnection, IDisposable
     {
-        #region Game Connection Events
-        public event EventHandler<EventArgs> Connected;
-        public event EventHandler<DataToEventArgs> DataToClient;
-        public event EventHandler<DataToEventArgs> DataToServer;
-        public event EventHandler<DisconnectedEventArgs> Disconnected;
-        #endregion
+        public event EventHandler Connected;
+        protected virtual void OnConnected(EventArgs e)
+        {
+            EventHandler handler = Connected;
 
-        #region Private Fields
+            if (handler != null)
+                handler(this, e);
+        }
+
+        public event EventHandler<DataToEventArgs> DataToClient;
+        protected virtual void OnDataToClient(DataToEventArgs e)
+        {
+            EventHandler<DataToEventArgs> handler = DataToClient;
+
+            if (handler != null)
+                handler(this, e);
+        }
+
+        public event EventHandler<DataToEventArgs> DataToServer;
+        protected virtual void OnDataToServer(DataToEventArgs e)
+        {
+            EventHandler<DataToEventArgs> handler = DataToServer;
+
+            if (handler != null)
+                handler(this, e);
+        }
+
+        public event EventHandler<DisconnectedEventArgs> Disconnected;
+        protected virtual void OnDisconnected(DisconnectedEventArgs e)
+        {
+            EventHandler<DisconnectedEventArgs> handler = Disconnected;
+
+            if (handler != null)
+                handler(this, e);
+        }
+
         private TcpListenerEx _htcpExt;
         private Socket _clientS, _serverS;
         private int _toClientS, _toServerS, _socketCount;
         private bool _hasOfficialSocket, _disconnectAllowed;
         private byte[] _clientB, _serverB, _clientC, _serverC;
-        private Dictionary<ushort, Action<HMessage>> _incomingEvents;
-        private Dictionary<ushort, Action<HMessage>> _outgoingEvents;
 
         private const TaskCreationOptions _eventCallFlags = (TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
 
         private readonly object _resetHostLock, _disconnectLock, _sendToClientLock, _sendToServerLock;
 
         private static readonly string HostsPath = Environment.GetFolderPath(Environment.SpecialFolder.System) + "\\drivers\\etc\\hosts";
-        #endregion
 
-        #region Public Properties
         public int Port { get; private set; }
         public string Host { get; private set; }
         public string[] Addresses { get; private set; }
@@ -74,30 +99,21 @@ namespace Sulakore.Communication
         public int SocketSkip { get; set; }
         public HProtocol Protocol { get; private set; }
 
-        public override bool CaptureEvents { get; set; }
-        #endregion
-
-        #region Constructor(s)
         public HConnection(string host, int port)
-            : base()
         {
             _resetHostLock = new object();
             _disconnectLock = new object();
             _sendToClientLock = new object();
             _sendToServerLock = new object();
 
-            _incomingEvents = new Dictionary<ushort, Action<HMessage>>();
-            _outgoingEvents = new Dictionary<ushort, Action<HMessage>>();
-
             Host = host;
             Port = port;
             ResetHost();
 
-            Addresses = Dns.GetHostAddresses(host).Select(ip => ip.ToString()).ToArray();
+            Addresses = Dns.GetHostAddresses(host)
+                .Select(ip => ip.ToString()).ToArray();
         }
-        #endregion
 
-        #region Public Methods
         public void Connect(bool loopback = false)
         {
             if (loopback)
@@ -150,26 +166,6 @@ namespace Sulakore.Communication
         public int SendToServer(ushort header, params object[] chunks)
         {
             return SendToServer(HMessage.Construct(header, HDestination.Server, Protocol, chunks));
-        }
-
-        public void AttachIncoming(ushort header, Action<HMessage> callback)
-        {
-            _incomingEvents[header] = callback;
-        }
-        public void DetachIncoming(ushort header)
-        {
-            if (_incomingEvents.ContainsKey(header))
-                _incomingEvents.Remove(header);
-        }
-
-        public void AttachOutgoing(ushort header, Action<HMessage> callback)
-        {
-            _outgoingEvents[header] = callback;
-        }
-        public void DetachOutgoing(ushort header)
-        {
-            if (_outgoingEvents.ContainsKey(header))
-                _outgoingEvents.Remove(header);
         }
 
         public void ResetHost()
@@ -226,9 +222,7 @@ namespace Sulakore.Communication
                 }
             }
         }
-        #endregion
 
-        #region Private Methods
         private void SocketAccepted(IAsyncResult iAr)
         {
             try
@@ -290,9 +284,7 @@ namespace Sulakore.Communication
                         _htcpExt = null;
 
                         Protocol = isModern ? HProtocol.Modern : HProtocol.Ancient;
-
-                        if (Connected != null)
-                            Connected(this, EventArgs.Empty);
+                        OnConnected(EventArgs.Empty);
                     }
                     else
                     {
@@ -319,49 +311,31 @@ namespace Sulakore.Communication
 
                 ReadClientData();
             }
-            catch (Exception ex)
-            {
-                Disconnect();
-                SKore.Debugger(ex.ToString());
-            }
+            catch { Disconnect(); }
         }
-        protected override void ProcessOutgoing(byte[] data)
+        public override void ProcessOutgoing(byte[] data)
         {
-            try
-            {
-                ++_toServerS;
-                if (_outgoingEvents.Count > 0 && !RequestEncrypted)
-                {
-                    int offset = (Protocol == HProtocol.Modern ? 4 : 3);
-                    ushort header = offset == 4 ? Modern.DecypherShort(data, offset) : Ancient.DecypherShort(data, offset);
-                    if (_outgoingEvents.ContainsKey(header))
-                    {
-                        var packet = new HMessage(data, HDestination.Server);
-                        Task.Factory.StartNew(() => _outgoingEvents[header](packet), _eventCallFlags)
-                            .ContinueWith(OnException, TaskContinuationOptions.OnlyOnFaulted);
-                    }
-                }
+            ++_toServerS;
 
-                if (DataToServer == null) SendToServer(data);
-                else
-                {
-                    var arguments = new DataToEventArgs(data, HDestination.Server, _toServerS);
-                    try { DataToServer(this, arguments); }
-                    catch (Exception ex)
-                    {
-                        SendToServer(data);
-                        SKore.Debugger(ex.ToString());
-                        return;
-                    }
-                    if (!arguments.Cancel) SendToServer(arguments.Packet.ToBytes());
-                }
-            }
-            catch (Exception ex) { SKore.Debugger(ex.ToString()); }
-            finally
+            if (!RequestEncrypted)
+                Task.Factory.StartNew(() => base.ProcessOutgoing(data), TaskCreationOptions.LongRunning)
+                    .ContinueWith(OnException, TaskContinuationOptions.OnlyOnFaulted);
+
+            if (DataToServer == null) SendToServer(data);
+            else
             {
-                if (CaptureEvents && !RequestEncrypted)
-                    Task.Factory.StartNew(() => base.ProcessOutgoing(data), _eventCallFlags)
-                        .ContinueWith(OnException, TaskContinuationOptions.OnlyOnFaulted);
+                var e = new DataToEventArgs(data, HDestination.Server, _toServerS);
+                try { OnDataToServer(e); }
+                catch
+                {
+                    e.Cancel = true;
+                    SendToServer(data);
+                }
+                finally
+                {
+                    if (!e.Cancel)
+                        SendToServer(e.Packet.ToBytes());
+                }
             }
         }
 
@@ -405,59 +379,43 @@ namespace Sulakore.Communication
 
                 ReadServerData();
             }
-            catch (Exception ex)
-            {
-                Disconnect();
-                SKore.Debugger(ex.ToString());
-            }
+            catch { Disconnect(); }
         }
-        protected override void ProcessIncoming(byte[] data)
+        public override void ProcessIncoming(byte[] data)
         {
-            try
-            {
-                ++_toClientS;
-                if (_incomingEvents.Count > 0 && !ResponseEncrypted)
-                {
-                    int headerOffset = (Protocol == HProtocol.Modern ? 4 : 0);
-                    ushort header = headerOffset == 4 ? Modern.DecypherShort(data, 4) : Ancient.DecypherShort(data);
-                    if (_incomingEvents.ContainsKey(header))
-                    {
-                        var packet = new HMessage(data, HDestination.Client);
-                        Task.Factory.StartNew(() => _incomingEvents[header](packet), _eventCallFlags)
-                            .ContinueWith(OnException, TaskContinuationOptions.OnlyOnFaulted);
-                    }
-                }
+            ++_toClientS;
 
-                if (DataToClient == null) SendToClient(data);
-                else
-                {
-                    var dataToEventArgs = new DataToEventArgs(data, HDestination.Client, _toClientS);
-                    try { DataToClient(this, dataToEventArgs); }
-                    catch (Exception ex)
-                    {
-                        SendToClient(data);
-                        SKore.Debugger(ex.ToString());
-                        return;
-                    }
-                    if (!dataToEventArgs.Cancel) SendToClient(dataToEventArgs.Packet.ToBytes());
-                }
-            }
-            catch (Exception ex) { SKore.Debugger(ex.ToString()); }
-            finally
+            if (!ResponseEncrypted)
+                Task.Factory.StartNew(() => base.ProcessIncoming(data), TaskCreationOptions.LongRunning)
+                    .ContinueWith(OnException, TaskContinuationOptions.OnlyOnFaulted);
+
+            if (DataToClient == null) SendToClient(data);
+            else
             {
-                if (CaptureEvents && !ResponseEncrypted)
-                    Task.Factory.StartNew(() => base.ProcessIncoming(data), _eventCallFlags)
-                        .ContinueWith(OnException, TaskContinuationOptions.OnlyOnFaulted);
+                var e = new DataToEventArgs(data, HDestination.Client, _toClientS);
+                try { OnDataToClient(e); }
+                catch
+                {
+                    e.Cancel = true;
+                    SendToClient(data);
+                }
+                finally
+                {
+                    if (!e.Cancel)
+                        SendToClient(e.Packet.ToBytes());
+                }
             }
         }
 
         private void OnException(Task task)
         {
-            SKore.Debugger(task.Exception.ToString());
+            Debug.WriteLine(task.Exception.ToString());
         }
-        #endregion
 
-        #region IDisposable Implementation
+        new public void Dispose()
+        {
+            Dispose(true);
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -472,12 +430,8 @@ namespace Sulakore.Communication
                 Addresses = null;
                 Port = SocketSkip = 0;
                 CaptureEvents = false;
-
-                _outgoingEvents.Clear();
-                _incomingEvents.Clear();
             }
             base.Dispose(disposing);
         }
-        #endregion
     }
 }
