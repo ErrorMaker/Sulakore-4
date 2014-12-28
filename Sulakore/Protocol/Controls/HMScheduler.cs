@@ -128,6 +128,22 @@ namespace Sulakore.Protocol.Controls
                 }
             }
         }
+        public HSchedule GetSelected()
+        {
+            return _schedules[SelectedItems[0]];
+        }
+
+        public string GetSelectedDescription()
+        {
+            string desc = _bySchedule[GetSelected()].ToolTipText;
+            return !string.IsNullOrEmpty(desc) ? desc.Substring(13).Split('\n')[0] : string.Empty;
+        }
+        public void SetSelectedDescription(string description)
+        {
+            if (!string.IsNullOrEmpty(description))
+                _bySchedule[GetSelected()].ToolTipText = string.Format("Description: {0}\n{1}",
+                    description, GetSelected().Packet);
+        }
 
         public void AddSchedule(HSchedule schedule, bool autoStart, string description)
         {
