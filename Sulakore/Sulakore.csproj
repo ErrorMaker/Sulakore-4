@@ -42,10 +42,6 @@
     </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Communication\Bridge\Enums\HExtensionState.cs" />
-    <Compile Include="Communication\Bridge\HContractor.cs" />
-    <Compile Include="Communication\Bridge\HExtensionLoader.cs" />
-    <Compile Include="Communication\Bridge\HTriggers.cs" />
     <Compile Include="Communication\Event Args\DataToEventArgs.cs" />
     <Compile Include="Communication\Event Args\DisconnectedEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\FurnitureDataLoadedEventArgs.cs" />
@@ -67,6 +63,11 @@
     <Compile Include="Communication\Event Args\Outgoing Event Args\HostRaiseSignEventArgs.cs" />
     <Compile Include="Communication\Event Args\Outgoing Event Args\HostTradePlayerEventArgs.cs" />
     <Compile Include="Communication\Event Args\Outgoing Event Args\HostWalkEventArgs.cs" />
+    <Compile Include="Extensions\Contractor.cs" />
+    <Compile Include="Extensions\Controls\ExtensionView.cs" />
+    <Compile Include="Extensions\ExtensionBase.cs" />
+    <Compile Include="Extensions\IContractor.cs" />
+    <Compile Include="Extensions\IExtension.cs" />
     <Compile Include="Communication\IHConnection.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerDataChangedEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerStanceChangedEventArgs.cs" />
@@ -74,7 +75,7 @@
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerDropFurnitureEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerGestureEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerSpeakEventArgs.cs" />
-    <Compile Include="Communication\Proxy\EavesRequestEventArgs.cs" />
+    <Compile Include="Communication\Event Args\EavesRequestEventArgs.cs" />
     <Compile Include="Editor\RecordHeader.cs" />
     <Compile Include="Editor\ShockwaveFlash.cs" />
     <Compile Include="Editor\Tags\DefineBinaryDataTag.cs" />
@@ -100,12 +101,9 @@
     <Compile Include="Habbo\IHPlayerData.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerKickedHostEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerDataLoadedEventArgs.cs" />
-    <Compile Include="Communication\Proxy\Eavesdropper.cs" />
-    <Compile Include="Communication\Proxy\EavesResponseEventArgs.cs" />
-    <Compile Include="Communication\Bridge\HExtension.cs" />
-    <Compile Include="Communication\Bridge\IHContractor.cs" />
-    <Compile Include="Communication\Bridge\IHExtension.cs" />
-    <Compile Include="Communication\HTriggerBase.cs" />
+    <Compile Include="Communication\Eavesdropper.cs" />
+    <Compile Include="Communication\Event Args\EavesResponseEventArgs.cs" />
+    <Compile Include="Communication\HTriggers.cs" />
     <Compile Include="Habbo\Controls\HClient.cs" />
     <Compile Include="Habbo\Headers\Incoming.cs" />
     <Compile Include="Habbo\Headers\Outgoing.cs" />
