@@ -7,6 +7,10 @@ namespace Sulakore
     internal sealed class WebClientEx : WebClient
     {
         private readonly CookieContainer _cookies;
+        public CookieContainer Cookies
+        {
+            get { return _cookies; }
+        }
 
         public WebClientEx(CookieContainer cookies = null)
         {
@@ -17,7 +21,10 @@ namespace Sulakore
         {
             var request = (base.GetWebRequest(address) as HttpWebRequest);
             if (request == null) return base.GetWebRequest(address);
-            request.CookieContainer = _cookies;
+
+            if (_cookies.Count > 0)
+                request.CookieContainer = _cookies;
+
             return request;
         }
         protected override WebResponse GetWebResponse(WebRequest request)
