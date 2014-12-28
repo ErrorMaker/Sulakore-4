@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace Sulakore.Protocol.Controls
 {
     [System.ComponentModel.DesignerCategory("Code")]
-    public class HMScheduler : ListView
+    public class Scheduler : ListView
     {
         #region Subscribable Events
         public event EventHandler<ScheduleTriggeredEventArgs> ScheduleTriggered;
@@ -42,7 +42,7 @@ namespace Sulakore.Protocol.Controls
         #endregion
 
         #region Constructor(s)
-        public HMScheduler()
+        public Scheduler()
         {
             _schedules = new Dictionary<ListViewItem, HSchedule>();
             _bySchedule = new Dictionary<HSchedule, ListViewItem>();
