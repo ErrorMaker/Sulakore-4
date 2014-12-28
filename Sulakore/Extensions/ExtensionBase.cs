@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using Sulakore.Protocol;
 using Sulakore.Communication;
@@ -10,6 +9,8 @@ namespace Sulakore.Extensions
     {
         public abstract string Name { get; }
         public abstract string Author { get; }
+
+        public string Version { get; set; }
         public string Location { get; set; }
         public IContractor Contractor { get; set; }
 
@@ -28,7 +29,7 @@ namespace Sulakore.Extensions
 
         void IExtension.DataToClient(byte[] data)
         {
-            Task.Factory.StartNew(() => base.ProcessIncoming(data));
+            Task.Factory.StartNew(() => base.ProcessIncoming(data), TaskCreationOptions.LongRunning);
 
             var packet = new HMessage(data, HDestination.Client);
             DataToClient(packet);
@@ -37,7 +38,7 @@ namespace Sulakore.Extensions
 
         void IExtension.DataToServer(byte[] data)
         {
-            Task.Factory.StartNew(() => base.ProcessOutgoing(data));
+            Task.Factory.StartNew(() => base.ProcessOutgoing(data), TaskCreationOptions.LongRunning);
 
             var packet = new HMessage(data, HDestination.Server);
             DataToServer(packet);
