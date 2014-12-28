@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Sulakore.Protocol;
+using System.Diagnostics;
 
 namespace Sulakore.Communication
 {
@@ -156,7 +157,7 @@ namespace Sulakore.Communication
         protected virtual void OnHostChangeClothes(HMessage packet)
         {
             EventHandler<HostClothesChangedEventArgs> handler = HostChangeClothes;
-            
+
             if (handler != null)
                 handler(this, new HostClothesChangedEventArgs(packet));
         }
@@ -281,6 +282,7 @@ namespace Sulakore.Communication
                 }
                 else ProcessOutgoing(previousOutgoing, ref packet);
             }
+            catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
             finally
             {
                 if (packet != null)
@@ -309,6 +311,7 @@ namespace Sulakore.Communication
                 }
                 else ProcessIncoming(previousIncoming, ref packet);
             }
+            catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
             finally
             {
                 if (packet != null)
