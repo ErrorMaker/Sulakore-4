@@ -122,8 +122,8 @@
     <Compile Include="Protocol\Enums\HDestination.cs" />
     <Compile Include="Protocol\Enums\HProtocol.cs" />
     <Compile Include="Protocol\Modern.cs" />
-    <Compile Include="Protocol\Controls\HMConstructer.cs" />
-    <Compile Include="Protocol\Controls\HMScheduler.cs" />
+    <Compile Include="Protocol\Controls\Constructer.cs" />
+    <Compile Include="Protocol\Controls\Scheduler.cs" />
     <Compile Include="Protocol\Encryption\BigInteger.cs" />
     <Compile Include="Protocol\Encryption\HKeyExchange.cs" />
     <Compile Include="Protocol\Encryption\RsaKey.cs" />
