@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Sulakore.Protocol.Controls
 {
     [System.ComponentModel.DesignerCategory("Code")]
-    public class HMConstructer : ListView
+    public class Constructer : ListView
     {
         #region Private Fields
         private HMessage _packet;
@@ -47,7 +47,7 @@ namespace Sulakore.Protocol.Controls
         #endregion
 
         #region Constructor(s)
-        public HMConstructer()
+        public Constructer()
         {
             _chunks = new List<object>();
 
