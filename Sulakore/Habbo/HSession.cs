@@ -12,13 +12,14 @@ using System.Collections.Generic;
 using Sulakore.Protocol.Encryption;
 using System.Collections.Specialized;
 using System.Security.Cryptography.X509Certificates;
+using System.Diagnostics;
 
 namespace Sulakore.Habbo
 {
     public sealed class HSession : IPlayerSession, IHConnection, IDisposable
     {
         #region Connection Events
-        public event EventHandler<EventArgs> Connected;
+        public event EventHandler Connected;
         public event EventHandler<DataToEventArgs> DataToServer;
         public event EventHandler<DataToEventArgs> DataToClient;
         public event EventHandler<DisconnectedEventArgs> Disconnected;
@@ -502,7 +503,7 @@ namespace Sulakore.Habbo
                     }
                 }
             }
-            catch (Exception ex) { SKore.Debugger(ex.ToString()); }
+            catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
             return false;
         }
         public Task<bool> LoginAsync()
@@ -631,14 +632,14 @@ namespace Sulakore.Habbo
                 if (DataToServer != null)
                 {
                     try { DataToServer(this, new DataToEventArgs(data, HDestination.Server, ++_toServerS)); }
-                    catch (Exception ex) { SKore.Debugger(ex.ToString()); }
+                    catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
                 }
 
                 if (ClientEncrypt != null)
                     data = ClientEncrypt.SafeParse(data);
 
                 try { _serverS.Send(data); }
-                catch (Exception ex) { Disconnect(); SKore.Debugger(ex.ToString()); return 0; }
+                catch (Exception ex) { Disconnect(); Debug.WriteLine(ex.ToString()); return 0; }
 
                 return data.Length;
             }
@@ -865,14 +866,14 @@ namespace Sulakore.Habbo
                         if (DataToClient != null)
                         {
                             try { DataToClient(this, new DataToEventArgs(chunk, HDestination.Client, _toClientS)); }
-                            catch (Exception ex) { SKore.Debugger(ex.ToString()); }
+                            catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
                         }
                     }
                 }
-                catch (Exception ex) { SKore.Debugger(ex.ToString()); }
+                catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
                 ReadServerData();
             }
-            catch (Exception ex) { Disconnect(); SKore.Debugger(ex.ToString()); }
+            catch (Exception ex) { Disconnect(); Debug.WriteLine(ex.ToString()); }
         }
         #endregion
 
