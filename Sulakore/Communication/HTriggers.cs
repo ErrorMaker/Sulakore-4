@@ -8,191 +8,202 @@ namespace Sulakore.Communication
 {
     public class HTriggers : IDisposable
     {
-        #region Subscribable Events
-        public event EventHandler<HostSayEventArgs> HostSay;
-        protected virtual void OnHostSay(HMessage packet)
-        {
-            EventHandler<HostSayEventArgs> handler = HostSay;
-
-            if (handler != null)
-                handler(this, new HostSayEventArgs(packet));
-        }
-
-        public event EventHandler<HostWalkEventArgs> HostWalk;
-        protected virtual void OnHostWalk(HMessage packet)
-        {
-            EventHandler<HostWalkEventArgs> handler = HostWalk;
-
-            if (handler != null)
-                handler(this, new HostWalkEventArgs(packet));
-        }
-
-        public event EventHandler<HostDanceEventArgs> HostDance;
-        protected virtual void OnHostDance(HMessage packet)
-        {
-            EventHandler<HostDanceEventArgs> handler = HostDance;
-
-            if (handler != null)
-                handler(this, new HostDanceEventArgs(packet));
-        }
-
-        public event EventHandler<HostShoutEventArgs> HostShout;
-        protected virtual void OnHostShout(HMessage packet)
-        {
-            EventHandler<HostShoutEventArgs> handler = HostShout;
-
-            if (handler != null)
-                handler(this, new HostShoutEventArgs(packet));
-        }
-
-        public event EventHandler<HostGestureEventArgs> HostGesture;
-        protected virtual void OnHostGesture(HMessage packet)
-        {
-            EventHandler<HostGestureEventArgs> handler = HostGesture;
-
-            if (handler != null)
-                handler(this, new HostGestureEventArgs(packet));
-        }
-
-        public event EventHandler<HostRoomExitEventArgs> HostRoomExit;
-        protected virtual void OnHostRoomExit(HMessage packet)
-        {
-            EventHandler<HostRoomExitEventArgs> handler = HostRoomExit;
-
-            if (handler != null)
-                handler(this, new HostRoomExitEventArgs(packet));
-        }
-
-        public event EventHandler<HostRaiseSignEventArgs> HostRaiseSign;
-        protected virtual void OnHostRaiseSign(HMessage packet)
-        {
-            EventHandler<HostRaiseSignEventArgs> handler = HostRaiseSign;
-
-            if (handler != null)
-                handler(this, new HostRaiseSignEventArgs(packet));
-        }
-
+        #region Outgoing Event Handlers
         public event EventHandler<HostBanPlayerEventArgs> HostBanPlayer;
-        protected virtual void OnHostBanPlayer(HMessage packet)
+        protected virtual void OnHostBanPlayer(HostBanPlayerEventArgs e)
         {
             EventHandler<HostBanPlayerEventArgs> handler = HostBanPlayer;
-
-            if (handler != null)
-                handler(this, new HostBanPlayerEventArgs(packet));
+            if (handler != null) handler(this, e);
         }
 
-        public event EventHandler<HostMutePlayerEventArgs> HostMutePlayer;
-        protected virtual void OnHostMutePlayer(HMessage packet)
+        public event EventHandler<HostChangeClothesEventArgs> HostChangeClothes;
+        protected virtual void OnHostChangeClothes(HostChangeClothesEventArgs e)
         {
-            EventHandler<HostMutePlayerEventArgs> handler = HostMutePlayer;
-
-            if (handler != null)
-                handler(this, new HostMutePlayerEventArgs(packet));
+            EventHandler<HostChangeClothesEventArgs> handler = HostChangeClothes;
+            if (handler != null) handler(this, e);
         }
 
-        public event EventHandler<HostKickPlayerEventArgs> HostKickPlayer;
-        protected virtual void OnHostKickPlayer(HMessage packet)
+        public event EventHandler<HostChangeMottoEventArgs> HostChangeMotto;
+        protected virtual void OnHostChangeMotto(HostChangeMottoEventArgs e)
         {
-            EventHandler<HostKickPlayerEventArgs> handler = HostKickPlayer;
+            EventHandler<HostChangeMottoEventArgs> handler = HostChangeMotto;
+            if (handler != null) handler(this, e);
+        }
 
-            if (handler != null)
-                handler(this, new HostKickPlayerEventArgs(packet));
+        public event EventHandler<HostChangeStanceEventArgs> HostChangeStance;
+        protected virtual void OnHostChangeStance(HostChangeStanceEventArgs e)
+        {
+            EventHandler<HostChangeStanceEventArgs> handler = HostChangeStance;
+            if (handler != null) handler(this, e);
         }
 
         public event EventHandler<HostClickPlayerEventArgs> HostClickPlayer;
-        protected virtual void OnHostClickPlayer(HMessage packet)
+        protected virtual void OnHostClickPlayer(HostClickPlayerEventArgs e)
         {
             EventHandler<HostClickPlayerEventArgs> handler = HostClickPlayer;
-
-            if (handler != null)
-                handler(this, new HostClickPlayerEventArgs(packet));
+            if (handler != null) handler(this, e);
         }
 
-        public event EventHandler<HostMottoChangedEventArgs> HostChangeMotto;
-        protected virtual void OnHostChangeMotto(HMessage packet)
+        public event EventHandler<HostDanceEventArgs> HostDance;
+        protected virtual void OnHostDance(HostDanceEventArgs e)
         {
-            EventHandler<HostMottoChangedEventArgs> handler = HostChangeMotto;
-
-            if (handler != null)
-                handler(this, new HostMottoChangedEventArgs(packet));
+            EventHandler<HostDanceEventArgs> handler = HostDance;
+            if (handler != null) handler(this, e);
         }
 
-        public event EventHandler<HostTradePlayerEventArgs> HostTradePlayer;
-        protected virtual void OnHostTradePlayer(HMessage packet)
+        public event EventHandler<HostGestureEventArgs> HostGesture;
+        protected virtual void OnHostGesture(HostGestureEventArgs e)
         {
-            EventHandler<HostTradePlayerEventArgs> handler = HostTradePlayer;
-
-            if (handler != null)
-                handler(this, new HostTradePlayerEventArgs(packet));
+            EventHandler<HostGestureEventArgs> handler = HostGesture;
+            if (handler != null) handler(this, e);
         }
 
-        public event EventHandler<HostStanceChangedEventArgs> HostChangeStance;
-        protected virtual void OnHostChangeStance(HMessage packet)
+        public event EventHandler<HostKickPlayerEventArgs> HostKickPlayer;
+        protected virtual void OnHostKickPlayer(HostKickPlayerEventArgs e)
         {
-            EventHandler<HostStanceChangedEventArgs> handler = HostChangeStance;
-
-            if (handler != null)
-                handler(this, new HostStanceChangedEventArgs(packet));
-        }
-
-        public event EventHandler<HostRoomNavigateEventArgs> HostRoomNavigate;
-        protected virtual void OnHostRoomNavigate(HMessage packet)
-        {
-            EventHandler<HostRoomNavigateEventArgs> handler = HostRoomNavigate;
-
-            if (handler != null)
-                handler(this, new HostRoomNavigateEventArgs(packet));
+            EventHandler<HostKickPlayerEventArgs> handler = HostKickPlayer;
+            if (handler != null) handler(this, e);
         }
 
         public event EventHandler<HostMoveFurnitureEventArgs> HostMoveFurniture;
-        protected virtual void OnHostMoveFurniture(HMessage packet)
+        protected virtual void OnHostMoveFurniture(HostMoveFurnitureEventArgs e)
         {
             EventHandler<HostMoveFurnitureEventArgs> handler = HostMoveFurniture;
-
-            if (handler != null)
-                handler(this, new HostMoveFurnitureEventArgs(packet));
+            if (handler != null) handler(this, e);
         }
 
-        public event EventHandler<HostClothesChangedEventArgs> HostChangeClothes;
-        protected virtual void OnHostChangeClothes(HMessage packet)
+        public event EventHandler<HostMutePlayerEventArgs> HostMutePlayer;
+        protected virtual void OnHostMutePlayer(HostMutePlayerEventArgs e)
         {
-            EventHandler<HostClothesChangedEventArgs> handler = HostChangeClothes;
-
-            if (handler != null)
-                handler(this, new HostClothesChangedEventArgs(packet));
+            EventHandler<HostMutePlayerEventArgs> handler = HostMutePlayer;
+            if (handler != null) handler(this, e);
         }
 
-        public event EventHandler<PlayerKickedHostEventArgs> PlayerKickedHost;
-        protected virtual void OnPlayerKickedHost(HMessage packet)
+        public event EventHandler<HostRaiseSignEventArgs> HostRaiseSign;
+        protected virtual void OnHostRaiseSign(HostRaiseSignEventArgs e)
         {
-            EventHandler<PlayerKickedHostEventArgs> handler = PlayerKickedHost;
+            EventHandler<HostRaiseSignEventArgs> handler = HostRaiseSign;
+            if (handler != null) handler(this, e);
+        }
 
-            if (handler != null)
-                handler(this, new PlayerKickedHostEventArgs(packet));
+        public event EventHandler<HostRoomExitEventArgs> HostRoomExit;
+        protected virtual void OnHostRoomExit(HostRoomExitEventArgs e)
+        {
+            EventHandler<HostRoomExitEventArgs> handler = HostRoomExit;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler<HostRoomNavigateEventArgs> HostRoomNavigate;
+        protected virtual void OnHostRoomNavigate(HostRoomNavigateEventArgs e)
+        {
+            EventHandler<HostRoomNavigateEventArgs> handler = HostRoomNavigate;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler<HostSayEventArgs> HostSay;
+        protected virtual void OnHostSay(HostSayEventArgs e)
+        {
+            EventHandler<HostSayEventArgs> handler = HostSay;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler<HostShoutEventArgs> HostShout;
+        protected virtual void OnHostShout(HostShoutEventArgs e)
+        {
+            EventHandler<HostShoutEventArgs> handler = HostShout;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler<HostTradePlayerEventArgs> HostTradePlayer;
+        protected virtual void OnHostTradePlayer(HostTradePlayerEventArgs e)
+        {
+            EventHandler<HostTradePlayerEventArgs> handler = HostTradePlayer;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler<HostWalkEventArgs> HostWalk;
+        protected virtual void OnHostWalk(HostWalkEventArgs e)
+        {
+            EventHandler<HostWalkEventArgs> handler = HostWalk;
+            if (handler != null) handler(this, e);
+        }
+        #endregion
+        #region Incoming Event Handlers
+        public event EventHandler<FurnitureDataLoadedEventArgs> FurnitureDataLoaded;
+        protected virtual void OnFurnitureDataLoaded(FurnitureDataLoadedEventArgs e)
+        {
+            EventHandler<FurnitureDataLoadedEventArgs> handler = FurnitureDataLoaded;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler<PlayerChangeDataEventArgs> PlayerChangeData;
+        protected virtual void OnPlayerChangeData(PlayerChangeDataEventArgs e)
+        {
+            EventHandler<PlayerChangeDataEventArgs> handler = PlayerChangeData;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler<PlayerChangeStanceEventArgs> PlayerChangeStance;
+        protected virtual void OnPlayerChangeStance(PlayerChangeStanceEventArgs e)
+        {
+            EventHandler<PlayerChangeStanceEventArgs> handler = PlayerChangeStance;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler<PlayerDanceEventArgs> PlayerDance;
+        protected virtual void OnPlayerDance(PlayerDanceEventArgs e)
+        {
+            EventHandler<PlayerDanceEventArgs> handler = PlayerDance;
+            if (handler != null) handler(this, e);
         }
 
         public event EventHandler<PlayerDataLoadedEventArgs> PlayerDataLoaded;
-        protected virtual void OnPlayerDataLoaded(HMessage packet)
+        protected virtual void OnPlayerDataLoaded(PlayerDataLoadedEventArgs e)
         {
             EventHandler<PlayerDataLoadedEventArgs> handler = PlayerDataLoaded;
-
-            if (handler != null)
-                handler(this, new PlayerDataLoadedEventArgs(packet));
+            if (handler != null) handler(this, e);
         }
 
-        public event EventHandler<FurnitureDataLoadedEventArgs> FurnitureDataLoaded;
-        protected virtual void OnFurnitureDataLoaded(HMessage packet)
+        public event EventHandler<PlayerDropFurnitureEventArgs> PlayerDropFurniture;
+        protected virtual void OnPlayerDropFurniture(PlayerDropFurnitureEventArgs e)
         {
-            EventHandler<FurnitureDataLoadedEventArgs> handler = FurnitureDataLoaded;
+            EventHandler<PlayerDropFurnitureEventArgs> handler = PlayerDropFurniture;
+            if (handler != null) handler(this, e);
+        }
 
-            if (handler != null)
-                handler(this, new FurnitureDataLoadedEventArgs(packet));
+        public event EventHandler<PlayerGestureEventArgs> PlayerGesture;
+        protected virtual void OnPlayerGesture(PlayerGestureEventArgs e)
+        {
+            EventHandler<PlayerGestureEventArgs> handler = PlayerGesture;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler<PlayerKickHostEventArgs> PlayerKickHost;
+        protected virtual void OnPlayerKickHost(PlayerKickHostEventArgs e)
+        {
+            EventHandler<PlayerKickHostEventArgs> handler = PlayerKickHost;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler<PlayerMoveFurnitureEventArgs> PlayerMoveFurniture;
+        protected virtual void OnPlayerMoveFurniture(PlayerMoveFurnitureEventArgs e)
+        {
+            EventHandler<PlayerMoveFurnitureEventArgs> handler = PlayerMoveFurniture;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler<PlayerSpeakEventArgs> PlayerSpeak;
+        protected virtual void OnPlayerSpeak(PlayerSpeakEventArgs e)
+        {
+            EventHandler<PlayerSpeakEventArgs> handler = PlayerSpeak;
+            if (handler != null) handler(this, e);
         }
         #endregion
 
         #region Private/Public Fields
-        private bool _lockEvents, _captureEvents;
         public delegate void PacketCallback(HMessage packet);
+
+        private bool _lockEvents, _captureEvents;
 
         private readonly Stack<HMessage> _previousOutgoing, _previousIncoming;
         private readonly IDictionary<ushort, PacketCallback> _lockedOut, _lockedIn, _inCallbacks, _outCallbacks;
@@ -292,6 +303,11 @@ namespace Sulakore.Communication
                 }
             }
         }
+        private void ProcessOutgoing(HMessage previous, ref HMessage current)
+        {
+
+        }
+
         public virtual void ProcessIncoming(byte[] data)
         {
             var packet = new HMessage(data, HDestination.Client);
@@ -321,95 +337,9 @@ namespace Sulakore.Communication
                 }
             }
         }
-
-        private void ProcessOutgoing(HMessage previous, ref HMessage current)
-        {
-            if (previous != null)
-            {
-                if (previous.Length >= 5 && previous.ReadShort(0) < previous.Length)
-                {
-                    switch (previous.ReadString())
-                    {
-                        case "OwnAvatarMenu":
-                        {
-                            if (previous.ReadString() != "click") break;
-                            if (previous.ReadString() != "sign") ProcessAvatarMenuEvent(previous, current);
-                            break;
-                        }
-                    }
-                    switch (current.ReadString())
-                    {
-                        case "OwnAvatarMenu":
-                        {
-                            if (current.ReadString() != "click") break;
-                            if (current.ReadString() == "sign") ProcessAvatarMenuEvent(current, previous);
-                            break;
-                        }
-                    }
-                    current = null;
-                }
-            }
-            else
-            {
-
-            }
-        }
         private void ProcessIncoming(HMessage previous, ref HMessage current)
         {
-            if (previous != null) current = null;
-            else
-            {
-                string currentPacketString = current.ToString();
 
-                if (current.Length > 100 & currentPacketString.Contains("hd-"))
-                    ProcessPlayerDataEvent(current);
-                else current = null;
-            }
-        }
-
-        private void ProcessPlayerDataEvent(HMessage packet)
-        {
-            int possiblePlayerCount = packet.ReadInt(0);
-            int possiblePlayerId = packet.ReadInt(4);
-            if (possiblePlayerCount > 0 && possiblePlayerCount < 250 && possiblePlayerId > 0)
-            {
-                if (LockEvents) _lockedOut[packet.Header] = OnPlayerDataLoaded;
-                OnPlayerDataLoaded(packet);
-            }
-        }
-        private void ProcessAvatarMenuEvent(HMessage logPacket, HMessage actionPacket)
-        {
-            int position = 0;
-            logPacket.ReadString(ref position);
-            logPacket.ReadString(ref position);
-            switch (logPacket.ReadString(ref position))
-            {
-                case "sign":
-                {
-                    if (LockEvents) _lockedOut[actionPacket.Header] = OnHostRaiseSign;
-                    OnHostRaiseSign(actionPacket); break;
-                }
-                case "stand":
-                case "sit":
-                {
-                    if (LockEvents) _lockedOut[actionPacket.Header] = OnHostChangeStance;
-                    OnHostChangeStance(actionPacket); break;
-                }
-                case "wave":
-                case "idle":
-                case "blow":
-                case "laugh":
-                {
-                    if (LockEvents) _lockedOut[actionPacket.Header] = OnHostGesture;
-                    OnHostGesture(actionPacket); break;
-                }
-                case "dance_stop":
-                case "dance_start":
-                {
-                    if (LockEvents) _lockedOut[actionPacket.Header] = OnHostDance;
-                    OnHostDance(actionPacket); break;
-                }
-            }
         }
 
         public void Dispose()
@@ -433,28 +363,37 @@ namespace Sulakore.Communication
 
                 if (_lockedIn != null)
                     _lockedIn.Clear();
-            }
 
-            SKore.Unsubscribe(ref HostSay);
-            SKore.Unsubscribe(ref HostWalk);
-            SKore.Unsubscribe(ref HostDance);
-            SKore.Unsubscribe(ref HostShout);
-            SKore.Unsubscribe(ref HostGesture);
-            SKore.Unsubscribe(ref HostRoomExit);
-            SKore.Unsubscribe(ref HostRaiseSign);
-            SKore.Unsubscribe(ref HostBanPlayer);
-            SKore.Unsubscribe(ref HostMutePlayer);
-            SKore.Unsubscribe(ref HostKickPlayer);
-            SKore.Unsubscribe(ref HostClickPlayer);
-            SKore.Unsubscribe(ref HostChangeMotto);
-            SKore.Unsubscribe(ref HostTradePlayer);
-            SKore.Unsubscribe(ref HostChangeStance);
-            SKore.Unsubscribe(ref HostRoomNavigate);
-            SKore.Unsubscribe(ref HostMoveFurniture);
-            SKore.Unsubscribe(ref HostChangeClothes);
-            SKore.Unsubscribe(ref PlayerKickedHost);
-            SKore.Unsubscribe(ref PlayerDataLoaded);
-            SKore.Unsubscribe(ref FurnitureDataLoaded);
+
+                SKore.Unsubscribe(ref HostBanPlayer);
+                SKore.Unsubscribe(ref HostChangeClothes);
+                SKore.Unsubscribe(ref HostChangeMotto);
+                SKore.Unsubscribe(ref HostChangeStance);
+                SKore.Unsubscribe(ref HostClickPlayer);
+                SKore.Unsubscribe(ref HostDance);
+                SKore.Unsubscribe(ref HostGesture);
+                SKore.Unsubscribe(ref HostKickPlayer);
+                SKore.Unsubscribe(ref HostMoveFurniture);
+                SKore.Unsubscribe(ref HostMutePlayer);
+                SKore.Unsubscribe(ref HostRaiseSign);
+                SKore.Unsubscribe(ref HostRoomExit);
+                SKore.Unsubscribe(ref HostRoomNavigate);
+                SKore.Unsubscribe(ref HostSay);
+                SKore.Unsubscribe(ref HostShout);
+                SKore.Unsubscribe(ref HostTradePlayer);
+                SKore.Unsubscribe(ref HostWalk);
+
+                SKore.Unsubscribe(ref FurnitureDataLoaded);
+                SKore.Unsubscribe(ref PlayerChangeData);
+                SKore.Unsubscribe(ref PlayerChangeStance);
+                SKore.Unsubscribe(ref PlayerDance);
+                SKore.Unsubscribe(ref PlayerDataLoaded);
+                SKore.Unsubscribe(ref PlayerDropFurniture);
+                SKore.Unsubscribe(ref PlayerGesture);
+                SKore.Unsubscribe(ref PlayerKickHost);
+                SKore.Unsubscribe(ref PlayerMoveFurniture);
+                SKore.Unsubscribe(ref PlayerSpeak);
+            }
         }
     }
 }
