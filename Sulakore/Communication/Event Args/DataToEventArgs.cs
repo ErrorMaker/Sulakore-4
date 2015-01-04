@@ -1,5 +1,6 @@
-﻿using Sulakore.Protocol;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+
+using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
