@@ -1,17 +1,17 @@
 ﻿using System;
+
 using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
-    public class HostMottoChangedEventArgs : EventArgs, IHabboEvent
+    public class HostChangeMottoEventArgs : EventArgs, IHabboEvent
     {
         private readonly HMessage _packet;
 
         public ushort Header { get; private set; }
-
         public string Motto { get; private set; }
 
-        public HostMottoChangedEventArgs(HMessage packet)
+        public HostChangeMottoEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;

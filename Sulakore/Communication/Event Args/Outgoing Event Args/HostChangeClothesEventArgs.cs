@@ -1,19 +1,19 @@
 ﻿using System;
+
 using Sulakore.Habbo;
 using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
-    public class HostClothesChangedEventArgs : EventArgs, IHabboEvent
+    public class HostChangeClothesEventArgs : EventArgs, IHabboEvent
     {
         private readonly HMessage _packet;
 
         public ushort Header { get; private set; }
-
         public HGender Gender { get; private set; }
         public string FigureId { get; private set; }
 
-        public HostClothesChangedEventArgs(HMessage packet)
+        public HostChangeClothesEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;

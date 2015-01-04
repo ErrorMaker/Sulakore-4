@@ -1,10 +1,11 @@
 ﻿using System;
+
 using Sulakore.Habbo;
 using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
-    public class PlayerDataChangedEventArgs : EventArgs, IHabboEvent
+    public class PlayerChangeDataEventArgs : EventArgs, IHabboEvent
     {
         private readonly HMessage _packet;
 
@@ -15,7 +16,7 @@ namespace Sulakore.Communication
         public HGender Gender { get; private set; }
         public string Motto { get; private set; }
 
-        public PlayerDataChangedEventArgs(HMessage packet)
+        public PlayerChangeDataEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;

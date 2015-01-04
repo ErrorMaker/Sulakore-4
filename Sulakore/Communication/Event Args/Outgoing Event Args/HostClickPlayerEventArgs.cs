@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Sulakore.Habbo;
 using Sulakore.Protocol;
 
@@ -9,7 +10,6 @@ namespace Sulakore.Communication
         private readonly HMessage _packet;
 
         public ushort Header { get; private set; }
-
         public int PlayerId { get; private set; }
         public HPoint Tile { get; private set; }
 

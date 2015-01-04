@@ -1,26 +1,20 @@
 ﻿using System;
+
 using Sulakore.Habbo;
 using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
-    public class PlayerMoveFurnitureEventArgs : EventArgs, IHabboEvent, IHFurnitureData
+    public class PlayerMoveFurnitureEventArgs : EventArgs, IHabboEvent
     {
         private readonly HMessage _packet;
 
         public ushort Header { get; private set; }
-
         public int FurnitureId { get; private set; }
         public int FurnitureTypeId { get; private set; }
-        public HPoint Tile { get; set; }
-        public HDirection Direction { get; set; }
+        public HPoint Tile { get; private set; }
+        public HDirection Direction { get; private set; }
         public int FurnitureOwnerId { get; private set; }
-
-        public int State { get; set; }
-        public string FurnitureOwnerName
-        {
-            get { return string.Empty; }
-        }
 
         public PlayerMoveFurnitureEventArgs(HMessage packet)
         {

@@ -1,18 +1,18 @@
 ﻿using System;
+
 using Sulakore.Habbo;
 using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
-    public class HostStanceChangedEventArgs : EventArgs, IHabboEvent
+    public class HostChangeStanceEventArgs : EventArgs, IHabboEvent
     {
         private readonly HMessage _packet;
 
         public ushort Header { get; private set; }
-
         public HStance Stance { get; private set; }
 
-        public HostStanceChangedEventArgs(HMessage packet)
+        public HostChangeStanceEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;

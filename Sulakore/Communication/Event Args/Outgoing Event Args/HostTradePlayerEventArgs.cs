@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Sulakore.Protocol;
 
 namespace Sulakore.Communication
@@ -8,7 +9,6 @@ namespace Sulakore.Communication
         private readonly HMessage _packet;
 
         public ushort Header { get; private set; }
-
         public int PlayerIndex { get; private set; }
 
         public HostTradePlayerEventArgs(HMessage packet)

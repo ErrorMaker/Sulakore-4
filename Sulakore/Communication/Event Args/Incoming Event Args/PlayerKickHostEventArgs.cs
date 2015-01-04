@@ -3,13 +3,13 @@ using Sulakore.Protocol;
 
 namespace Sulakore.Communication
 {
-    public class PlayerKickedHostEventArgs : EventArgs, IHabboEvent
+    public class PlayerKickHostEventArgs : EventArgs, IHabboEvent
     {
         private readonly HMessage _packet;
 
         public ushort Header { get; private set; }
 
-        public PlayerKickedHostEventArgs(HMessage packet)
+        public PlayerKickHostEventArgs(HMessage packet)
         {
             _packet = packet;
             Header = _packet.Header;
