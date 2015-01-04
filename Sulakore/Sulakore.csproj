@@ -47,9 +47,9 @@
     <Compile Include="Communication\Event Args\Incoming Event Args\FurnitureDataLoadedEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerMoveFurnitureEventArgs.cs" />
     <Compile Include="Communication\Event Args\Outgoing Event Args\HostBanPlayerEventArgs.cs" />
-    <Compile Include="Communication\Event Args\Outgoing Event Args\HostClothesChangedEventArgs.cs" />
-    <Compile Include="Communication\Event Args\Outgoing Event Args\HostMottoChangedEventArgs.cs" />
-    <Compile Include="Communication\Event Args\Outgoing Event Args\HostStanceChangedEventArgs.cs" />
+    <Compile Include="Communication\Event Args\Outgoing Event Args\HostChangeClothesEventArgs.cs" />
+    <Compile Include="Communication\Event Args\Outgoing Event Args\HostChangeMottoEventArgs.cs" />
+    <Compile Include="Communication\Event Args\Outgoing Event Args\HostChangeStanceEventArgs.cs" />
     <Compile Include="Communication\Event Args\Outgoing Event Args\HostClickPlayerEventArgs.cs" />
     <Compile Include="Communication\Event Args\Outgoing Event Args\HostDanceEventArgs.cs" />
     <Compile Include="Communication\Event Args\Outgoing Event Args\HostGestureEventArgs.cs" />
@@ -69,8 +69,8 @@
     <Compile Include="Extensions\IContractor.cs" />
     <Compile Include="Extensions\IExtension.cs" />
     <Compile Include="Communication\IHConnection.cs" />
-    <Compile Include="Communication\Event Args\Incoming Event Args\PlayerDataChangedEventArgs.cs" />
-    <Compile Include="Communication\Event Args\Incoming Event Args\PlayerStanceChangedEventArgs.cs" />
+    <Compile Include="Communication\Event Args\Incoming Event Args\PlayerChangeDataEventArgs.cs" />
+    <Compile Include="Communication\Event Args\Incoming Event Args\PlayerChangeStanceEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerDanceEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerDropFurnitureEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerGestureEventArgs.cs" />
@@ -99,7 +99,7 @@
     <Compile Include="Habbo\HPlayerData.cs" />
     <Compile Include="Habbo\IHFurnitureData.cs" />
     <Compile Include="Habbo\IHPlayerData.cs" />
-    <Compile Include="Communication\Event Args\Incoming Event Args\PlayerKickedHostEventArgs.cs" />
+    <Compile Include="Communication\Event Args\Incoming Event Args\PlayerKickHostEventArgs.cs" />
     <Compile Include="Communication\Event Args\Incoming Event Args\PlayerDataLoadedEventArgs.cs" />
     <Compile Include="Communication\Eavesdropper.cs" />
     <Compile Include="Communication\Event Args\EavesResponseEventArgs.cs" />
